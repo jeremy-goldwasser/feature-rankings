@@ -2,11 +2,12 @@ import pandas as pd
 import numpy as np
 from os.path import join
 from sklearn.model_selection import train_test_split
+import pickle
 
-def load_credit(path):
+def make_credit(data_path):
     # df = sage.datasets.credit()
     # df.to_csv("Data/credit.csv")
-    df = pd.read_csv(join(path, "credit.csv"), index_col=0)
+    df = pd.read_csv(join(data_path, "credit", "credit.csv"), index_col=0)
 
     # Property, other installment, housing, job, status of checking act, credit history, purpose, savings, employment since, marital status, old debtors
     n = df.shape[0]
@@ -19,7 +20,7 @@ def load_credit(path):
         'Debtors/Guarantors', 'Property Type', 'Other Installment Plans',
         'Housing Ownership', 'Job', #'Telephone', 'Foreign Worker' # These are just binary
     ]
-    X_binarized = pd.get_dummies(X_df, columns=categorical_columns)
+    X_binarized = pd.get_dummies(X_df, columns=categorical_columns, dtype=float)
 
     mapping_dict = {}
     for i, col in enumerate(X_df.columns):
@@ -40,9 +41,8 @@ def load_credit(path):
     return X_train, y_train, X_test, y_test, mapping_dict
 
 
-def load_brca(path):
-    np.random.seed(1)
-    data = pd.read_csv(join(path, "brca_small.csv"))
+def make_brca(data_path):
+    data = pd.read_csv(join(data_path, "brca", "brca_small.csv"))
     X = data.values[:, :-1][:,:20]
     Y = data.values[:, -1]
     Y = (Y==2).astype(int) # Formulate as binary classification problem
@@ -60,16 +60,15 @@ def load_brca(path):
     return X_train, y_train, X_test, y_test, mapping_dict
 
 
-def load_census(path):
+def make_census(data_path):
     # Adult census income dataset
     # import shap
     # X_display, y_display = shap.datasets.adult(display=True)
     # X_display.to_csv("Data/census_X.csv")
     # np.save("Data/census_y.npy", y_display)
-    X_display = pd.read_csv(join(path, "census_X.csv"), index_col=0)
-    y_display = np.load(join(path, "census_y.npy"))
-    X_binarized = pd.get_dummies(X_display)
-
+    X_display = pd.read_csv(join(data_path, "census", "census_X.csv"), index_col=0)
+    y_display = np.load(join(data_path, "census", "census_y.npy"))
+    X_binarized = pd.get_dummies(X_display, dtype=float)
     mapping_dict = {}
     for i, col in enumerate(X_display.columns):
         bin_cols = []
@@ -95,12 +94,32 @@ def load_census(path):
     
     return X_train, y_train, X_test, y_test, mapping_dict
 
-def load_data(dataset, path):
+
+def make_data(data_path, dataset):
     if dataset=="brca":
-        return load_brca(path)
+        return make_brca(data_path)
     if dataset=="credit":
-        return load_credit(path)
+        return make_credit(data_path)
     if dataset=="census":
-        return load_census(path)
+        return make_census(data_path)
     print("Dataset must be brca, credit, or census.")
     return -1
+
+
+def save_data(data_path, dataset, X_train, y_train, X_test, y_test, mapping_dict):
+    np.save(join(data_path, dataset, "X_train.npy"), X_train)
+    np.save(join(data_path, dataset, "X_test.npy"), X_test)
+    np.save(join(data_path, dataset, "y_train.npy"), y_train)
+    np.save(join(data_path, dataset, "y_test.npy"), y_test)
+    with open(join(data_path, dataset, "mapping_dict"), "wb") as fp:
+        pickle.dump(mapping_dict, fp)
+
+
+def load_data(data_path, dataset):
+    X_train = np.load(join(data_path, dataset, "X_train.npy"))
+    X_test = np.load(join(data_path, dataset, "X_test.npy"))
+    y_train = np.load(join(data_path, dataset, "y_train.npy"))
+    y_test = np.load(join(data_path, dataset, "y_test.npy"))
+    with open(join(data_path, dataset, "mapping_dict"), "rb") as fp:
+        mapping_dict = pickle.load(fp)
+    return X_train, y_train, X_test, y_test, mapping_dict
