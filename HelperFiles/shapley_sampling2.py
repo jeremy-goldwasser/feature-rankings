@@ -179,14 +179,13 @@ def shapley_sampling_adaptive(model, X, xloc, K,
         # Run until order of pair is stable
         test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, 
                                         factor_of_two=factor_of_two, n_equal=n_equal, n_old=n_old)
-        # print("here")
         exceeded = False
         while test_result != "reject":
             # Run for suggested number of samples to be significant difference
             n_to_run = [max(int(buffer*n), n_init) for n in test_result[1]]
             # print(n_to_run)
             if max(n_to_run) > max_n_perms:
-                print(n_to_run)
+                # print(n_to_run)
                 if not exceeded:
                     n_to_run = [max_n_perms, max_n_perms]
                     exceeded = True
@@ -214,7 +213,6 @@ def shapley_sampling_adaptive(model, X, xloc, K,
             test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, 
                                     factor_of_two=factor_of_two, n_equal=n_equal, n_old=n_old)
         # Replace with new samples
-        # print("pair converged")
         diffs_all_feats[index_pair[0]] = diffs_pair[0]
         diffs_all_feats[index_pair[1]] = diffs_pair[1]
     shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
