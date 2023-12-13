@@ -1,0 +1,717 @@
+shap_census_nn_K5_10x
+0
+20 0.0
+40 0.0
+60 0.0
+80 0.0
+100 0.0
+120 0.0
+140 0.0
+160 0.0
+180 0.0
+200 0.0
+220 0.0
+240 0.0
+260 0.0
+280 0.0
+300 0.0
+320 0.0
+340 0.0
+360 0.0
+380 0.0
+400 0.0
+420 0.0
+440 0.0
+460 0.0
+480 0.0
+500 0.0
+1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+20 0.0
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+40 0.0
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+60 0.02
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+80 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+100 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+120 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+140 0.04
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+160 0.04
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+180 0.04
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+200 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+220 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+240 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+260 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+280 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+300 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+320 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+340 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+360 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+380 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+400 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+420 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+440 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+460 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+480 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+500 0.05
+2
+20 0.05
+40 0.03
+60 0.03
+80 0.04
+100 0.04
+120 0.04
+140 0.04
+160 0.04
+180 0.03
+200 0.03
+220 0.03
+240 0.03
+260 0.02
+280 0.03
+300 0.03
+320 0.03
+340 0.02
+360 0.03
+380 0.03
+400 0.03
+420 0.03
+440 0.03
+460 0.03
+480 0.03
+500 0.03
+3
+20 0.0
+40 0.0
+60 0.0
+80 0.0
+100 0.0
+120 0.0
+140 0.0
+160 0.0
+180 0.0
+200 0.0
+220 0.0
+240 0.0
+260 0.0
+280 0.0
+300 0.0
+320 0.0
+340 0.0
+360 0.0
+380 0.0
+400 0.0
+420 0.0
+440 0.0
+460 0.0
+480 0.0
+500 0.0
+4
+20 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+40 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+60 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+80 0.04
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+100 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+120 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+140 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+160 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+180 0.02
+200 0.03
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+220 0.02
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+240 0.02
+260 0.02
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+280 0.02
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+300 0.02
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+320 0.02
+340 0.02
+Hit max # perms without converging. Returning `NA`.
+360 0.02
+380 0.02
+Hit max # perms without converging. Returning `NA`.
+400 0.02
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+420 0.02
+440 0.02
+460 0.02
+480 0.02
+Hit max # perms without converging. Returning `NA`.
+500 0.02
+5
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+20 0.05
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+40 0.12
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+60 0.1
+Hit max # perms without converging. Returning `NA`.
+80 0.09
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+100 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+120 0.09
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+140 0.09
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+160 0.08
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+180 0.08
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+200 0.08
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+220 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+240 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+260 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+280 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+300 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+320 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+340 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+360 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+380 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+400 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+420 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+440 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+460 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+480 0.06
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+500 0.06
+6
+Hit max # perms without converging. Returning `NA`.
+20 0.0
+40 0.0
+60 0.05
+80 0.05
+100 0.08
+120 0.09
+Hit max # perms without converging. Returning `NA`.
+140 0.08
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+160 0.07
+180 0.06
+200 0.06
+220 0.07
+240 0.08
+Hit max # perms without converging. Returning `NA`.
+260 0.09
+280 0.09
+300 0.08
+320 0.07
+340 0.07
+Hit max # perms without converging. Returning `NA`.
+360 0.07
+380 0.07
+400 0.07
+420 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+440 0.07
+460 0.07
+480 0.07
+Hit max # perms without converging. Returning `NA`.
+500 0.07
+7
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+20 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+40 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+60 0.12
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+80 0.14
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+100 0.13
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+120 0.15
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+140 0.15
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+160 0.15
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+180 0.14
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+200 0.16
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+220 0.16
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+240 0.17
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+260 0.16
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+280 0.15
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+300 0.15
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+320 0.15
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+340 0.16
+Hit max # perms without converging. Returning `NA`.
+360 0.16
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+380 0.16
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+400 0.17
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+420 0.17
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+440 0.17
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+460 0.17
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+480 0.16
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+500 0.17
+8
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+20 0.1
+Hit max # perms without converging. Returning `NA`.
+40 0.07
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+60 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+80 0.12
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+100 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+120 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+140 0.11
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+160 0.11
+Hit max # perms without converging. Returning `NA`.
+180 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+200 0.09
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+220 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+240 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+260 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+280 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+300 0.11
+Hit max # perms without converging. Returning `NA`.
+320 0.1
+340 0.11
+Hit max # perms without converging. Returning `NA`.
+360 0.11
+380 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+400 0.1
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+420 0.1
+Hit max # perms without converging. Returning `NA`.
+440 0.11
+Hit max # perms without converging. Returning `NA`.
+460 0.11
+Hit max # perms without converging. Returning `NA`.
+480 0.11
+Hit max # perms without converging. Returning `NA`.
+Hit max # perms without converging. Returning `NA`.
+500 0.12
+9
+20 0.0
+40 0.0
+60 0.0
+80 0.0
+100 0.0
+120 0.0
+140 0.0
+160 0.0
+180 0.0
+200 0.01
+220 0.01
+240 0.01
+260 0.01
+280 0.01
+300 0.01
+320 0.01
+340 0.01
+360 0.01
+380 0.01
+400 0.01
+420 0.01
+440 0.01
+460 0.01
+480 0.01
+500 0.01
