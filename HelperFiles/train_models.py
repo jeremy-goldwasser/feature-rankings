@@ -20,7 +20,7 @@ class TwoLayerNet(nn.Module):
         out = self.softmax(out)
         return out
 
-def train_neural_net(X_train, y_train, xloc=None, mapping_dict=None):
+def train_neural_net(X_train, y_train):
     # Convert the input and label data to PyTorch tensors
     inputs = torch.tensor(X_train, dtype=torch.float32)
     labels = torch.tensor(y_train, dtype=torch.long)
@@ -68,61 +68,13 @@ def train_neural_net(X_train, y_train, xloc=None, mapping_dict=None):
         if not torch.is_tensor(x):
             x = torch.tensor(x, dtype=torch.float32)
         return neural_net(x).detach().numpy()
-
-    if xloc is None:
-        return model
-    else:
-        def compute_hessian(x):
-            if not torch.is_tensor(x):
-                x = torch.tensor(x, dtype=torch.float32)
-            dim = x.shape[1]
-            hessian = torch.autograd.functional.hessian(neural_net, x)
-            hessian = hessian.reshape((dim,dim)).detach().numpy()
-            return hessian
-        
-        feature_means = np.mean(X_train, axis=0)
-        cov_mat = correct_cov(np.cov(X_train, rowvar=False))
-
-        # Select point and compute its gradient and hessian
-        xloc_torch = torch.tensor(xloc, dtype=torch.float32).requires_grad_(True)
-        y_pred = net(xloc_torch)[0,1]
-        y_pred.backward()
-        gradient = xloc_torch.grad.detach().numpy().reshape((xloc.shape[1], 1))
-        hessian = compute_hessian(xloc)
-
-        # Obtain true SHAP values and verify their feasibility
-        true_shap_vals = compute_shap_vals_quadratic(xloc, gradient, hessian, feature_means, cov_mat, mapping_dict=mapping_dict)
-
-        y_pred = y_pred.detach().numpy()
-        def approx(input):
-            return f_second_order_approx(y_pred,input,xloc,gradient,hessian)
-
-        return model, approx, true_shap_vals
+    return model
 
 
-
-def train_logreg(X_train, y_train, xloc=None, mapping_dict=None):
+def train_logreg(X_train, y_train):
     logreg = LogisticRegression().fit(X_train, y_train)
     # print("Class imbalance: {}".format(100*(max(np.mean(y_test), 1-np.mean(y_test)))))
     # print("Estimation accuracy: {}".format(np.mean((logreg.predict(X_test) > 0.5)==y_test)*100))
-
     def model(x):
         return logreg.predict_proba(x)[:,1]
-
-    if xloc is None:
-        return model
-    else:
-        feature_means = np.mean(X_train, axis=0)
-        cov_mat = correct_cov(np.cov(X_train, rowvar=False))
-        BETA = logreg.coef_.reshape(-1)
-        y_pred = model(xloc)
-        gradient = logreg_gradient(y_pred, BETA)
-        hessian = logreg_hessian(y_pred, BETA)
-
-        # Obtain true SHAP values and verify their feasibility
-        true_shap_vals = compute_shap_vals_quadratic(xloc, gradient, hessian, feature_means, cov_mat, mapping_dict=mapping_dict)
-
-        def approx(input):
-            return f_second_order_approx(y_pred,input,xloc,gradient,hessian)
-        
-        return model, approx, true_shap_vals
+    return model
