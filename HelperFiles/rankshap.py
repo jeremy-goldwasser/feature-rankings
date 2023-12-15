@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 from helper import *
-import sys
+
 
 def normal_test(feat1, feat2, alpha=0.05, n_equal=True, abs=True):
     if abs is True and np.mean(feat1)*np.mean(feat2) < 0:
@@ -125,14 +125,13 @@ def compute_diffs_all_feats(model, X, xloc, M, mapping_dict=None, n_samples_per_
     return(diffs_all_feats)
 
 
-def shapley_sampling_adaptive(model, X, xloc, K, 
-                            mapping_dict=None, alpha=0.05, 
-                            n_samples_per_perm=2, n_init=100, 
-                            buffer=1.1, max_n_perms=10000, 
-                            n_equal=True, abs=True):
+def rankshap(model, X, xloc, K, mapping_dict=None, alpha=0.05, 
+            n_samples_per_perm=2, n_init=100, buffer=1.1, max_n_perms=10000, 
+            n_equal=True, abs=True):
+    converged = False
     diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_init, 
                                             mapping_dict=mapping_dict, 
-                                            n_samples_per_perm=n_samples_per_perm, abs=abs)
+                                            n_samples_per_perm=n_samples_per_perm)
     d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
     
     while not do_all_tests_pass(diffs_all_feats, K, alpha=alpha, n_equal=n_equal):
@@ -153,8 +152,9 @@ def shapley_sampling_adaptive(model, X, xloc, K,
                     n_to_run = [max_n_perms, max_n_perms]
                     exceeded = True
                 else:
-                    print("Hit max # perms without converging. Returning `NA`.")
-                    return "NA", "NA"
+                    # print("Hit max # perms without converging. Returning `NA`.")
+                    # return "NA", "NA"
+                    return shap_vals, diffs_all_feats, converged
             diffs_pair = []
             for i in range(2):
                 j = index_pair[i]
@@ -178,4 +178,5 @@ def shapley_sampling_adaptive(model, X, xloc, K,
         diffs_all_feats[index_pair[0]] = diffs_pair[0]
         diffs_all_feats[index_pair[1]] = diffs_pair[1]
     shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
-    return shap_vals, diffs_all_feats
+    converged = True
+    return shap_vals, diffs_all_feats, converged

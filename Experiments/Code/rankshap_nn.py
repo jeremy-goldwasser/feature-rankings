@@ -3,11 +3,14 @@ import numpy as np
 import sys
 import pickle
 
-dir_path = "/accounts/grad/jeremy_goldwasser/RankSHAP"
+import pathlib
 from os.path import join
+path_to_file = str(pathlib.Path().resolve())
+dir_path = join(path_to_file, "../../")
+
 sys.path.append(join(dir_path, "HelperFiles"))
 from helper import *
-from shapley_sampling2 import *
+from rankshap import *
 from train_models import *
 from load_data import *
 

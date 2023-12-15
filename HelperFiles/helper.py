@@ -18,6 +18,7 @@ def get_ordering(shap_vals, abs=True):
     else:
         return np.argsort(shap_vals)[::-1]
 
+
 def mode_rows(a):
     a = np.ascontiguousarray(a)
     void_dt = np.dtype((np.void, a.dtype.itemsize * np.prod(a.shape[1:])))
@@ -26,3 +27,9 @@ def mode_rows(a):
     largest_count_id = ids[count.argmax()]
     most_frequent_row = a[largest_count_id]
     return most_frequent_row
+
+
+def calc_fwer(top_K):
+    most_common_row = mode_rows(top_K)
+    fwer = 1 - np.mean(np.all(np.array(top_K)==most_common_row,axis=1))
+    return np.round(fwer, 2)
