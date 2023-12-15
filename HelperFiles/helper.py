@@ -12,7 +12,7 @@ def map_S(S, mapping_dict):
     return S_cols
 
 
-def get_ordering(shap_vals, abs=True):
+def get_ranking(shap_vals, abs=True):
     if abs:
         return np.argsort(np.abs(shap_vals))[::-1]
     else:

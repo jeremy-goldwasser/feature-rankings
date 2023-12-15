@@ -4,14 +4,50 @@ from os.path import join
 from sklearn.model_selection import train_test_split
 import pickle
 
+
+def make_mapping_dict(X_orig, X_binarized):
+    mapping_dict = {}
+    for i, col in enumerate(X_orig.columns):
+        bin_cols = []
+        for j, bin_col in enumerate(X_binarized.columns):
+            if bin_col.startswith(col):
+                bin_cols.append(j)
+        mapping_dict[i] = bin_cols
+    return mapping_dict
+
+
+def make_bank(data_path):
+    # import sage
+    # df = sage.datasets.bank()
+    df = pd.read_csv(join(data_path, "bank", "bank.csv"))
+    y = df["Success"]
+    X_orig = df.drop(columns=['Success'])
+    n = df.shape[0]
+
+    # X_train_raw = np.load(join(data_path, "bank", "X_train.npy"))
+    X_binarized = pd.get_dummies(X_orig, dtype=float)
+    mapping_dict = make_mapping_dict(X_orig, X_binarized)
+
+    np.random.seed(1)
+    X_norm = (X_binarized-X_binarized.min())/(X_binarized.max()-X_binarized.min())
+    n_train = round(n*0.75)
+    train_idx = np.random.choice(n, n_train, replace=False)
+    X_train, y_train = X_norm.iloc[train_idx].to_numpy(), y.iloc[train_idx].to_numpy()
+    test_idx = np.setdiff1d(np.arange(n),train_idx)
+    X_test, y_test = X_norm.iloc[test_idx].to_numpy(), y.iloc[test_idx].to_numpy()
+
+    return X_train, y_train, X_test, y_test, mapping_dict
+
+
 def make_credit(data_path):
+    # import sage
     # df = sage.datasets.credit()
     # df.to_csv("Data/credit.csv")
     df = pd.read_csv(join(data_path, "credit", "credit.csv"), index_col=0)
 
     # Property, other installment, housing, job, status of checking act, credit history, purpose, savings, employment since, marital status, old debtors
     n = df.shape[0]
-    X_df = df.drop(["Good Customer"], axis=1)
+    X_orig = df.drop(["Good Customer"], axis=1)
     y = df["Good Customer"]
 
     categorical_columns = [
@@ -20,19 +56,13 @@ def make_credit(data_path):
         'Debtors/Guarantors', 'Property Type', 'Other Installment Plans',
         'Housing Ownership', 'Job', #'Telephone', 'Foreign Worker' # These are just binary
     ]
-    X_binarized = pd.get_dummies(X_df, columns=categorical_columns, dtype=float)
+    X_binarized = pd.get_dummies(X_orig, columns=categorical_columns, dtype=float)
 
-    mapping_dict = {}
-    for i, col in enumerate(X_df.columns):
-        bin_cols = []
-        for j, bin_col in enumerate(X_binarized.columns):
-            if bin_col.startswith(col):
-                bin_cols.append(j)
-        mapping_dict[i] = bin_cols
+    mapping_dict = make_mapping_dict(X_orig, X_binarized)
 
     np.random.seed(1)
     X_norm = (X_binarized-X_binarized.min())/(X_binarized.max()-X_binarized.min())
-    n_train = round(n*0.8)
+    n_train = round(n*0.75)
     train_idx = np.random.choice(n, n_train, replace=False)
     X_train, y_train = X_norm.iloc[train_idx].to_numpy(), y.iloc[train_idx].to_numpy()
     test_idx = np.setdiff1d(np.arange(n),train_idx)
@@ -43,7 +73,7 @@ def make_credit(data_path):
 
 def make_brca(data_path):
     data = pd.read_csv(join(data_path, "brca", "brca_small.csv"))
-    X = data.values[:, :-1][:,:20]
+    X = data.values[:, :-1][:,:20] # Just use first 20 genes
     Y = data.values[:, -1]
     Y = (Y==2).astype(int) # Formulate as binary classification problem
     
@@ -63,19 +93,13 @@ def make_brca(data_path):
 def make_census(data_path):
     # Adult census income dataset
     # import shap
-    # X_display, y_display = shap.datasets.adult(display=True)
-    # X_display.to_csv("Data/census_X.csv")
-    # np.save("Data/census_y.npy", y_display)
-    X_display = pd.read_csv(join(data_path, "census", "census_X.csv"), index_col=0)
+    # X_orig, y_orig = shap.datasets.adult(display=True)
+    # X_orig.to_csv("Data/census_X.csv")
+    # np.save("Data/census_y.npy", y_orig)
+    X_orig = pd.read_csv(join(data_path, "census", "census_X.csv"), index_col=0)
     y_display = np.load(join(data_path, "census", "census_y.npy"))
-    X_binarized = pd.get_dummies(X_display, dtype=float)
-    mapping_dict = {}
-    for i, col in enumerate(X_display.columns):
-        bin_cols = []
-        for j, bin_col in enumerate(X_binarized.columns):
-            if bin_col.startswith(col):
-                bin_cols.append(j)
-        mapping_dict[i] = bin_cols
+    X_binarized = pd.get_dummies(X_orig, dtype=float)
+    mapping_dict = make_mapping_dict(X_orig, X_binarized)
 
     X_norm = (X_binarized-X_binarized.min())/(X_binarized.max()-X_binarized.min())
     y_int = y_display.astype("int8")
@@ -96,13 +120,15 @@ def make_census(data_path):
 
 
 def make_data(data_path, dataset):
+    if dataset=="bank":
+        return make_bank(data_path)
     if dataset=="brca":
         return make_brca(data_path)
     if dataset=="credit":
         return make_credit(data_path)
     if dataset=="census":
         return make_census(data_path)
-    print("Dataset must be brca, credit, or census.")
+    print("Dataset must be bank, brca, credit, or census.")
     return -1
 
 
@@ -121,5 +147,5 @@ def load_data(data_path, dataset):
     y_train = np.load(join(data_path, dataset, "y_train.npy"))
     y_test = np.load(join(data_path, dataset, "y_test.npy"))
     with open(join(data_path, dataset, "mapping_dict"), "rb") as fp:
-        mapping_dict = pickle.load(fp)
+        mapping_dict = pickle.load(fp) # May be none, in case of brca
     return X_train, y_train, X_test, y_test, mapping_dict

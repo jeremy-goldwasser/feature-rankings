@@ -34,7 +34,7 @@ def do_all_tests_pass(diffs_all_feats, K, alpha=0.05,
         # shap_ests = np.mean(diffs_all_feats, axis=1)
         shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
         # Indices with biggest to smallest absolute SHAP value
-        order = get_ordering(shap_ests, abs=abs)
+        order = get_ranking(shap_ests, abs=abs)
     first_test_to_fail = 0
     # Test stability of 1 vs 2; 2 vs 3; etc until K vs K+1
     while first_test_to_fail < K:
@@ -57,7 +57,7 @@ def find_first_test_to_fail(diffs_all_feats, K, alpha=0.05,
         # shap_ests = np.mean(diffs_all_feats, axis=1)
         shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
         # Indices with biggest to smallest absolute SHAP value
-        order = get_ordering(shap_ests, abs=abs)
+        order = get_ranking(shap_ests, abs=abs)
     first_test_to_fail = 0
     while first_test_to_fail < K:
         feat1 = diffs_all_feats[int(order[first_test_to_fail])]
@@ -125,9 +125,23 @@ def compute_diffs_all_feats(model, X, xloc, M, mapping_dict=None, n_samples_per_
     return(diffs_all_feats)
 
 
-def rankshap(model, X, xloc, K, mapping_dict=None, alpha=0.05, 
-            n_samples_per_perm=2, n_init=100, buffer=1.1, max_n_perms=10000, 
-            n_equal=True, abs=True):
+def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None, 
+            n_samples_per_perm=2, n_init=100, max_n_perms=10000,  
+            n_equal=True, buffer=1.1, abs=True):
+    '''
+    - model: Inputs a numpy array, outputs a scalar
+    - X: N by D matrix of samples
+    - xloc: 1 by D matrix with one sample, whose SHAP values are estimated
+    - K: Number of features we want to rank correctly
+    - alpha: Significance level
+    - mapping_dict: Dictionary mapping categorical variables to corresponding binary columns of X and xloc
+    - n_samples_per_perm: Number of samples of X_{S^c} with which to estimate v(S) = E[f(X) | x_S)]
+    - n_init: Number of initial permutations for all features, before testing pairs for ranking
+    - n_equal: Boolean, whether we want ambiguously ranked features to receive equal number of permutations, or scale by relative variance
+    - buffer: Factor by which to increase estimate of necessary number of permutations. Should be ≥ 1.
+    - abs: Whether we want to rank features by the absolute values of their Shapley values
+    
+    '''
     converged = False
     diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_init, 
                                             mapping_dict=mapping_dict, 
@@ -136,7 +150,7 @@ def rankshap(model, X, xloc, K, mapping_dict=None, alpha=0.05,
     
     while not do_all_tests_pass(diffs_all_feats, K, alpha=alpha, n_equal=n_equal):
         shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
-        order = get_ordering(shap_ests, abs=abs)
+        order = get_ranking(shap_ests, abs=abs)
         first_test_to_fail = find_first_test_to_fail(diffs_all_feats, K, 
                                     order=order, alpha=alpha, n_equal=n_equal, abs=abs)
         index_pair = (int(order[first_test_to_fail]), int(order[first_test_to_fail+1]))
@@ -154,6 +168,7 @@ def rankshap(model, X, xloc, K, mapping_dict=None, alpha=0.05,
                 else:
                     # print("Hit max # perms without converging. Returning `NA`.")
                     # return "NA", "NA"
+                    shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
                     return shap_vals, diffs_all_feats, converged
             diffs_pair = []
             for i in range(2):

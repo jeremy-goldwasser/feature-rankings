@@ -1,7 +1,10 @@
 import numpy as np
 import pickle
+import pathlib
 from os.path import join
-dir_path = "/accounts/grad/jeremy_goldwasser/RankSHAP"
+path_to_file = str(pathlib.Path().resolve())
+dir_path = join(path_to_file, "../../")
+
 import sys
 sys.path.append(join(dir_path, "HelperFiles"))
 from helper import *
@@ -18,18 +21,11 @@ fwers = []
 for shap_vals_all in shap_vals_all_pts:
     top_K = []
     for shap_vals in shap_vals_all:
-        est_top_K = get_ordering(shap_vals)[:K]
+        est_top_K = get_ranking(shap_vals)[:K]
         top_K.append(est_top_K)
 
     #### Compute average #####
-    top_K = np.array(top_K)
-    most_common_row = mode_rows(top_K)
-    ct = 0
-    for idx in range(N_runs):
-        if np.array_equal(most_common_row, top_K[idx]):
-            ct += 1
-    # print("{}%".format(np.round((1 - ct / N_runs), 3)*100)) # FWER
-    fwer = 1 - ct / N_runs
+    fwer = calc_fwer(top_K)
     fwers.append(np.round(fwer*100, 1))
     print("{}%".format(round(fwer*100,1))) # FWER
 
