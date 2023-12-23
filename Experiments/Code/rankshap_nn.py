@@ -30,7 +30,7 @@ model = train_neural_net(X_train, y_train)
 #%%
 np.random.seed(1)
 N_runs = 250
-N_pts = 40
+N_pts = 30
 x_idx = 0
 skip_thresh = 0.2
 
@@ -63,7 +63,7 @@ while len(fwers) < N_pts:
     shap_vals_all_pts.append(shap_vals_all)
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)
-        print("#"*20, x_idx, fwer, "#"*20)
+        print("#"*20, len(top_K), fwer, "#"*20)
         fwers.append(fwer)
     x_idx += 1
 

@@ -27,7 +27,7 @@ print(fname)
 
 breast_cancer = load_breast_cancer()
 data_path = join(dir_path, "Experiments", "Data")
-# train, test, labels_train, labels_test = train_test_split(breast_cancer.data, breast_cancer.target, train_size=0.80, random_state=1)
+# train, test, labels_train, labels_test = train_test_split(breast_cancer.data, breast_cancer.target, train_size=0.70, random_state=1)
 # save_data(data_path, dataset, train, labels_train, test, labels_test, mapping_dict=None)
 train, labels_train, test, labels_test, _ = load_data(data_path, dataset)
 
@@ -45,7 +45,7 @@ explainer = lime_tabular.LimeTabularExplainer(train,
 alpha = 0.20
 skip_thresh = 0.2
 N_runs = 250
-N_pts = 40
+N_pts = 30
 alpha_adj = alpha/K/2
 top_K_all = []
 fwers = []
@@ -59,7 +59,7 @@ while len(fwers) < N_pts:
         count += 1
         exp = explainer.slime(xloc, rf.predict_proba, num_features = K, 
                                 num_samples = 1000, n_max = 100000, 
-                                alpha = alpha_adj, tol=1e-4, return_none=True)
+                                alpha = alpha_adj, tol=5e-5, return_none=True)
         if exp is not None:
             tuples = exp.local_exp[1]
             feats = [tuples[i][0] for i in range(K)]
@@ -72,7 +72,7 @@ while len(fwers) < N_pts:
                 break
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)
-        print("#"*20, x_idx, fwer, "#"*20)
+        print("#"*20, len(top_K), fwer, "#"*20)
         fwers.append(fwer)
         top_K_all.append(top_K)
     x_idx += 1
