@@ -45,7 +45,7 @@ explainer = lime_tabular.LimeTabularExplainer(train,
 alpha = 0.20
 skip_thresh = 0.2
 N_runs = 250
-N_pts = 20
+N_pts = 40
 alpha_adj = alpha/K/2
 top_K_all = []
 fwers = []
@@ -68,7 +68,7 @@ while len(fwers) < N_pts:
         else:
             # print("failed to converge; " + str(len(top_K)))
             num_successes = len(top_K)
-            if count > 5 and num_successes/count < skip_thresh:
+            if count > 10 and num_successes/count < skip_thresh:
                 break
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)

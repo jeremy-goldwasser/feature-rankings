@@ -25,12 +25,12 @@ fname2 = "shap_fwers_k" + str(K)
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
 print(len(y_test))
-# model = train_neural_net(X_train, y_train)
+model = train_neural_net(X_train, y_train)
 
 #%%
 np.random.seed(1)
 N_runs = 250
-N_pts = 20
+N_pts = 40
 x_idx = 0
 skip_thresh = 0.2
 
@@ -58,7 +58,7 @@ while len(fwers) < N_pts:
         else:
             # print("failed to converge; " + str(len(top_K)))
             num_successes = len(top_K)
-            if count > 5 and num_successes/count < skip_thresh:
+            if count > 10 and num_successes/count < skip_thresh:
                 break
     shap_vals_all_pts.append(shap_vals_all)
     if len(top_K)==N_runs:
