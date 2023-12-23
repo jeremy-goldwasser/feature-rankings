@@ -17,14 +17,15 @@ import warnings
 warnings.filterwarnings('ignore')
 
 dataset = sys.argv[1]
+dataset = "census"
 K = int(sys.argv[2])
 # fname = "shap_" + dataset + "_nn_K" + str(K) + "_10x"
 fname = "shap_vals_k" + str(K)
 fname2 = "shap_fwers_k" + str(K)
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
-
-model = train_neural_net(X_train, y_train)
+print(len(y_test))
+# model = train_neural_net(X_train, y_train)
 
 #%%
 np.random.seed(1)
@@ -72,3 +73,5 @@ while len(fwers) < N_pts:
     with open(join(dir_path, "Experiments", "Results", fname2), "wb") as fp:
         pickle.dump(fwers, fp)
 
+
+# %%
