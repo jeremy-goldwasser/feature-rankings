@@ -20,7 +20,7 @@ N_runs = len(top_K_all[0])
 fwers = []
 for top_K in top_K_all:
     fwer = calc_fwer(top_K)
-    fwers.append(np.round(fwer*100, 1))
+    fwers.append(fwer)
     print("{}%".format(round(fwer*100,1))) # FWER
 
 with open(join(dir_path, "Experiments", "Results", "lime_fwers_K" + str(K)), "wb") as fp:

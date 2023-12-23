@@ -25,7 +25,7 @@ for shap_vals_all in shap_vals_all_pts:
         top_K.append(est_top_K)
 
     fwer = calc_fwer(top_K)
-    fwers.append(np.round(fwer*100, 1))
+    fwers.append(fwer)
     print("{}%".format(round(fwer*100,1))) # FWER
 
 with open(join(dir_path, "Experiments", "Results", "shap_fwers_K" + str(K)), "wb") as fp:

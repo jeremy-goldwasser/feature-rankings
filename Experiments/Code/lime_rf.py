@@ -20,7 +20,9 @@ warnings.filterwarnings('ignore')
 
 dataset = "breast_cancer"
 K = int(sys.argv[1])
-fname = "lime_" + dataset + "_rf_K" + str(K) + "_10x"
+# fname = "lime_" + dataset + "_rf_K" + str(K) + "_10x"
+fname = "lime_ranks_k" + str(K)
+fname2 = "lime_fwers_k" + str(K)
 print(fname)
 
 breast_cancer = load_breast_cancer()
@@ -42,18 +44,18 @@ explainer = lime_tabular.LimeTabularExplainer(train,
 
 alpha = 0.20
 skip_thresh = 0.2
-n_trials = 500
-n_pts = 10
+N_runs = 250
+N_pts = 20
 alpha_adj = alpha/K/2
 top_K_all = []
 fwers = []
 x_idx = 0
-while len(fwers) < n_pts:
+while len(fwers) < N_pts:
     print(x_idx)
     xloc = test[x_idx]
     top_K = []
     count = 0
-    while len(top_K) < n_trials:
+    while len(top_K) < N_runs:
         count += 1
         exp = explainer.slime(xloc, rf.predict_proba, num_features = K, 
                                 num_samples = 1000, n_max = 100000, 
@@ -62,13 +64,13 @@ while len(fwers) < n_pts:
             tuples = exp.local_exp[1]
             feats = [tuples[i][0] for i in range(K)]
             top_K.append(feats)
-            # if (len(top_K)%10==0): print(len(top_K), calc_fwer(top_K))
+            if (len(top_K)%50==0): print(len(top_K), calc_fwer(top_K))
         else:
             # print("failed to converge; " + str(len(top_K)))
             num_successes = len(top_K)
             if count > 5 and num_successes/count < skip_thresh:
                 break
-    if len(top_K)==n_trials:
+    if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)
         print("#"*20, x_idx, fwer, "#"*20)
         fwers.append(fwer)
@@ -78,3 +80,6 @@ while len(fwers) < n_pts:
     # Store results
     with open(join(dir_path, "Experiments", "Results", fname), "wb") as fp:
         pickle.dump(top_K_all, fp)
+
+    with open(join(dir_path, "Experiments", "Results", fname2), "wb") as fp:
+        pickle.dump(fwers, fp) 
