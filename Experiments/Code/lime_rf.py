@@ -43,11 +43,12 @@ explainer = lime_tabular.LimeTabularExplainer(train,
 alpha = 0.20
 skip_thresh = 0.2
 n_trials = 500
+n_pts = 10
 alpha_adj = alpha/K/2
 top_K_all = []
 fwers = []
 x_idx = 0
-while len(fwers) < 20:
+while len(fwers) < n_pts:
     print(x_idx)
     xloc = test[x_idx]
     top_K = []
