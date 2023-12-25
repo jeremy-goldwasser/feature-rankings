@@ -63,8 +63,8 @@ while len(fwers) < N_pts:
     shap_vals_all_pts.append(shap_vals_all)
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)
-        print("#"*20, len(top_K), fwer, "#"*20)
         fwers.append(fwer)
+        print("#"*20, len(fwers), fwer, "#"*20)
     x_idx += 1
 
     # Store results
