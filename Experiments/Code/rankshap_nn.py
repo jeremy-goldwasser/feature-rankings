@@ -17,7 +17,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 dataset = sys.argv[1]
-dataset = "census"
 K = int(sys.argv[2])
 # fname = "shap_" + dataset + "_nn_K" + str(K) + "_10x"
 fname = "shap_vals_k" + str(K)
