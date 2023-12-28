@@ -43,7 +43,7 @@ explainer = lime_tabular.LimeTabularExplainer(train,
 
 
 alpha = 0.20
-skip_thresh = 0.2
+skip_thresh = 0.5
 N_runs = 250
 N_pts = 30
 alpha_adj = alpha/K/2
@@ -58,8 +58,8 @@ while len(fwers) < N_pts:
     while len(top_K) < N_runs:
         count += 1
         exp = explainer.slime(xloc, rf.predict_proba, num_features = K, 
-                                num_samples = 1000, n_max = 100000, 
-                                alpha = alpha_adj, tol=5e-5, return_none=True)
+                                num_samples = 1000, n_max = 200000, 
+                                alpha = alpha_adj, tol=1e-4, return_none=True)
         if exp is not None:
             tuples = exp.local_exp[1]
             feats = [tuples[i][0] for i in range(K)]
@@ -72,9 +72,9 @@ while len(fwers) < N_pts:
                 break
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)
-        print("#"*20, len(top_K), fwer, "#"*20)
         fwers.append(fwer)
         top_K_all.append(top_K)
+        print("#"*20, len(fwers), fwer, "#"*20)
     x_idx += 1
 
     # Store results

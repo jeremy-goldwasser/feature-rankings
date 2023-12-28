@@ -31,7 +31,7 @@ np.random.seed(1)
 N_runs = 250
 N_pts = 30
 x_idx = 0
-skip_thresh = 0.2
+skip_thresh = 0.5
 
 shap_vals_all_pts = []
 fwers = []
@@ -55,14 +55,13 @@ while len(fwers) < N_pts:
             if len(top_K) % 50 == 0:
                 print(len(top_K), calc_fwer(top_K))
         else:
-            # print("failed to converge; " + str(len(top_K)))
             num_successes = len(top_K)
             if count > 10 and num_successes/count < skip_thresh:
                 break
-    shap_vals_all_pts.append(shap_vals_all)
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K)
         fwers.append(fwer)
+        shap_vals_all_pts.append(shap_vals_all)
         print("#"*20, len(fwers), fwer, "#"*20)
     x_idx += 1
 
