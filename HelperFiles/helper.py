@@ -29,7 +29,8 @@ def mode_rows(a):
     return most_frequent_row
 
 
-def calc_fwer(top_K):
+def calc_fwer(top_K, Round=True):
     most_common_row = mode_rows(top_K)
     fwer = 1 - np.mean(np.all(np.array(top_K)==most_common_row,axis=1))
-    return np.round(fwer, 2)
+    return np.round(fwer, 2) if Round else fwer
+    
