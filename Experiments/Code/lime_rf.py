@@ -71,7 +71,7 @@ while len(fwers) < N_pts:
             if count > 10 and num_successes/count < skip_thresh:
                 break
     if len(top_K)==N_runs:
-        fwer = calc_fwer(top_K)
+        fwer = calc_fwer(top_K, Round=False)
         fwers.append(fwer)
         top_K_all.append(top_K)
         print("#"*20, len(fwers), fwer, "#"*20)
