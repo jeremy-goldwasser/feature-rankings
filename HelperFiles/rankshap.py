@@ -195,3 +195,12 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
     shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
     converged = True
     return shap_vals, diffs_all_feats, converged
+
+
+def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_perm=2):
+    diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_perms, 
+                                            mapping_dict=mapping_dict, 
+                                            n_samples_per_perm=n_samples_per_perm)
+    d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
+    shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
+    return shap_vals
