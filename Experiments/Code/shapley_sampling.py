@@ -18,26 +18,28 @@ warnings.filterwarnings('ignore')
 
 dataset = "census"
 X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
-print(len(y_test))
 model = train_neural_net(X_train, y_train)
-np.random.seed(1)
-K = 5
+# model = train_logreg(X_train, y_train)
+np.random.seed(42)
+# K = 5
+K = int(sys.argv[1])
+n_perms = int(sys.argv[2])
 N_runs = 50
 N_pts = 30
 
 fwers = []
-top_5_ss = []
+top_K_ss = []
 shap_vals_all_pts = []
 for x_idx in range(N_pts):
     print(x_idx)
     xloc = X_test[x_idx:(x_idx+1)]
     top_K = []
     for i in range(N_runs):
-        shap_vals = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=500)
+        shap_vals = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=n_perms)
         est_top_K = get_ranking(shap_vals)[:K]
         top_K.append(est_top_K)
     print(calc_fwer(top_K))
-    top_5_ss.append(top_K)
-
-with open(join(dir_path, "Experiments", "Results", "ss_ranks_k5"), "wb") as fp:
-    pickle.dump(top_5_ss, fp)
+    top_K_ss.append(top_K)
+fname = "ss_ranks_k"+str(K)+"_n"+str(n_perms)+"b"
+with open(join(dir_path, "Experiments", "Results", fname), "wb") as fp:
+    pickle.dump(top_K_ss, fp)
