@@ -1,4 +1,6 @@
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader, WeightedRandomSampler
@@ -20,7 +22,10 @@ class TwoLayerNet(nn.Module):
         out = self.softmax(out)
         return out
 
-def train_neural_net(X_train, y_train):
+def train_neural_net(X_train, y_train, lime=False):
+    if lime:
+        clf = MLPClassifier(random_state=1, hidden_layer_sizes=(50,)).fit(X_train, y_train)
+        return clf.predict_proba
     # Convert the input and label data to PyTorch tensors
     inputs = torch.tensor(X_train, dtype=torch.float32)
     labels = torch.tensor(y_train, dtype=torch.long)
@@ -71,10 +76,27 @@ def train_neural_net(X_train, y_train):
     return model
 
 
-def train_logreg(X_train, y_train):
-    logreg = LogisticRegression().fit(X_train, y_train)
-    # print("Class imbalance: {}".format(100*(max(np.mean(y_test), 1-np.mean(y_test)))))
-    # print("Estimation accuracy: {}".format(np.mean((logreg.predict(X_test) > 0.5)==y_test)*100))
+def train_logreg(X_train, y_train, lime=False):
+    logreg = LogisticRegression(random_state=0).fit(X_train, y_train)
+    if lime:
+        return logreg.predict_proba
     def model(x):
         return logreg.predict_proba(x)[:,1]
     return model
+
+def train_rf(X_train, y_train, lime=False):
+    rf = RandomForestClassifier(random_state=0).fit(X_train, y_train)
+    if lime:
+        return rf.predict_proba
+
+    def model(x):
+        return rf.predict_proba(x)[:,1]
+    return model
+
+def train_model(X_train, y_train, model, lime=False):
+    if model=="nn":
+        return train_neural_net(X_train, y_train, lime)
+    elif model=="rf":
+        return train_rf(X_train, y_train, lime)
+    else:
+        return train_logreg(X_train, y_train, lime)

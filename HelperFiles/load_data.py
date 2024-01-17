@@ -3,6 +3,7 @@ import numpy as np
 from os.path import join
 from sklearn.model_selection import train_test_split
 import pickle
+from sklearn.datasets import load_breast_cancer
 
 
 def make_mapping_dict(X_orig, X_binarized):
@@ -89,6 +90,15 @@ def make_brca(data_path):
 
     return X_train, y_train, X_test, y_test, mapping_dict
 
+def make_breast_cancer(data_path):
+    breast_cancer = load_breast_cancer()
+    X = breast_cancer['data']
+    Y = breast_cancer['target']
+    n = Y.shape[0]
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=int(n*.25), random_state=0)
+    mapping_dict = None
+
+    return X_train, y_train, X_test, y_test, mapping_dict
 
 def make_census(data_path):
     # Adult census income dataset
@@ -128,6 +138,8 @@ def make_data(data_path, dataset):
         return make_credit(data_path)
     if dataset=="census":
         return make_census(data_path)
+    if dataset=="breast_cancer":
+        return make_breast_cancer(data_path)
     print("Dataset must be bank, brca, credit, or census.")
     return -1
 

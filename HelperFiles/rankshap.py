@@ -147,20 +147,24 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                                             mapping_dict=mapping_dict, 
                                             n_samples_per_perm=n_samples_per_perm)
     d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
-    
-    while not do_all_tests_pass(diffs_all_feats, K, alpha=alpha, n_equal=n_equal):
+    # ct = 0
+    while not do_all_tests_pass(diffs_all_feats, K, alpha=alpha, n_equal=n_equal, abs=abs):
+        # ct += 1
+        # print(ct)
         shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
         order = get_ranking(shap_ests, abs=abs)
         first_test_to_fail = find_first_test_to_fail(diffs_all_feats, K, 
                                     order=order, alpha=alpha, n_equal=n_equal, abs=abs)
         index_pair = (int(order[first_test_to_fail]), int(order[first_test_to_fail+1]))
         diffs_pair = [diffs_all_feats[index_pair[0]], diffs_all_feats[index_pair[1]]]
-        # Run until order of pair is stable
+        
         test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
         exceeded = False
+        # Run until order of pair is stable
         while test_result != "reject":
             # Run for suggested number of samples to be significant difference
             n_to_run = [max(int(buffer*n), n_init) for n in test_result[1]]
+            # print(n_to_run)
             if max(n_to_run) > max_n_perms:
                 if not exceeded:
                     n_to_run = [max_n_perms, max_n_perms]
@@ -171,6 +175,7 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                     shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
                     return shap_vals, diffs_all_feats, converged
             diffs_pair = []
+            # print(n_to_run)
             for i in range(2):
                 j = index_pair[i]
                 w_vals,wj_vals = [], []
@@ -189,9 +194,12 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                 diffs_avg = np.mean(np.reshape(diffs_all,[-1,n_samples_per_perm]),axis=1) # length M
                 diffs_pair.append(diffs_avg)
             test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
-        # Replace with new samples
-        diffs_all_feats[index_pair[0]] = diffs_pair[0]
-        diffs_all_feats[index_pair[1]] = diffs_pair[1]
+            # print(test_result)
+            # Replace with new samples
+            diffs_all_feats[index_pair[0]] = diffs_pair[0]
+            diffs_all_feats[index_pair[1]] = diffs_pair[1]
+            # print([np.mean(diffs_all_feats[j]) for j in range(d)])  #fine
+            
     shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
     converged = True
     return shap_vals, diffs_all_feats, converged
