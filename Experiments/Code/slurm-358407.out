@@ -1,0 +1,23 @@
+Namespace(method='lime', dataset='breast_cancer', k=3, algo='nn', nruns=100, npts=10, alpha=0.2)
+lime_breast_cancer_K3_fwers
+0
+50 0.0
+100 0.0
+#################### 1 0.0 ####################
+1
+50 0.0
+100 0.0
+#################### 2 0.0 ####################
+2
+50 0.0
+100 0.0
+#################### 3 0.0 ####################
+3
+Traceback (most recent call last):
+  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/experiment.py", line 73, in <module>
+    exp = explainer.slime(xloc, model, num_features = K, 
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/accounts/grad/jeremy_goldwasser/.local/lib/python3.11/site-packages/slime/lime_tabular.py", line 721, in slime
+    if test_result[k][0] < -tol:
+       ~~~~~~~~~~~^^^
+KeyError: 2
