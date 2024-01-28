@@ -1,8 +1,0 @@
-Namespace(method='lime', dataset='brca', k=3, algo='nn', nruns=100, npts=10, alpha=0.2)
-lime_brca_K3_fwers
-0
-Traceback (most recent call last):
-  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/experiment.py", line 83, in <module>
-    if not converged:
-           ^^^^^^^^^
-NameError: name 'converged' is not defined
