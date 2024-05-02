@@ -43,6 +43,8 @@ print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
 model = train_model(X_train, y_train, algo, isLime)
 N_test = y_test.shape[0]
+max_n_perms = 100000
+max_n_lime = 500000
 
 np.random.seed(0)
 x_idx = 0
@@ -66,14 +68,14 @@ while len(fwers) < N_pts and x_idx < N_test:
     while len(top_K) < N_runs:
         if method=="shap":
             shap_vals, _, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
-                                    mapping_dict=mapping_dict, max_n_perms=10000, 
+                                    mapping_dict=mapping_dict, max_n_perms=max_n_perms, 
                                     n_init=100, n_equal=False)
             if converged:
                 est_top_K = get_ranking(shap_vals)[:K]
                 top_K.append(est_top_K)
         else:
             exp = explainer.slime(xloc, model, num_features = K, 
-                            num_samples = 1000, n_max = 200000, 
+                            num_samples = 1000, n_max = max_n_lime, 
                             alpha = alpha_adj, tol=1e-4, return_none=True)
             if exp is not None:
                 est_top_K = extract_lime_feats(exp, K, mapping_dict)
