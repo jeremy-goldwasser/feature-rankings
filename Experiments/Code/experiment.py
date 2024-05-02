@@ -82,7 +82,9 @@ while len(fwers) < N_pts and x_idx < N_test:
                             num_samples = 1000, n_max = max_n_lime, 
                             alpha = alpha_adj, tol=1e-4, return_none=True)
             if exp is not None:
-                est_top_K = extract_lime_feats(exp, K, mapping_dict)
+                # est_top_K = extract_lime_feats(exp, K, mapping_dict)
+                # Don't see a good way to get back to feature space.
+                est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
                 top_K.append(est_top_K)
                 converged = True
             else:

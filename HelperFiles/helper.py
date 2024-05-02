@@ -13,6 +13,7 @@ def map_S(S, mapping_dict):
 
 
 def get_ranking(shap_vals, abs=True):
+    # Indices with biggest to smallest (absolute) SHAP value
     if abs:
         return np.argsort(np.abs(shap_vals))[::-1]
     else:

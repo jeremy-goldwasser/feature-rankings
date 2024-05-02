@@ -2,8 +2,11 @@ import numpy as np
 from scipy.stats import norm
 from helper import *
 
+def diffs_to_shap_vals(diffs_all_feats):
+    return [np.mean(diffs) for diffs in diffs_all_feats]
 
 def normal_test(feat1, feat2, alpha=0.05, n_equal=True, abs=True):
+    # Either outputs "reject" or "fail to reject" and estimated # of samples until rejection
     if abs is True and np.mean(feat1)*np.mean(feat2) < 0:
         if isinstance(feat2, np.ndarray): feat2 = -feat2
         else: feat2 = [-feat2[j] for j in range(len(feat2))]
@@ -25,50 +28,24 @@ def normal_test(feat1, feat2, alpha=0.05, n_equal=True, abs=True):
             n_to_run = [new_n1, new_n2]                
         return "fail to reject", n_to_run
 
-
-def do_all_tests_pass(diffs_all_feats, K, alpha=0.05, 
-                    order=None, n_equal=True, abs=True):
-    # Stop when top-K SHAP ests are significantly in order, and K'th is bigger than rest
+def find_num_tests_passed(diffs_all_feats, alpha=0.05, n_equal=True, abs=True, K=None):
+    # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
     d = len(diffs_all_feats)
-    if order is None:
-        # shap_ests = np.mean(diffs_all_feats, axis=1)
-        shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
-        # Indices with biggest to smallest absolute SHAP value
-        order = get_ranking(shap_ests, abs=abs)
-    first_test_to_fail = 0
-    # Test stability of 1 vs 2; 2 vs 3; etc until K vs K+1
-    while first_test_to_fail < K:
-        feat1 = diffs_all_feats[int(order[first_test_to_fail])]
-        feat2 = diffs_all_feats[int(order[first_test_to_fail+1])]
+    shap_ests = diffs_to_shap_vals(diffs_all_feats)
+    order = get_ranking(shap_ests, abs=abs)
+    num_tests_passed = 0
+    # Test stability of 1 vs 2; 2 vs 3; etc (d-1 total tests)
+    max_num_tests = d-1 if K is None else K
+    while num_tests_passed < max_num_tests: 
+        feat1 = diffs_all_feats[int(order[num_tests_passed])]
+        feat2 = diffs_all_feats[int(order[num_tests_passed+1])]
         test_result = normal_test(feat1, feat2, alpha=alpha, 
                                 n_equal=n_equal)
         if test_result=="reject":
-            first_test_to_fail += 1
+            num_tests_passed += 1
         else:
-            return False
-
-    return True
-
-
-def find_first_test_to_fail(diffs_all_feats, K, alpha=0.05, 
-                            order=None, n_equal=True, abs=True):
-    d = len(diffs_all_feats)
-    if order is None:
-        # shap_ests = np.mean(diffs_all_feats, axis=1)
-        shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
-        # Indices with biggest to smallest absolute SHAP value
-        order = get_ranking(shap_ests, abs=abs)
-    first_test_to_fail = 0
-    while first_test_to_fail < K:
-        feat1 = diffs_all_feats[int(order[first_test_to_fail])]
-        feat2 = diffs_all_feats[int(order[first_test_to_fail+1])]
-        test_result = normal_test(feat1, feat2, alpha=alpha, 
-                                n_equal=n_equal, abs=abs)
-        if test_result=="reject":
-            first_test_to_fail += 1
-        else:
-            return first_test_to_fail
-    return -1
+            break
+    return num_tests_passed 
 
 
 def query_values_marginal(X, xloc, S, j,  mapping_dict, n_samples_per_perm):
@@ -147,15 +124,12 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                                             mapping_dict=mapping_dict, 
                                             n_samples_per_perm=n_samples_per_perm)
     d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
-    # ct = 0
-    while not do_all_tests_pass(diffs_all_feats, K, alpha=alpha, n_equal=n_equal, abs=abs):
-        # ct += 1
-        # print(ct)
-        shap_ests = [np.mean(diffs_all_feats[j]) for j in range(d)]
+    n_tests_passed = find_num_tests_passed(diffs_all_feats, alpha, n_equal, abs, K)
+    while n_tests_passed < K:
+        shap_ests = diffs_to_shap_vals(diffs_all_feats)
         order = get_ranking(shap_ests, abs=abs)
-        first_test_to_fail = find_first_test_to_fail(diffs_all_feats, K, 
-                                    order=order, alpha=alpha, n_equal=n_equal, abs=abs)
-        index_pair = (int(order[first_test_to_fail]), int(order[first_test_to_fail+1]))
+        # Number of tests passed = index of test with first failure
+        index_pair = (int(order[n_tests_passed]), int(order[n_tests_passed+1]))
         diffs_pair = [diffs_all_feats[index_pair[0]], diffs_all_feats[index_pair[1]]]
         
         test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
@@ -171,11 +145,9 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                     exceeded = True
                 else:
                     # print("Hit max # perms without converging. Returning `NA`.")
-                    # return "NA", "NA"
-                    shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
+                    shap_vals = np.array(diffs_to_shap_vals(diffs_all_feats))
                     return shap_vals, diffs_all_feats, converged
             diffs_pair = []
-            # print(n_to_run)
             for i in range(2):
                 j = index_pair[i]
                 w_vals,wj_vals = [], []
@@ -194,21 +166,27 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                 diffs_avg = np.mean(np.reshape(diffs_all,[-1,n_samples_per_perm]),axis=1) # length M
                 diffs_pair.append(diffs_avg)
             test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
-            # print(test_result)
             # Replace with new samples
             diffs_all_feats[index_pair[0]] = diffs_pair[0]
             diffs_all_feats[index_pair[1]] = diffs_pair[1]
-            # print([np.mean(diffs_all_feats[j]) for j in range(d)])  #fine
-            
-    shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
+        n_tests_passed = find_num_tests_passed(diffs_all_feats, alpha, n_equal, abs, K)   
+    shap_vals = np.array(diffs_to_shap_vals(diffs_all_feats))
     converged = True
     return shap_vals, diffs_all_feats, converged
 
 
-def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_perm=2):
+def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_perm=2, 
+                        alphas=None, abs=True):
     diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_perms, 
                                             mapping_dict=mapping_dict, 
                                             n_samples_per_perm=n_samples_per_perm)
-    d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
-    shap_vals = np.array([np.mean(diffs_all_feats[j]) for j in range(d)])
-    return shap_vals
+    # d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
+    shap_vals = np.array(diffs_to_shap_vals(diffs_all_feats))
+    if alphas is None:
+        return shap_vals
+    else:
+        if isinstance(alphas, list):
+            n_verified = [find_num_tests_passed(diffs_all_feats, alpha=alpha, abs=abs) for alpha in alphas]
+        else:
+            n_verified = find_num_tests_passed(diffs_all_feats, alpha=alphas, abs=abs)
+        return shap_vals, n_verified

@@ -94,6 +94,7 @@ def train_rf(X_train, y_train, lime=False):
     return model
 
 def train_model(X_train, y_train, model, lime=False):
+    # Already in mapped form
     if model=="nn":
         return train_neural_net(X_train, y_train, lime)
     elif model=="rf":

@@ -6,7 +6,7 @@ from helper import *
 ############### Compute coalitions, conditional means and KernelSHAP estimates ###############
 
 def compute_coalitions_values(model, X, xloc,
-            n_perms_btwn_tests, n_samples_per_perm, mapping_dict):
+            n_perms, n_samples_per_perm, mapping_dict):
     d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
     kernel_weights = [0]*(d+1)
     for subset_size in range(d+1):
@@ -15,18 +15,19 @@ def compute_coalitions_values(model, X, xloc,
     subset_size_distr = np.array(kernel_weights) / np.sum(kernel_weights)
     coalitions = []
     W_vals = []
-    for count in range(n_perms_btwn_tests):
+    for count in range(n_perms):
         subset_size = np.random.choice(np.arange(len(subset_size_distr)), p=subset_size_distr)
-        # Randomly choose these features, then convert to binary vector
+        # Randomly choose these features, then convert to binary vector z
         S = np.random.choice(d, subset_size, replace=False)
         z = np.zeros(d)
         z[S] = 1
+        # For each z/S, compute list of length {# samples/perm} of X_{S^c}|X_S
         w_x_vals = coalitions_kshap(X, xloc, z, n_samples_per_perm, mapping_dict)
 
         count += 1
         coalitions = np.append(coalitions, z).reshape((count, d))        
         W_vals.append(w_x_vals)
-        if count==n_perms_btwn_tests:
+        if count==n_perms:
             # Compute all conditional means, variances, and covariances
             coalition_values, coalition_vars = conditional_means_vars_kshap(model,W_vals,xloc,
                                    n_samples_per_perm)
@@ -60,7 +61,7 @@ def coalitions_kshap(X, xloc, z, n_samples_per_perm, mapping_dict=None):
 def conditional_means_vars_kshap(model, W_vals,xloc, n_samples_per_perm):
     # Calculates means (value functions) and variances for each value function
     W_vals = np.reshape(W_vals, [-1*n_samples_per_perm, xloc.shape[1]])
-        
+
     preds_given_S = model(W_vals)
     preds_given_S = np.reshape(preds_given_S,[-1,n_samples_per_perm])
     coalition_values = np.mean(preds_given_S,axis=1)
@@ -120,5 +121,3 @@ def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=
                                                                     mapping_dict)
     kshap_ests = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
     return kshap_ests
-
-
