@@ -2,12 +2,12 @@ import numpy as np
 import sys
 import pickle
 import pathlib
-from os.path import join
+import os
 path_to_file = str(pathlib.Path().resolve())
-dir_path = join(path_to_file, "../../")
+dir_path = os.path.join(path_to_file, "../../")
 from slime import lime_tabular
 
-sys.path.append(join(dir_path, "HelperFiles"))
+sys.path.append(os.path.join(dir_path, "HelperFiles"))
 from helper import *
 from rankshap import *
 from train_models import *
@@ -40,7 +40,7 @@ alpha = args.alpha
 fname = method + "_" + dataset + "_K" + str(K) + "_fwers"
 isLime = (method=="lime")
 print(fname)
-X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
+X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
 model = train_model(X_train, y_train, algo, isLime)
 N_test = y_test.shape[0]
 
@@ -49,6 +49,8 @@ x_idx = 0
 skip_thresh = 0.5
 
 fwers = {}
+results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
+if not os.path.exists: os.makedirs(results_path)
 if isLime:
     explainer = lime_tabular.LimeTabularExplainer(X_train, 
                                               discretize_continuous = False, 
@@ -95,6 +97,6 @@ while len(fwers) < N_pts and x_idx < N_test:
     x_idx += 1
 
     # Store results
-    with open(join(dir_path, "Experiments", "Results", fname), "wb") as fp:
+    with open(os.path.join(results_path, fname), "wb") as fp:
         pickle.dump(fwers, fp)
 
