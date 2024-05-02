@@ -25,6 +25,7 @@ parser.add_argument('--algo', type=str, default="nn")
 parser.add_argument('--nruns', type=int, default=100)
 parser.add_argument('--npts', type=int, default=10)
 parser.add_argument('--alpha', type=float, default=0.2)
+parser.add_argument('--save_topK', type=bool, default=False)
 
 args = parser.parse_args() 
 print(args)
@@ -36,8 +37,10 @@ algo = args.algo
 N_runs = args.nruns
 N_pts = args.npts
 alpha = args.alpha
+save_topK = args.save_topK
 
 fname = method + "_" + dataset + "_K" + str(K) + "_fwers"
+fname2 = method + "_" + dataset + "_K" + str(K) + "_ranks"
 isLime = (method=="lime")
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
@@ -50,9 +53,10 @@ np.random.seed(0)
 x_idx = 0
 skip_thresh = 0.5
 
+top_K_all = []
 fwers = {}
 results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
-if not os.path.exists: os.makedirs(results_path)
+if not os.path.exists(results_path): os.makedirs(results_path)
 if isLime:
     explainer = lime_tabular.LimeTabularExplainer(X_train, 
                                               discretize_continuous = False, 
@@ -95,10 +99,13 @@ while len(fwers) < N_pts and x_idx < N_test:
     if len(top_K)==N_runs:
         fwer = calc_fwer(top_K, Round=False)
         fwers[x_idx] = fwer
+        top_K_all.append(top_K)
         print("#"*20, len(fwers), fwer, "#"*20)
     x_idx += 1
 
     # Store results
     with open(os.path.join(results_path, fname), "wb") as fp:
         pickle.dump(fwers, fp)
+    with open(os.path.join(results_path, fname2), "wb") as fp:
+        pickle.dump(top_K_all, fp)
 

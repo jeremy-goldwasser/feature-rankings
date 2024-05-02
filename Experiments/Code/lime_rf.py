@@ -17,9 +17,13 @@ from load_data import *
 
 import warnings
 warnings.filterwarnings('ignore')
-
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--k', type= int, default=2)
+args = parser.parse_args() 
+K = args.k
 dataset = "breast_cancer"
-K = int(sys.argv[1])
+# K = int(sys.argv[1])
 # fname = "lime_" + dataset + "_rf_K" + str(K) + "_10x"
 fname = "lime_ranks_k" + str(K)
 fname2 = "lime_fwers_k" + str(K)

@@ -16,9 +16,16 @@ from load_data import *
 import warnings
 warnings.filterwarnings('ignore')
 
-dataset = sys.argv[1]
-K = int(sys.argv[2])
-# fname = "shap_" + dataset + "_nn_K" + str(K) + "_10x"
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--dataset', type= str, default="census")
+parser.add_argument('--k', type= int, default=2)
+args = parser.parse_args() 
+dataset = args.dataset
+K = args.k
+# dataset = sys.argv[1]
+# K = int(sys.argv[2])
+
 fname = "shap_vals_k" + str(K)
 fname2 = "shap_fwers_k" + str(K)
 print(fname)
