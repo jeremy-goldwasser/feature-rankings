@@ -1,11 +1,11 @@
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import t#norm
 from helper import *
 
 def diffs_to_shap_vals(diffs_all_feats):
     return [np.mean(diffs) for diffs in diffs_all_feats]
 
-def normal_test(feat1, feat2, alpha=0.05, n_equal=True, abs=True):
+def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
     # Either outputs "reject" or "fail to reject" and estimated # of samples until rejection
     if abs is True and np.mean(feat1)*np.mean(feat2) < 0:
         if isinstance(feat2, np.ndarray): feat2 = -feat2
@@ -14,38 +14,40 @@ def normal_test(feat1, feat2, alpha=0.05, n_equal=True, abs=True):
     n1, n2 = len(feat1), len(feat2)
     var1, var2 = np.var(feat1, ddof=1), np.var(feat2, ddof=1)
     var_factor = 2
-    Z_obs = np.abs(diff_shap_vals)/np.sqrt(var_factor*(var1/n1 + var2/n2))
-    Z_crit = norm.ppf(1 - alpha/2) # 1-a/2 quantile (upper tail) of standard normal
-    if Z_obs > Z_crit:
+    testStat = np.abs(diff_shap_vals)/np.sqrt(var_factor*(var1/n1 + var2/n2))
+    df = welch_df(var1, var2, n1, n2)
+    critVal = t.ppf(1-alpha/2, df)
+    # critVal = norm.ppf(1 - alpha/2) # 1-a/2 quantile (upper tail) of standard normal
+    if testStat > critVal:
         return "reject"
     else:
         if n_equal: # Same number of permutations for each feature
-            n_to_run = (Z_crit/diff_shap_vals)**2 * 2*(var1 + var2)
+            n_to_run = (critVal/diff_shap_vals)**2 * 2*(var1 + var2)
             n_to_run = [n_to_run, n_to_run]
         else: # Scale number of permutations by the variance
-            new_n1 = 4*var1*(Z_crit/diff_shap_vals)**2
+            new_n1 = 4*var1*(critVal/diff_shap_vals)**2
             new_n2 = (var2/var1)*new_n1
             n_to_run = [new_n1, new_n2]                
         return "fail to reject", n_to_run
 
-def find_num_tests_passed(diffs_all_feats, alpha=0.05, n_equal=True, abs=True, K=None):
+def find_num_verified(diffs_all_feats, alpha=0.1, n_equal=True, abs=True, K=None):
     # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
     d = len(diffs_all_feats)
     shap_ests = diffs_to_shap_vals(diffs_all_feats)
     order = get_ranking(shap_ests, abs=abs)
-    num_tests_passed = 0
+    num_verified = 0
     # Test stability of 1 vs 2; 2 vs 3; etc (d-1 total tests)
     max_num_tests = d-1 if K is None else K
-    while num_tests_passed < max_num_tests: 
-        feat1 = diffs_all_feats[int(order[num_tests_passed])]
-        feat2 = diffs_all_feats[int(order[num_tests_passed+1])]
-        test_result = normal_test(feat1, feat2, alpha=alpha, 
+    while num_verified < max_num_tests: 
+        feat1 = diffs_all_feats[int(order[num_verified])]
+        feat2 = diffs_all_feats[int(order[num_verified+1])]
+        test_result = ss_test(feat1, feat2, alpha=alpha, 
                                 n_equal=n_equal)
         if test_result=="reject":
-            num_tests_passed += 1
+            num_verified += 1
         else:
             break
-    return num_tests_passed 
+    return num_verified 
 
 
 def query_values_marginal(X, xloc, S, j,  mapping_dict, n_samples_per_perm):
@@ -124,27 +126,26 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                                             mapping_dict=mapping_dict, 
                                             n_samples_per_perm=n_samples_per_perm)
     d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
-    n_tests_passed = find_num_tests_passed(diffs_all_feats, alpha, n_equal, abs, K)
-    while n_tests_passed < K:
+    N_total = n_init*d
+    n_verified = find_num_verified(diffs_all_feats, alpha, n_equal, abs, K)
+    while n_verified < K:
         shap_ests = diffs_to_shap_vals(diffs_all_feats)
         order = get_ranking(shap_ests, abs=abs)
         # Number of tests passed = index of test with first failure
-        index_pair = (int(order[n_tests_passed]), int(order[n_tests_passed+1]))
+        index_pair = (int(order[n_verified]), int(order[n_verified+1]))
         diffs_pair = [diffs_all_feats[index_pair[0]], diffs_all_feats[index_pair[1]]]
         
-        test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
+        test_result = ss_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
         exceeded = False
         # Run until order of pair is stable
         while test_result != "reject":
             # Run for suggested number of samples to be significant difference
             n_to_run = [max(int(buffer*n), n_init) for n in test_result[1]]
-            # print(n_to_run)
             if max(n_to_run) > max_n_perms:
                 if not exceeded:
                     n_to_run = [max_n_perms, max_n_perms]
                     exceeded = True
-                else:
-                    # print("Hit max # perms without converging. Returning `NA`.")
+                else: # Already ran on that pair for max # of perms; didn't stabilize. Return.
                     shap_vals = np.array(diffs_to_shap_vals(diffs_all_feats))
                     return shap_vals, diffs_all_feats, converged
             diffs_pair = []
@@ -152,6 +153,7 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                 j = index_pair[i]
                 w_vals,wj_vals = [], []
                 for _ in range(n_to_run[i]):
+                    # Generate new permutations and thus new x_{S^c | S}
                     perm = np.random.permutation(d)
                     j_idx = np.argwhere(perm==j).item()
                     S = np.array(perm[:j_idx])
@@ -159,20 +161,21 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                     tw_vals, twj_vals = query_values_marginal(X, xloc, S, j, mapping_dict, n_samples_per_perm)
                     w_vals.append(tw_vals)
                     wj_vals.append(twj_vals)
+                    N_total += n_to_run[i]
                 w_vals = np.reshape(w_vals, [-1, xloc.shape[1]])
                 wj_vals = np.reshape(wj_vals, [-1, xloc.shape[1]])
                 
                 diffs_all = model(wj_vals) - model(w_vals)
                 diffs_avg = np.mean(np.reshape(diffs_all,[-1,n_samples_per_perm]),axis=1) # length M
                 diffs_pair.append(diffs_avg)
-            test_result = normal_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
+            test_result = ss_test(diffs_pair[0], diffs_pair[1], alpha=alpha, n_equal=n_equal, abs=abs)
             # Replace with new samples
             diffs_all_feats[index_pair[0]] = diffs_pair[0]
             diffs_all_feats[index_pair[1]] = diffs_pair[1]
-        n_tests_passed = find_num_tests_passed(diffs_all_feats, alpha, n_equal, abs, K)   
+        n_verified = find_num_verified(diffs_all_feats, alpha, n_equal, abs, K)   
     shap_vals = np.array(diffs_to_shap_vals(diffs_all_feats))
     converged = True
-    return shap_vals, diffs_all_feats, converged
+    return shap_vals, diffs_all_feats, N_total, converged
 
 
 def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_perm=2, 
@@ -186,7 +189,7 @@ def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_p
         return shap_vals
     else:
         if isinstance(alphas, list):
-            n_verified = [find_num_tests_passed(diffs_all_feats, alpha=alpha, abs=abs) for alpha in alphas]
+            n_verified = [find_num_verified(diffs_all_feats, alpha=alpha, abs=abs) for alpha in alphas]
         else:
-            n_verified = find_num_tests_passed(diffs_all_feats, alpha=alphas, abs=abs)
+            n_verified = find_num_verified(diffs_all_feats, alpha=alphas, abs=abs)
         return shap_vals, n_verified

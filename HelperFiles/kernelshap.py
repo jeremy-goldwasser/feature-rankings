@@ -1,6 +1,6 @@
 import numpy as np
 from math import comb
-# from scipy.stats import ttest_ind, t
+from scipy.stats import t, nct, norm
 from helper import *
 
 ############### Compute coalitions, conditional means and KernelSHAP estimates ###############
@@ -111,13 +111,142 @@ def kshap_equation(yloc, coalitions, coalition_values, avg_pred):
 
 
 ################### KernelSHAP method ###################
+def compute_kshap_vars_ls(var_values, coalitions):
+    d = coalitions.shape[1]
+    #   mean_subset_values = np.matmul(coalitions, kshap_ests) + avg_pred
+    #   var_values = np.mean((coalition_values - mean_subset_values)**2) * np.identity(M) 
+    var_values = np.diagflat(var_values)
+    # counts = np.sum(coalitions, axis=1).astype(int).tolist()
+    ones_vec = np.ones(d).reshape((d, 1))
+    A = coalitions.T @ coalitions
+    try:
+        A_inv = np.linalg.inv(A)
+    except:
+        new_cond_num = 10000
+        u, s, vh = np.linalg.svd(A)
+        min_acceptable = s[0]/new_cond_num
+        s2 = np.copy(s)
+        s2[s <= min_acceptable] = min_acceptable
+        A2 = np.matmul(u, np.matmul(np.diag(s2), vh))
 
+        A_inv = np.linalg.inv(A2)
+    
+    C = np.diag(np.ones(d)) - np.outer(ones_vec,ones_vec) @ A_inv/np.matmul(np.matmul(ones_vec.T, A_inv), ones_vec)
 
-def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=None):
+    AZ = A_inv @ C @ coalitions.T
+    kshap_covmat_ls = AZ @ var_values @ AZ.T
+    return kshap_covmat_ls
+
+def kshap_test_stat(kshap_vals, kshap_covs, idx1, idx2, abs=True):
+    # Welch's t test with more conservative DF
+    kshap1, kshap2 = kshap_vals[idx1], kshap_vals[idx2]
+    kshap_vars = np.diagonal(kshap_covs)
+    var1, var2 = kshap_vars[idx1], kshap_vars[idx2]
+    cov12 = kshap_covs[idx1, idx2]
+    if abs is True and kshap1*kshap2 < 0: # Opposite sign
+        kshap2 = -kshap2
+        cov12 = -cov12
+    varDiff = var1 + var2 - 2*cov12 # Difference of random variables
+    testStat = np.abs(kshap1 - kshap2)/np.sqrt(varDiff)
+    return testStat
+
+def kshap_test(kshap_vals, kshap_covs, idx1, idx2, n, alpha=0.1, abs=True):
+    testStat = kshap_test_stat(kshap_vals, kshap_covs, idx1, idx2, abs)
+    # always smaller than Welch - more conservative
+    df = n-1 
+    critVal = t.ppf(1 - alpha/2, df) # 1-a/2 quantile (upper tail) of t-distribution
+    return "reject" if testStat > critVal else "fail to reject"
+
+def find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=.05, abs=True):
+    d = len(kshap_vals)
+    order = get_ranking(kshap_vals, abs=abs)
+    num_verified = 0
+    # Test stability of 1 vs 2; 2 vs 3; etc (d-1 total tests)
+    while num_verified < d-1: 
+        idx1, idx2 = int(order[num_verified]), int(order[num_verified+1])
+        test_result = kshap_test(kshap_vals, kshap_covs, idx1, idx2, n_perms, alpha=alpha, abs=abs)
+        if test_result=="reject":
+            num_verified += 1
+        else:
+            break
+    return num_verified
+
+def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=None,
+            alphas=None, abs=True):
     avg_pred = np.mean(model(X))
     y_pred = model(xloc)
-    coalitions, coalition_values, _ = compute_coalitions_values(model, X, xloc, 
+    coalitions, coalition_values, coalition_vars = compute_coalitions_values(model, X, xloc, 
                                                                     n_perms, n_samples_per_perm, 
                                                                     mapping_dict)
-    kshap_ests = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
-    return kshap_ests
+    kshap_vals = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
+    if alphas is None:
+        return kshap_vals
+    else:
+        kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
+        if isinstance(alphas, list):
+            n_verified = [find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=alpha, abs=abs) for alpha in alphas]
+        else:
+            n_verified = find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=alphas, abs=abs)
+        return kshap_vals, n_verified 
+
+def kernelshap_top_k(model, X, xloc, K, mapping_dict=None, 
+                n_samples_per_perm=5, n_perms_btwn_tests=100, n_max=100000, 
+                alpha=0.1, beta=0.2, abs=True):
+    avg_pred = np.mean(model(X))
+    y_pred = model(xloc)
+    acceptNullThresh = beta/(1-alpha/2)
+    rejectNullThresh = (1-beta)/(alpha/2)
+    # print(acceptNullThresh)
+    # print(rejectNullThresh)
+    orderings = []
+    N = 0
+    num_verified = 0
+    # coalitions, coalition_values, coalition_vars = [], [], []
+    while N < n_max and num_verified < K:
+        coalitions_t, coalition_values_t, coalition_vars_t = compute_coalitions_values(model, X, xloc, 
+                                                                        n_perms_btwn_tests, n_samples_per_perm, 
+                                                                        mapping_dict)
+        N += n_perms_btwn_tests
+        if N > n_perms_btwn_tests:
+            coalitions = np.concatenate((coalitions, coalitions_t)) # z vectors
+            coalition_values = np.concatenate((coalition_values, coalition_values_t)) # E[f(X)|z]
+            coalition_vars = np.concatenate((coalition_vars, coalition_vars_t)) # Var[f(X)|z]
+        else:
+            coalitions, coalition_values, coalition_vars = coalitions_t, coalition_values_t, coalition_vars_t
+        kshap_vals = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
+        kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
+        # kshap_vars = np.diagonal(kshap_covs)
+        min_effect_size = (t.ppf(1-alpha/2, N-1) + t.ppf(1-beta, N-1))/np.sqrt(N)
+        order = get_ranking(kshap_vals, abs=abs)
+        while num_verified < K:
+            # Find pair of indices to check
+            idx1, idx2 = int(order[num_verified]), int(order[num_verified+1])
+            testStat = kshap_test_stat(kshap_vals, kshap_covs, idx1, idx2, abs)
+            # SPRT: P(test stat | noncentral t)/P(test stat | t)
+
+            null_density = t.pdf(testStat, df=N-1)
+            # alt_density = nct.pdf(testStat, df=N-1, nc=min_effect_size) # Wasn't working
+            alt_density = nct.pdf(testStat, df=N-1, nc=testStat)
+            if np.isnan(null_density) or np.isnan(alt_density):
+                null_density = norm.pdf(testStat)
+                # alt_density = norm.pdf(testStat, loc=min_effect_size) # Wasn't working :(
+                alt_density = norm.pdf(testStat, loc=testStat) # Is this kosher???
+            LR = alt_density / null_density
+            if LR < acceptNullThresh:
+                # Should never happen, because null density can never be below alt_density
+                # e.g. alpha=.2, beta=.2 --> threshold is 2/9
+                return kshap_vals, False
+            if LR > rejectNullThresh:
+                num_verified += 1
+                orderings.append((idx1, idx2))
+            else:
+                break
+    converged = True
+    if num_verified < K:
+        converged = False
+    else:
+        final_order = get_ranking(kshap_vals)
+        for i in range(K):
+            if orderings[i] != (final_order[i], final_order[i+1]):
+                converged = False
+    return kshap_vals, N, converged

@@ -30,8 +30,17 @@ def mode_rows(a):
     return most_frequent_row
 
 
-def calc_fwer(top_K, Round=True):
+def calc_fwer(top_K):
     most_common_row = mode_rows(top_K)
     fwer = 1 - np.mean(np.all(np.array(top_K)==most_common_row,axis=1))
-    return np.round(fwer, 2) if Round else fwer
+    return np.round(fwer, 3)# if Round else fwer
     
+def welch_df(var1, var2, n1, n2, var_of_mean=False):
+    if var_of_mean:
+        num = (var1 + var2)**2
+        denom = var1**2/(n1-1) + var2**2/(n2-1)
+    else:
+        num = (var1/n1 + var2/n2)**2
+        denom = (var1/n1)**2/(n1-1) + (var2/n2)**2/(n2-1)
+    df = num / denom
+    return df
