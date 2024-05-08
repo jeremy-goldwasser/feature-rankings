@@ -22,38 +22,40 @@ def compute_coalitions_values(model, X, xloc,
         z = np.zeros(d)
         z[S] = 1
         # For each z/S, compute list of length {# samples/perm} of X_{S^c}|X_S
-        w_x_vals = coalitions_kshap(X, xloc, z, n_samples_per_perm, mapping_dict)
-
-        count += 1
-        coalitions = np.append(coalitions, z).reshape((count, d))        
+        # w_x_vals = coalitions_kshap(X, xloc, z, n_samples_per_perm, mapping_dict)
+        w_x_vals = coalitions_kshap(X, xloc, S, n_samples_per_perm, mapping_dict)
+        coalitions.append(z)
+        # coalitions = np.append(coalitions, z).reshape((count, d))        
         W_vals.append(w_x_vals)
-        if count==n_perms:
-            # Compute all conditional means, variances, and covariances
-            coalition_values, coalition_vars = conditional_means_vars_kshap(model,W_vals,xloc,
-                                   n_samples_per_perm)
-            return coalitions, coalition_values, coalition_vars
+    coalitions = np.array(coalitions).reshape((n_perms, d))        
+    # Compute all conditional means, variances, and covariances
+    coalition_values, coalition_vars = conditional_means_vars_kshap(model,W_vals,xloc,
+                            n_samples_per_perm)
+    return coalitions, coalition_values, coalition_vars
+        # count += 1
+        # coalitions = np.append(coalitions, z).reshape((count, d))        
+        # W_vals.append(w_x_vals)
+        # if count==n_perms:
+        #     # Compute all conditional means, variances, and covariances
+        #     coalition_values, coalition_vars = conditional_means_vars_kshap(model,W_vals,xloc,
+        #                            n_samples_per_perm)
+        #     return coalitions, coalition_values, coalition_vars
 
-def coalitions_kshap(X, xloc, z, n_samples_per_perm, mapping_dict=None):
+def coalitions_kshap(X, xloc, S, n_samples_per_perm, mapping_dict=None):
     # Of true num features, if mapping_dict not None
-    d = z.shape[0] 
-    if mapping_dict is None:
-        S = np.nonzero(z)[0]
-        Sc = np.where(~np.isin(np.arange(d), S))[0]
-    else:
-        # "original" low # of dimensions
-        S_orig = np.nonzero(z)[0]
-        Sc_orig = np.where(~np.isin(np.arange(d), S_orig))[0]
-        # High # of dimensions (each binary level as a column)
+    if mapping_dict is not None:
+        # Map from "original" low # of dimensions to high in order to impute 
+        S_orig = S
+        # High # of dimensions
         S = map_S(S_orig, mapping_dict)
-        Sc = map_S(Sc_orig, mapping_dict)
     
     w_x_vals = []
+    n = X.shape[0]
     for _ in range(n_samples_per_perm):
-        w = X[np.random.choice(X.shape[0], size=1),:]
-        # Copy xloc, then replace its "unknown" features with those of random sample w
-        w_x_s = np.copy(xloc)
-        w_x_s[0][Sc] = w[0][Sc]
-        w_x_vals.append(w_x_s)
+        w = X[np.random.choice(n, size=1),:]
+        # Use features in S from xloc, and others (Sc) from random sample w
+        w[0][S] = xloc[0][S]
+        w_x_vals.append(w)
     
     return w_x_vals
 
@@ -216,7 +218,7 @@ def kernelshap_top_k(model, X, xloc, K, mapping_dict=None,
         kshap_vals = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
         kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
         # kshap_vars = np.diagonal(kshap_covs)
-        min_effect_size = (t.ppf(1-alpha/2, N-1) + t.ppf(1-beta, N-1))/np.sqrt(N)
+        # min_effect_size = (t.ppf(1-alpha/2, N-1) + t.ppf(1-beta, N-1))/np.sqrt(N)
         order = get_ranking(kshap_vals, abs=abs)
         while num_verified < K:
             # Find pair of indices to check

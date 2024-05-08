@@ -10,6 +10,7 @@ from slime import lime_tabular
 sys.path.append(os.path.join(dir_path, "HelperFiles"))
 from helper import *
 from rankshap import *
+from kernelshap import *
 from train_models import *
 from load_data import *
 
@@ -78,7 +79,7 @@ while len(fwers) < N_pts and x_idx < N_test:
             try:
                 exp = explainer.slime(xloc, model, num_features = K, 
                                             num_samples = 1000, n_max = max_n_lime, 
-                                            alpha = alpha_adj, tol=1e-4, return_none=True)
+                                            alpha = alpha_adj, tol=1e-4)
                 if exp is not None:
                     # est_top_K = extract_lime_feats(exp, K, mapping_dict)
                     # Don't see a good way to get back to feature space.
@@ -97,6 +98,8 @@ while len(fwers) < N_pts and x_idx < N_test:
                 shap_vals, N, converged = kernelshap_top_k(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                     n_samples_per_perm=5, n_perms_btwn_tests=1000, n_max=max_n_kernelshap, 
                     alpha=alpha, beta=0.2, abs=True)
+            else:
+                print("Name must be lime, rankshap, or kernelshap.")
             if converged:
                 est_top_K = get_ranking(shap_vals)[:K]
                 Ns.append(N)
