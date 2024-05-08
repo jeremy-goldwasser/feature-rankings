@@ -1,0 +1,202 @@
+Namespace(method='lime', dataset='census', k=5, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
+lime_census_K5_fwers
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+Aborting. Too infrequently converging.
+10
+Aborting. Too infrequently converging.
+11
+Aborting. Too infrequently converging.
+12
+Aborting. Too infrequently converging.
+13
+Aborting. Too infrequently converging.
+14
+Aborting. Too infrequently converging.
+15
+Aborting. Too infrequently converging.
+16
+Aborting. Too infrequently converging.
+17
+Aborting. Too infrequently converging.
+18
+Aborting. Too infrequently converging.
+19
+Aborting. Too infrequently converging.
+20
+Aborting. Too infrequently converging.
+21
+Aborting. Too infrequently converging.
+22
+Aborting. Too infrequently converging.
+23
+Aborting. Too infrequently converging.
+24
+Aborting. Too infrequently converging.
+25
+Aborting. Too infrequently converging.
+26
+Aborting. Too infrequently converging.
+27
+25 0.0
+50 0.0
+75 0.0
+#################### 1 0.0  (idx  27 )  ####################
+Aborting. Too infrequently converging.
+28
+Aborting. Too infrequently converging.
+29
+Aborting. Too infrequently converging.
+30
+Aborting. Too infrequently converging.
+31
+Aborting. Too infrequently converging.
+32
+Aborting. Too infrequently converging.
+33
+Aborting. Too infrequently converging.
+34
+Aborting. Too infrequently converging.
+35
+Aborting. Too infrequently converging.
+36
+Aborting. Too infrequently converging.
+37
+Aborting. Too infrequently converging.
+38
+Aborting. Too infrequently converging.
+39
+Aborting. Too infrequently converging.
+40
+25 0.0
+50 0.0
+75 0.0
+#################### 2 0.0  (idx  40 )  ####################
+Aborting. Too infrequently converging.
+41
+Aborting. Too infrequently converging.
+42
+25 0.0
+50 0.0
+75 0.0
+#################### 3 0.0  (idx  42 )  ####################
+Aborting. Too infrequently converging.
+43
+Aborting. Too infrequently converging.
+44
+25 0.0
+50 0.0
+75 0.0
+#################### 4 0.0  (idx  44 )  ####################
+Aborting. Too infrequently converging.
+45
+Aborting. Too infrequently converging.
+46
+Aborting. Too infrequently converging.
+47
+Aborting. Too infrequently converging.
+48
+25 0.0
+50 0.0
+75 0.0
+#################### 5 0.0  (idx  48 )  ####################
+49
+50
+Aborting. Too infrequently converging.
+51
+Aborting. Too infrequently converging.
+52
+25 0.0
+50 0.0
+75 0.0
+#################### 6 0.0  (idx  52 )  ####################
+53
+54
+55
+56
+57
+58
+59
+60
+25 0.0
+50 0.0
+75 0.0
+#################### 7 0.0  (idx  60 )  ####################
+61
+62
+25 0.0
+50 0.0
+75 0.0
+#################### 8 0.0  (idx  62 )  ####################
+63
+64
+25 0.0
+50 0.0
+75 0.0
+#################### 9 0.0  (idx  64 )  ####################
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+Aborting. Too infrequently converging.
+91
+Aborting. Too infrequently converging.
+92
+Aborting. Too infrequently converging.
+93
+Aborting. Too infrequently converging.
+94
+Aborting. Too infrequently converging.
+95
+Aborting. Too infrequently converging.
+96
+Aborting. Too infrequently converging.
+97
+Aborting. Too infrequently converging.
+98
+Aborting. Too infrequently converging.
+99
+Aborting. Too infrequently converging.
+100
+Aborting. Too infrequently converging.
+101
+Aborting. Too infrequently converging.
+102
+Aborting. Too infrequently converging.
+103
+Aborting. Too infrequently converging.
+104
+25 0.0
+50 0.0
+75 0.0
+#################### 10 0.0  (idx  104 )  ####################

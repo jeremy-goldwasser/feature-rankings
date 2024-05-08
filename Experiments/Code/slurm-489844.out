@@ -1,0 +1,28 @@
+Namespace(method='rankshap', dataset='credit', k=2, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
+rankshap_credit_K2_fwers
+0
+50 0.0
+100 0.0
+#################### 1 0.0  (idx  0 )  ####################
+1
+50 0.0
+100 0.0
+#################### 2 0.0  (idx  1 )  ####################
+2
+50 0.0
+100 0.0
+#################### 3 0.0  (idx  2 )  ####################
+3
+50 0.0
+100 0.0
+#################### 4 0.0  (idx  3 )  ####################
+4
+50 0.0
+100 0.0
+#################### 5 0.0  (idx  4 )  ####################
+5
+Traceback (most recent call last):
+  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/experiment.py", line 94, in <module>
+    shap_vals, _, N, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected 4, got 3)

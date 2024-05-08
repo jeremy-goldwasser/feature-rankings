@@ -1,0 +1,6 @@
+Namespace(method='kernelshap', dataset='brca', k=2, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
+kernelshap_brca_K2_fwers
+0
+slurmstepd-scf-sm10: error: *** JOB 489832 ON scf-sm10 CANCELLED AT 2024-05-05T14:39:18 ***
+slurmstepd-scf-sm10: error: *** JOB 489832 STEPD TERMINATED ON scf-sm10 AT 2024-05-05T14:40:19 DUE TO JOB NOT ENDING WITH SIGNALS ***
+slurmstepd-scf-sm10: error: unlink((null)/slurm_script): No such file or directory

@@ -1,0 +1,43 @@
+Namespace(method='kernelshap', dataset='brca', k=2, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
+kernelshap_brca_K2_fwers
+0
+0 0
+5000
+10000
+15000
+20000
+25000
+30000
+35000
+40000
+45000
+50000
+55000
+60000
+65000
+70000
+75000
+80000
+85000
+90000
+95000
+100000
+False
+0 1
+5000
+10000
+15000
+20000
+25000
+30000
+35000
+40000
+45000
+50000
+55000
+60000
+65000
+70000
+75000
+80000
+slurmstepd-scf-sm10: error: *** JOB 492608 ON scf-sm10 CANCELLED AT 2024-05-05T19:23:32 ***

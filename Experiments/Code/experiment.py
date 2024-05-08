@@ -10,6 +10,7 @@ from slime import lime_tabular
 sys.path.append(os.path.join(dir_path, "HelperFiles"))
 from helper import *
 from rankshap import *
+from kernelshap import *
 from train_models import *
 from load_data import *
 
@@ -47,9 +48,11 @@ print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
 model = train_model(X_train, y_train, algo, isLime)
 N_test = y_test.shape[0]
-max_n_rankshap = 100000
-max_n_kernelshap = 200000
-max_n_lime = 500000
+# max_n_rankshap = 100000
+max_n_rankshap = 20000
+# max_n_kernelshap = 200000
+max_n_kernelshap = 50000
+max_n_lime = 100000 # 500000
 
 np.random.seed(0)
 x_idx = 0
@@ -67,6 +70,10 @@ if isLime:
     alpha_adj = alpha/K/2
 N_samples = []
 while len(fwers) < N_pts and x_idx < N_test:
+    # Don't bother in situations that rarely converge
+    if x_idx >= 10 and len(fwers)/x_idx < 0.1:
+        print("Aborting. Too infrequently converging.")
+        break
     print(x_idx)
     xloc = X_test[x_idx] if isLime else X_test[x_idx:(x_idx+1)]
     shap_vals_all = []
@@ -76,9 +83,13 @@ while len(fwers) < N_pts and x_idx < N_test:
     while len(top_K) < N_runs:
         if method=="lime":
             try:
+                if dataset=="credit" and x_idx==19 and K==5: 
+                    tol = 1e-5 # Get closer to true algorithm
+                else:
+                    tol = 1e-4
                 exp = explainer.slime(xloc, model, num_features = K, 
                                             num_samples = 1000, n_max = max_n_lime, 
-                                            alpha = alpha_adj, tol=1e-4, return_none=True)
+                                            alpha = alpha_adj, tol=tol, return_none=True) # not 1e-4
                 if exp is not None:
                     # est_top_K = extract_lime_feats(exp, K, mapping_dict)
                     # Don't see a good way to get back to feature space.
@@ -92,11 +103,15 @@ while len(fwers) < N_pts and x_idx < N_test:
             if method=="rankshap":
                 shap_vals, _, N, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
                                         mapping_dict=mapping_dict, max_n_perms=max_n_rankshap, 
-                                        n_samples_per_perm=5, n_init=100, n_equal=False, return_N=True)
+                                        n_samples_per_perm=10, n_init=100, n_equal=False)
             elif method=="kernelshap":
+                # print(len(top_K), count)
                 shap_vals, N, converged = kernelshap_top_k(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
-                    n_samples_per_perm=5, n_perms_btwn_tests=1000, n_max=max_n_kernelshap, 
+                    n_samples_per_perm=10, n_perms_btwn_tests=500, n_max=max_n_kernelshap, 
                     alpha=alpha, beta=0.2, abs=True)
+                # print(converged)
+            else:
+                print("Name must be lime, rankshap, or kernelshap.")
             if converged:
                 est_top_K = get_ranking(shap_vals)[:K]
                 Ns.append(N)
@@ -106,10 +121,10 @@ while len(fwers) < N_pts and x_idx < N_test:
         count += 1
         num_successes = len(top_K)
         if not converged:
-            if count > 10 and num_successes/count < skip_thresh:
+            if count >= 5 and num_successes/count < skip_thresh:
                 break
         else:
-            if num_successes % 50 == 0 and num_successes > 0:
+            if num_successes % 25 == 0 and num_successes > 0 and num_successes!=N_runs:
                 print(num_successes, calc_fwer(top_K))
             
     if len(top_K)==N_runs:
@@ -118,14 +133,12 @@ while len(fwers) < N_pts and x_idx < N_test:
         top_K_all.append(top_K)
         N_samples.append(Ns)
         print("#"*20, len(fwers), fwer, " (idx ", x_idx, ") ", "#"*20)
+        # Store results
+        with open(os.path.join(results_path, fname), "wb") as fp:
+            pickle.dump(fwers, fp)
+        with open(os.path.join(results_path, fname2), "wb") as fp:
+            pickle.dump(top_K_all, fp)
+        if method != "lime":
+            with open(os.path.join(results_path, fname3), "wb") as fp:
+                pickle.dump(np.array(N_samples), fp)
     x_idx += 1
-
-    # Store results
-    with open(os.path.join(results_path, fname), "wb") as fp:
-        pickle.dump(fwers, fp)
-    with open(os.path.join(results_path, fname2), "wb") as fp:
-        pickle.dump(top_K_all, fp)
-    if method != "lime":
-        with open(os.path.join(results_path, fname3), "wb") as fp:
-            pickle.dump(np.array(N_samples), fp)
-

@@ -1,0 +1,18 @@
+Namespace(method='kernelshap', dataset='breast_cancer', k=3, algo='nn', nruns=100, npts=10, alpha=0.2, save_topK=False)
+kernelshap_breast_cancer_K3_fwers
+0
+1
+2
+3
+4
+25 0.0
+50 0.0
+75 0.0
+#################### 1 0.0  (idx  4 )  ####################
+5
+6
+7
+8
+9
+10
+Aborting. Too infrequently converging.

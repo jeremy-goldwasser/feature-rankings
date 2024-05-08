@@ -1,0 +1,5 @@
+Namespace(method='rankshap', dataset='credit', k=5, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
+rankshap_credit_K5_fwers
+0
+50 0.06
+slurmstepd-scf-sm10: error: *** JOB 492102 ON scf-sm10 CANCELLED AT 2024-05-05T20:02:11 ***

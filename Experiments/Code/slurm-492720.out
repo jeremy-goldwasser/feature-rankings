@@ -1,0 +1,11 @@
+Namespace(method='rankshap', dataset='brca', k=5, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
+rankshap_brca_K5_fwers
+0
+1
+2
+50 0.0
+100 0.01
+#################### 1 0.01  (idx  2 )  ####################
+3
+50 0.0
+slurmstepd-scf-sm20: error: *** JOB 492720 ON scf-sm20 CANCELLED AT 2024-05-05T21:38:52 ***
