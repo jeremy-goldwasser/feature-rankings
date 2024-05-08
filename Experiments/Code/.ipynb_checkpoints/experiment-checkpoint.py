@@ -109,7 +109,6 @@ while len(fwers) < N_pts and x_idx < N_test:
                 shap_vals, N, converged = kernelshap_top_k(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                     n_samples_per_perm=10, n_perms_btwn_tests=500, n_max=max_n_kernelshap, 
                     alpha=alpha, beta=0.2, abs=True)
-                # print(converged)
             else:
                 print("Name must be lime, rankshap, or kernelshap.")
             if converged:

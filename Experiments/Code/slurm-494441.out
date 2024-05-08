@@ -1,0 +1,7 @@
+Namespace(method='ss', dataset='bank', algo='nn', nruns=250, npts=10)
+ss_bank_all_ranks
+Traceback (most recent call last):
+  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/retrospective.py", line 49, in <module>
+    results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
+                                                                                ^^^^^
+NameError: name 'alpha' is not defined. Did you mean: 'alphas'?

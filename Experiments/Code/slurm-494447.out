@@ -1,0 +1,9 @@
+Namespace(method='kernelshap', dataset='bank', algo='nn', nruns=250, npts=10)
+kernelshap_bank_all_ranks
+0
+[0, 0, 2]
+Traceback (most recent call last):
+  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/retrospective.py", line 72, in <module>
+    est_top_K = get_ranking(shap_vals, abs=True)[:K]
+                                                  ^
+NameError: name 'K' is not defined
