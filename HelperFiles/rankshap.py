@@ -56,30 +56,37 @@ def query_values_marginal(X, xloc, S, j,  mapping_dict, n_samples_per_perm):
     '''
     SandJ = np.append(S,j)
     n = X.shape[0]
-    if mapping_dict is None:
-        d = X.shape[1]
-        Sc = np.where(~np.isin(np.arange(d), S))[0]
-        Sjc = np.where(~np.isin(np.arange(d), SandJ))[0]
-    else:
+    # d = X.shape[1]
+    # d_arr = np.arange(d)
+    # if mapping_dict is None:
+    
+    #     Sc = np.setdiff1d(d_arr, S)
+    #       Sjc = np.setdiff1d(d_arr, SandJ)
+    #     # Sc = np.where(~np.isin(np.arange(d), S))[0]
+    #     # Sjc = np.where(~np.isin(np.arange(d), SandJ))[0]
+    # else:
+    if mapping_dict is not None:
         d = len(mapping_dict)
-        Sc_orig = np.where(~np.isin(np.arange(d), S))[0] # "original" low # of dimensions
-        Sjc_orig = np.where(~np.isin(np.arange(d), SandJ))[0]
-        Sc = map_S(Sc_orig, mapping_dict)
-        Sjc = map_S(Sjc_orig, mapping_dict)
+        S = map_S(S, mapping_dict)
+        SandJ = map_S(SandJ, mapping_dict)
+
+        # # "original" low # of dimensions
+        # Sc_orig = np.setdiff1d(d_arr, S)
+        # Sjc_orig = np.setdiff1d(d_arr, SandJ)
+        # Sc = map_S(Sc_orig, mapping_dict)
+        # Sjc = map_S(Sjc_orig, mapping_dict)
 
     w_vals = []
     wj_vals = []
-
     for _ in range(n_samples_per_perm):
         # Sample "unknown" features from a dataset sample z
         z = X[np.random.choice(n, size=1),:]
-        w_x_s, w_x_s_j = np.copy(xloc), np.copy(xloc)
-        w_x_s[0][Sc] = z[0][Sc]
-        w_x_s_j[0][Sjc] = z[0][Sjc]
-
-        w_vals.append(w_x_s)
-        wj_vals.append(w_x_s_j)
-
+        z1, z2 = np.copy(z), np.copy(z)
+        z1[0][S] = xloc[0][S]
+        w_vals.append(z1)
+        z2[0][SandJ] = xloc[0][SandJ]
+        wj_vals.append(z2)
+    # print(wj_vals[0]-w_vals[0])
     return w_vals, wj_vals
 
 def compute_diffs_all_feats(model, X, xloc, M, mapping_dict=None, n_samples_per_perm=2):
