@@ -33,7 +33,7 @@ algo = args.algo
 N_runs = args.nruns
 N_pts = args.npts
 
-fname = method + "_" + dataset + "_all_ranks"
+fname = method + "_" + dataset + "_shap_vals"
 fname2 = method + "_" + dataset + "_N_verified"
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
@@ -45,17 +45,17 @@ x_idx = 0
 alphas = [0.05, 0.1, 0.2]
 d = len(mapping_dict) if mapping_dict is not None else X_train.shape[1]
 
-top_K_all = []
 results_path = os.path.join(dir_path, "Experiments", "Results", "Retrospective")
 if not os.path.exists(results_path): os.makedirs(results_path)
+shap_vals_all = []
 N_verified_all = []
+
 N_samples = 2*d + 2048
 # while len(fwers) < N_pts and x_idx < N_test:
 for x_idx in range(N_pts):
     print(x_idx)
     xloc = X_test[x_idx:(x_idx+1)]
-    shap_vals_all = []
-    top_K = []
+    shap_vals_pt = []
     Ns = []
     for i in range(N_runs):
         if method=="ss":
@@ -69,14 +69,14 @@ for x_idx in range(N_pts):
         else:
             print("Name must be ss or kernelshap.")
         if i==0: print(n_verified)
-        est_top_K = get_ranking(shap_vals, abs=True)
+        shap_vals_pt.append(shap_vals)
         Ns.append(n_verified)
-        top_K.append(est_top_K)
-    top_K_all.append(top_K)
+    shap_vals_all.append(shap_vals_pt)
     N_verified_all.append(Ns)
+
             
     # Store results
     with open(os.path.join(results_path, fname), "wb") as fp:
-        pickle.dump(np.array(top_K_all), fp)
+        pickle.dump(np.array(shap_vals_all), fp)
     with open(os.path.join(results_path, fname2), "wb") as fp:
         pickle.dump(np.array(N_verified_all), fp)
