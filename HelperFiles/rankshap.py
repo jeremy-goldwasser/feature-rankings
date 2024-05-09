@@ -5,7 +5,7 @@ from helper import *
 def diffs_to_shap_vals(diffs_all_feats):
     return [np.mean(diffs) for diffs in diffs_all_feats]
 
-def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
+def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True, repro=True):
     # Either outputs "reject" or "fail to reject" and estimated # of samples until rejection
     if abs is True and np.mean(feat1)*np.mean(feat2) < 0:
         if isinstance(feat2, np.ndarray): feat2 = -feat2
@@ -13,7 +13,7 @@ def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
     diff_shap_vals = np.mean(feat1) - np.mean(feat2)
     n1, n2 = len(feat1), len(feat2)
     var1, var2 = np.var(feat1, ddof=1), np.var(feat2, ddof=1)
-    var_factor = 2
+    var_factor = 2 if repro else 1
     testStat = np.abs(diff_shap_vals)/np.sqrt(var_factor*(var1/n1 + var2/n2))
     df = welch_df(var1, var2, n1, n2)
     critVal = t.ppf(1-alpha/2, df)
@@ -30,7 +30,8 @@ def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
             n_to_run = [new_n1, new_n2]                
         return "fail to reject", n_to_run
 
-def find_num_verified(diffs_all_feats, alpha=0.1, n_equal=True, abs=True, K=None):
+def find_num_verified(diffs_all_feats, alpha=0.1, 
+                    n_equal=True, abs=True, K=None, repro=True):
     # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
     d = len(diffs_all_feats)
     shap_ests = diffs_to_shap_vals(diffs_all_feats)
@@ -42,7 +43,7 @@ def find_num_verified(diffs_all_feats, alpha=0.1, n_equal=True, abs=True, K=None
         feat1 = diffs_all_feats[int(order[num_verified])]
         feat2 = diffs_all_feats[int(order[num_verified+1])]
         test_result = ss_test(feat1, feat2, alpha=alpha, 
-                                n_equal=n_equal)
+                                n_equal=n_equal, repro=repro)
         if test_result=="reject":
             num_verified += 1
         else:
@@ -196,7 +197,7 @@ def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_p
         return shap_vals
     else:
         if isinstance(alphas, list):
-            n_verified = [find_num_verified(diffs_all_feats, alpha=alpha, abs=abs) for alpha in alphas]
+            n_verified = [find_num_verified(diffs_all_feats, alpha=alpha, abs=abs, repro=False) for alpha in alphas]
         else:
-            n_verified = find_num_verified(diffs_all_feats, alpha=alphas, abs=abs)
+            n_verified = find_num_verified(diffs_all_feats, alpha=alphas, abs=abs, repro=False)
         return shap_vals, n_verified

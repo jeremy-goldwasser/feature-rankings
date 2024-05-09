@@ -44,3 +44,8 @@ def welch_df(var1, var2, n1, n2, var_of_mean=False):
         denom = (var1/n1)**2/(n1-1) + (var2/n2)**2/(n2-1)
     df = num / denom
     return df
+
+def shap_vals_to_ranks(shap_vals, abs=True):
+    N_pts, N_runs, d = shap_vals.shape
+    shap_ranks = np.array([get_ranking(shap_vals[i,j,:], abs=abs) for i in range(N_pts) for j in range(N_runs)]).reshape(shap_vals.shape)
+    return shap_ranks

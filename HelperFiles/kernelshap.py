@@ -140,7 +140,7 @@ def compute_kshap_vars_ls(var_values, coalitions):
     return kshap_covmat_ls
 
 def kshap_test_stat(kshap_vals, kshap_covs, idx1, idx2, abs=True):
-    # Welch's t test with more conservative DF
+    # t-test statistic
     kshap1, kshap2 = kshap_vals[idx1], kshap_vals[idx2]
     kshap_vars = np.diagonal(kshap_covs)
     var1, var2 = kshap_vars[idx1], kshap_vars[idx2]

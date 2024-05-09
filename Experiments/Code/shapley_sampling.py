@@ -66,5 +66,5 @@ while n_successful < N_pts:
     
     tail = "_adaptive" if n_perms is None else str(n_perms)
     fname = "ss_ranks_k" + str(K) + "_n" + tail
-    with open(join(dir_path, "Experiments", "Results", fname), "wb") as fp:
+    with open(join(dir_path, "Experiments", "Results", "alpha0.2", fname), "wb") as fp:
         pickle.dump(top_K_ss, fp)

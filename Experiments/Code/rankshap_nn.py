@@ -26,8 +26,8 @@ K = args.k
 # dataset = sys.argv[1]
 # K = int(sys.argv[2])
 
-fname = "shap_vals_k" + str(K)
-fname2 = "shap_fwers_k" + str(K)
+fname = "shap_vals_K" + str(K)
+fname2 = "shap_fwers_K" + str(K)
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
 print(len(y_test))
@@ -66,16 +66,16 @@ while len(fwers) < N_pts:
             if count > 10 and num_successes/count < skip_thresh:
                 break
     if len(top_K)==N_runs:
-        fwer = calc_fwer(top_K, Round=False)
+        fwer = calc_fwer(top_K)
         fwers.append(fwer)
         shap_vals_all_pts.append(shap_vals_all)
         print("#"*20, len(fwers), fwer, "#"*20)
     x_idx += 1
 
     # Store results
-    with open(join(dir_path, "Experiments", "Results", fname), "wb") as fp:
+    with open(join(dir_path, "Experiments", "Results", "alpha0.2", fname), "wb") as fp:
         pickle.dump(shap_vals_all_pts, fp)
-    with open(join(dir_path, "Experiments", "Results", fname2), "wb") as fp:
+    with open(join(dir_path, "Experiments", "Results", "alpha0.2", fname2), "wb") as fp:
         pickle.dump(fwers, fp)
 
 
