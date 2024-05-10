@@ -1,0 +1,4 @@
+Namespace(method='rankshap', dataset='breast_cancer', k=7, algo='nn', nruns=100, npts=10, alpha=0.2, save_topK=False)
+rankshap_breast_cancer_K7_fwers
+0
+slurmstepd-scf-sm23: error: *** JOB 495197 ON scf-sm23 CANCELLED AT 2024-05-09T12:03:17 ***
