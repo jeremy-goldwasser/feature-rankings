@@ -48,8 +48,7 @@ print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
 model = train_model(X_train, y_train, algo, isLime)
 N_test = y_test.shape[0]
-# max_n_rankshap = 100000
-max_n_rankshap = 20000
+max_n_rankshap = 10000
 # max_n_kernelshap = 200000
 max_n_kernelshap = 50000
 max_n_lime = 100000 # 500000

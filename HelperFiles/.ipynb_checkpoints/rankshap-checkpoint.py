@@ -5,7 +5,7 @@ from helper import *
 def diffs_to_shap_vals(diffs_all_feats):
     return [np.mean(diffs) for diffs in diffs_all_feats]
 
-def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
+def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True, repro=True):
     # Either outputs "reject" or "fail to reject" and estimated # of samples until rejection
     if abs is True and np.mean(feat1)*np.mean(feat2) < 0:
         if isinstance(feat2, np.ndarray): feat2 = -feat2
@@ -13,7 +13,7 @@ def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
     diff_shap_vals = np.mean(feat1) - np.mean(feat2)
     n1, n2 = len(feat1), len(feat2)
     var1, var2 = np.var(feat1, ddof=1), np.var(feat2, ddof=1)
-    var_factor = 2
+    var_factor = 2 if repro else 1
     testStat = np.abs(diff_shap_vals)/np.sqrt(var_factor*(var1/n1 + var2/n2))
     df = welch_df(var1, var2, n1, n2)
     critVal = t.ppf(1-alpha/2, df)
@@ -30,7 +30,8 @@ def ss_test(feat1, feat2, alpha=0.1, n_equal=True, abs=True):
             n_to_run = [new_n1, new_n2]                
         return "fail to reject", n_to_run
 
-def find_num_verified(diffs_all_feats, alpha=0.1, n_equal=True, abs=True, K=None):
+def find_num_verified(diffs_all_feats, alpha=0.1, 
+                    n_equal=True, abs=True, K=None, repro=True):
     # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
     d = len(diffs_all_feats)
     shap_ests = diffs_to_shap_vals(diffs_all_feats)
@@ -42,7 +43,7 @@ def find_num_verified(diffs_all_feats, alpha=0.1, n_equal=True, abs=True, K=None
         feat1 = diffs_all_feats[int(order[num_verified])]
         feat2 = diffs_all_feats[int(order[num_verified+1])]
         test_result = ss_test(feat1, feat2, alpha=alpha, 
-                                n_equal=n_equal)
+                                n_equal=n_equal, repro=repro)
         if test_result=="reject":
             num_verified += 1
         else:
@@ -56,30 +57,37 @@ def query_values_marginal(X, xloc, S, j,  mapping_dict, n_samples_per_perm):
     '''
     SandJ = np.append(S,j)
     n = X.shape[0]
-    if mapping_dict is None:
-        d = X.shape[1]
-        Sc = np.where(~np.isin(np.arange(d), S))[0]
-        Sjc = np.where(~np.isin(np.arange(d), SandJ))[0]
-    else:
+    # d = X.shape[1]
+    # d_arr = np.arange(d)
+    # if mapping_dict is None:
+    
+    #     Sc = np.setdiff1d(d_arr, S)
+    #       Sjc = np.setdiff1d(d_arr, SandJ)
+    #     # Sc = np.where(~np.isin(np.arange(d), S))[0]
+    #     # Sjc = np.where(~np.isin(np.arange(d), SandJ))[0]
+    # else:
+    if mapping_dict is not None:
         d = len(mapping_dict)
-        Sc_orig = np.where(~np.isin(np.arange(d), S))[0] # "original" low # of dimensions
-        Sjc_orig = np.where(~np.isin(np.arange(d), SandJ))[0]
-        Sc = map_S(Sc_orig, mapping_dict)
-        Sjc = map_S(Sjc_orig, mapping_dict)
+        S = map_S(S, mapping_dict)
+        SandJ = map_S(SandJ, mapping_dict)
+
+        # # "original" low # of dimensions
+        # Sc_orig = np.setdiff1d(d_arr, S)
+        # Sjc_orig = np.setdiff1d(d_arr, SandJ)
+        # Sc = map_S(Sc_orig, mapping_dict)
+        # Sjc = map_S(Sjc_orig, mapping_dict)
 
     w_vals = []
     wj_vals = []
-
     for _ in range(n_samples_per_perm):
         # Sample "unknown" features from a dataset sample z
         z = X[np.random.choice(n, size=1),:]
-        w_x_s, w_x_s_j = np.copy(xloc), np.copy(xloc)
-        w_x_s[0][Sc] = z[0][Sc]
-        w_x_s_j[0][Sjc] = z[0][Sjc]
-
-        w_vals.append(w_x_s)
-        wj_vals.append(w_x_s_j)
-
+        z1, z2 = np.copy(z), np.copy(z)
+        z1[0][S] = xloc[0][S]
+        w_vals.append(z1)
+        z2[0][SandJ] = xloc[0][SandJ]
+        wj_vals.append(z2)
+    # print(wj_vals[0]-w_vals[0])
     return w_vals, wj_vals
 
 def compute_diffs_all_feats(model, X, xloc, M, mapping_dict=None, n_samples_per_perm=2):
@@ -161,7 +169,7 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                     tw_vals, twj_vals = query_values_marginal(X, xloc, S, j, mapping_dict, n_samples_per_perm)
                     w_vals.append(tw_vals)
                     wj_vals.append(twj_vals)
-                    N_total += n_to_run[i]
+                N_total += n_to_run[i]
                 w_vals = np.reshape(w_vals, [-1, xloc.shape[1]])
                 wj_vals = np.reshape(wj_vals, [-1, xloc.shape[1]])
                 
@@ -189,7 +197,7 @@ def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_p
         return shap_vals
     else:
         if isinstance(alphas, list):
-            n_verified = [find_num_verified(diffs_all_feats, alpha=alpha, abs=abs) for alpha in alphas]
+            n_verified = [find_num_verified(diffs_all_feats, alpha=alpha, abs=abs, repro=False) for alpha in alphas]
         else:
-            n_verified = find_num_verified(diffs_all_feats, alpha=alphas, abs=abs)
+            n_verified = find_num_verified(diffs_all_feats, alpha=alphas, abs=abs, repro=False)
         return shap_vals, n_verified
