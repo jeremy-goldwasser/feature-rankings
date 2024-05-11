@@ -169,7 +169,7 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
                     tw_vals, twj_vals = query_values_marginal(X, xloc, S, j, mapping_dict, n_samples_per_perm)
                     w_vals.append(tw_vals)
                     wj_vals.append(twj_vals)
-                    N_total += n_to_run[i]
+                N_total += n_to_run[i]
                 w_vals = np.reshape(w_vals, [-1, xloc.shape[1]])
                 wj_vals = np.reshape(wj_vals, [-1, xloc.shape[1]])
                 
