@@ -85,6 +85,7 @@ def invert_matrix(A):
         A_inv = np.linalg.inv(A2)
     return A_inv
 
+
 def kshap_equation(yloc, coalitions, coalition_values, avg_pred):
     '''
     Computes KernelSHAP estimates for all features. The equation is the solution to the 
@@ -106,9 +107,14 @@ def kshap_equation(yloc, coalitions, coalition_values, avg_pred):
     ones_vec = np.ones(d).reshape((d, 1))
     numerator = np.matmul(np.matmul(ones_vec.T, A_inv), b) - yloc + avg_pred
     denominator = np.matmul(np.matmul(ones_vec.T, A_inv), ones_vec)
-    term = (b - (numerator / denominator)).reshape((d, 1))
+    term = b.reshape((d, 1)) - ones_vec*(numerator / denominator)
 
     kshap_ests = np.matmul(A_inv, term).reshape(-1)
+    # subset_sizes = np.sum(coalitions,axis=1).astype(int) # Number in each
+    # W = np.diag([subset_size_distr[size] for size in subset_sizes])
+    # coalitions2 = coalitions[:,:-1]
+    # kshap_ests = np.linalg.solve(coalitions2.T @ W @ coalitions2, coalitions2.T @ W @ (coalition_values-avg_pred))
+    # kshap_ests = np.append(kshap_ests, yloc - avg_pred - np.sum(kshap_ests))
     return kshap_ests
 
 
@@ -173,6 +179,7 @@ def find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=.05, abs=True
             break
     return num_verified
 
+
 def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=None,
             alphas=None, abs=True):
     avg_pred = np.mean(model(X))
@@ -182,14 +189,18 @@ def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=
                                                                     mapping_dict)
     kshap_vals = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
     if alphas is None:
-        return kshap_vals
+        return kshap_vals#, compute_kshap_vars_boot(model, xloc, avg_pred, coalitions, 
+                    #coalition_values, n_boot=250)
     else:
-        kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
+        # kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
+        kshap_covs = compute_kshap_vars_boot(model, xloc, avg_pred, coalitions, 
+                    coalition_values, n_boot=250)
         if isinstance(alphas, list):
             n_verified = [find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=alpha, abs=abs) for alpha in alphas]
         else:
             n_verified = find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=alphas, abs=abs)
         return kshap_vals, n_verified 
+
 
 def kernelshap_top_k(model, X, xloc, K, mapping_dict=None, 
                 n_samples_per_perm=5, n_perms_btwn_tests=100, n_max=100000, 
@@ -217,7 +228,9 @@ def kernelshap_top_k(model, X, xloc, K, mapping_dict=None,
         else:
             coalitions, coalition_values, coalition_vars = coalitions_t, coalition_values_t, coalition_vars_t
         kshap_vals = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
-        kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
+        # kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
+        kshap_covs = compute_kshap_vars_boot(model, xloc, avg_pred, coalitions, 
+                    coalition_values, n_boot=250)
         # kshap_vars = np.diagonal(kshap_covs)
         # min_effect_size = (t.ppf(1-alpha/2, N-1) + t.ppf(1-beta, N-1))/np.sqrt(N)
         order = get_ranking(kshap_vals, abs=abs)
@@ -255,3 +268,34 @@ def kernelshap_top_k(model, X, xloc, K, mapping_dict=None,
             if orderings[i] != (final_order[i], final_order[i+1]):
                 converged = False
     return kshap_vals, N, converged
+
+
+
+###################################
+
+def compute_kshap_vars_boot(model, xloc, avg_pred, coalitions, 
+                    coalition_values, n_boot):
+    """
+    Returns n_boot sets of kernelSHAP values for each feature, 
+    fitting kernelSHAP on both the true model and its approximation with each bootstrapped resampling.
+
+    We can probably make a version of this function where you don't have to bootstrap the model,
+    since we don't need this for computing CV-kSHAP estimates; we only need it to compute the
+    variance reduction of CV-kSHAP over vanilla kSHAP. Low priority.
+    """
+
+    kshap_vals_boot = []
+    M = coalition_values.shape[0]
+    yloc = model(xloc)
+    for _ in range(n_boot):
+        idx = np.random.randint(M, size=M)
+        z_boot = coalitions[idx]
+        coalition_values_model_boot = coalition_values[idx]
+
+        # compute the kernelSHAP estimates on these bootstrapped samples, fitting ls
+        kshap_vals_boot.append(kshap_equation(yloc, z_boot, coalition_values_model_boot, avg_pred))
+
+    kshap_vals_boot = np.stack(kshap_vals_boot, axis=0)
+    # Compute empirical covariance matrix of each feature's KernelSHAP value, using bootstrapped samples.
+    kshap_cov_boot = np.cov(np.array(kshap_vals_boot), rowvar=False)
+    return kshap_cov_boot
