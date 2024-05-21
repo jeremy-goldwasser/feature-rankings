@@ -1,8 +1,0 @@
-Namespace(method='kernelshap', dataset='bank', algo='nn', nruns=250, npts=10)
-kernelshap_bank_all_ranks
-0
-Traceback (most recent call last):
-  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/retrospective.py", line 66, in <module>
-    shap_vals, n_verified = kernelshap(model, X_train, xloc, n_perms=N_samples, 
-                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: kernelshap() got an unexpected keyword argument 'N_verified_per_perm'

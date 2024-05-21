@@ -1,3 +1,0 @@
-Namespace(method='kernelshap', dataset='bank', k=2, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
-kernelshap_bank_K2_fwers
-slurmstepd-scf-sm20: error: *** JOB 493889 ON scf-sm20 CANCELLED AT 2024-05-06T23:29:28 ***

@@ -1,7 +1,0 @@
-Namespace(method='rankshap', dataset='brca', k=5, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
-rankshap_brca_K5_fwers
-0
-1
-2
-3
-slurmstepd-scf-sm20: error: *** JOB 492990 ON scf-sm20 CANCELLED AT 2024-05-05T21:48:10 ***

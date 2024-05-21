@@ -1,4 +1,0 @@
-Namespace(method='kernelshap', dataset='credit', k=5, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
-kernelshap_credit_K5_fwers
-0
-slurmstepd-scf-sm10: error: *** JOB 489847 ON scf-sm10 CANCELLED AT 2024-05-05T14:39:23 ***

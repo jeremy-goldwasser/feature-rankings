@@ -1,5 +1,0 @@
-Namespace(method='kernelshap', dataset='brca', k=2, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
-kernelshap_brca_K2_fwers
-0
-0 0
-slurmstepd-scf-sm11: error: *** JOB 492158 ON scf-sm11 CANCELLED AT 2024-05-05T20:02:36 ***

@@ -1,4 +1,0 @@
-Namespace(method='kernelshap', dataset='breast_cancer', k=2, algo='nn', nruns=100, npts=10, alpha=0.2, save_topK=False)
-kernelshap_breast_cancer_K2_fwers
-0
-slurmstepd-scf-sm21: error: *** JOB 493903 ON scf-sm21 CANCELLED AT 2024-05-06T23:34:21 ***

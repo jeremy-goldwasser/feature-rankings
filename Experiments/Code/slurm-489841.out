@@ -1,8 +1,0 @@
-Namespace(method='rankshap', dataset='brca', k=5, algo='nn', nruns=100, npts=10, alpha=0.1, save_topK=False)
-rankshap_brca_K5_fwers
-0
-Traceback (most recent call last):
-  File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/experiment.py", line 94, in <module>
-    shap_vals, _, N, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: not enough values to unpack (expected 4, got 3)
