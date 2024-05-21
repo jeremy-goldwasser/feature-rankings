@@ -129,6 +129,8 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
     - abs: Whether we want to rank features by the absolute values of their Shapley values
     
     '''
+    if xloc.ndim==1:
+        xloc = xloc.reshape(1,-1)
     converged = False
     diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_init, 
                                             mapping_dict=mapping_dict, 
@@ -188,6 +190,8 @@ def rankshap(model, X, xloc, K, alpha=0.10, mapping_dict=None,
 
 def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_perm=2, 
                         alphas=None, abs=True):
+    if xloc.ndim==1:
+        xloc = xloc.reshape(1,-1)
     diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_perms, 
                                             mapping_dict=mapping_dict, 
                                             n_samples_per_perm=n_samples_per_perm)

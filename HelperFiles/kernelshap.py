@@ -184,6 +184,8 @@ def find_num_verified_kshap(kshap_vals, kshap_covs, n_perms, alpha=.05, abs=True
 
 def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=None,
             alphas=None, abs=True):
+    if xloc.ndim==1:
+        xloc = xloc.reshape(1,-1)
     avg_pred = np.mean(model(X))
     y_pred = model(xloc)
     coalitions, coalition_values, coalition_vars = compute_coalitions_values(model, X, xloc, 
@@ -204,9 +206,11 @@ def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=
         return kshap_vals, n_verified 
 
 
-def kernelshap_top_k(model, X, xloc, K, mapping_dict=None, 
+def sprtshap(model, X, xloc, K, mapping_dict=None, 
                 n_samples_per_perm=5, n_perms_btwn_tests=100, n_max=100000, 
                 alpha=0.1, beta=0.2, abs=True):
+    if xloc.ndim==1:
+        xloc = xloc.reshape(1,-1)
     avg_pred = np.mean(model(X))
     y_pred = model(xloc)
     acceptNullThresh = beta/(1-alpha/2)
