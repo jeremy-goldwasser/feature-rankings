@@ -23,8 +23,8 @@ breast_cancer = load_breast_cancer()
 data_path = join(dir_path, "Experiments", "Data")
 train, labels_train, test, labels_test, _ = load_data(data_path, dataset)
 
-rf = RandomForestClassifier()
-rf.fit(train, labels_train)
+# rf = RandomForestClassifier()
+# rf.fit(train, labels_train)
 colnames = breast_cancer.feature_names
 explainer = lime_tabular.LimeTabularExplainer(train, 
                                               feature_names = colnames, 
@@ -40,7 +40,7 @@ K = 5
 xloc = test[i]
 top_K_lime = []
 for _ in range(200):
-    exp = explainer.explain_instance(xloc, rf.predict_proba, num_features = K, num_samples = 5000) # Default
+    exp = explainer.explain_instance(xloc, model, num_features = K, num_samples = 5000) # Default
     # exp.show_in_notebook(show_table = True)
     tuples = exp.local_exp[1]
     feats = [tuples[i][0] for i in range(5)]
@@ -53,9 +53,9 @@ count = 0
 N_runs = 50
 while len(top_K_slime) < N_runs:
     count += 1
-    exp = explainer.slime(xloc, rf.predict_proba, num_features = K, 
+    exp = explainer.slime(xloc, model, num_features = K, 
                                 num_samples = 1000, n_max = 500000, #1000000
-                                alpha = 0.2/K/2, tol=1e-4, return_none=True) #5e-5
+                                alpha = 0.2/K/2, tol=1e-4, return_none=True) #5e-5; rf.predict_proba
     if exp is not None:
         tuples = exp.local_exp[1]
         feats = [tuples[i][0] for i in range(K)]

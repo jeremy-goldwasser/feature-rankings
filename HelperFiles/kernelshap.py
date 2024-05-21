@@ -146,6 +146,8 @@ def compute_kshap_vars_ls(var_values, coalitions):
     return kshap_covmat_ls
 
 def kshap_test_stat(kshap_vals, kshap_covs, idx1, idx2, abs=True):
+    # TO DO: x2 for reproducibility (top K) (???) if the results aren't too conservative
+    # If they are, maybe I can consider a redo on top-K
     # t-test statistic
     kshap1, kshap2 = kshap_vals[idx1], kshap_vals[idx2]
     kshap_vars = np.diagonal(kshap_covs)

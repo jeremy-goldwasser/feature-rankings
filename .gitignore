@@ -3,4 +3,11 @@ try.ipynb
 slime/
 Papers/
 Versions/
+Experiments/Results/alpha0.1copy
+Experiments/Results/alpha0.2copy
+Experiments/Results/Retrospectivecopy
 Presentations/
+Experiments/Analysis/.ipynb_checkpoints
+Experiments/Analysis/lime_instability.ipynb
+Experiments/Results/lime_instability.png
+Experiments/Code/slurm*

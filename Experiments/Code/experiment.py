@@ -26,7 +26,6 @@ parser.add_argument('--algo', type=str, default="nn")
 parser.add_argument('--nruns', type=int, default=100)
 parser.add_argument('--npts', type=int, default=10)
 parser.add_argument('--alpha', type=float, default=0.2)
-parser.add_argument('--save_topK', type=bool, default=False)
 
 args = parser.parse_args() 
 print(args)
@@ -38,7 +37,6 @@ algo = args.algo
 N_runs = args.nruns
 N_pts = args.npts
 alpha = args.alpha
-save_topK = args.save_topK
 
 fname = method + "_" + dataset + "_K" + str(K) + "_fwers"
 fname2 = method + "_" + dataset + "_K" + str(K) + "_ranks"
