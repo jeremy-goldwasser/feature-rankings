@@ -188,13 +188,12 @@ def kernelshap(model, X, xloc, n_perms=500, n_samples_per_perm=10, mapping_dict=
         xloc = xloc.reshape(1,-1)
     avg_pred = np.mean(model(X))
     y_pred = model(xloc)
-    coalitions, coalition_values, coalition_vars = compute_coalitions_values(model, X, xloc, 
+    coalitions, coalition_values, _ = compute_coalitions_values(model, X, xloc, 
                                                                     n_perms, n_samples_per_perm, 
                                                                     mapping_dict)
     kshap_vals = kshap_equation(y_pred, coalitions, coalition_values, avg_pred)
     if alphas is None:
-        return kshap_vals#, compute_kshap_vars_boot(model, xloc, avg_pred, coalitions, 
-                    #coalition_values, n_boot=250)
+        return kshap_vals
     else:
         # kshap_covs = compute_kshap_vars_ls(coalition_vars,coalitions)
         kshap_covs = compute_kshap_vars_boot(model, xloc, avg_pred, coalitions, 

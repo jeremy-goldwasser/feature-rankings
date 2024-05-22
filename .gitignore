@@ -10,6 +10,11 @@ Experiments/Code/lime_rf.py
 Presentations/
 Experiments/Analysis/.ipynb_checkpoints
 Experiments/Analysis/lime_instability.ipynb
+Experiments/Results/alpha0.2/lime_vs_slime
+Experiments/Results/alpha0.2/ss_ranks_k2_n800
+Experiments/Results/alpha0.2/ss_ranks_k5_n2200
+Experiments/Results/lime_ranks*
+Experiments/Results/lime_fwers*
 Experiments/Results/lime_instability.png
 Experiments/Code/slurm*
 .DS_Store
