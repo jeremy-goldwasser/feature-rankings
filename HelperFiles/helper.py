@@ -1,6 +1,8 @@
 import numpy as np
+from scipy.stats import t
+from scipy.stats import norm
 
-
+############### MISC HELPER FUNCTIONS ###############
 def map_S(S, mapping_dict):
     '''
     Maps a subset of feature indices to the corresponding subset of columns.
@@ -49,3 +51,78 @@ def shap_vals_to_ranks(shap_vals, abs=True):
     N_pts, N_runs, d = shap_vals.shape
     shap_ranks = np.array([get_ranking(shap_vals[i,j,:], abs=abs) for i in range(N_pts) for j in range(N_runs)]).reshape(shap_vals.shape)
     return shap_ranks
+
+####### TESTING #######
+
+def test_for_max(means, vars_of_means, j, alpha, 
+                 compute_sample_size=False, n_equal=True, value_vars=None,
+                 return_p_val=False):
+    # Assumes means are sorted in decreasing order.
+    # Only use 2 means & variances considered, as well as the second-biggest mean.
+    # If calculating sample size, use those two variances.
+    x1, xj = means[0], means[j]
+    s1, sj = vars_of_means[0], vars_of_means[j]
+    mu_1j = (x1*sj + xj*s1)/(s1+sj)
+    s_1j = (s1**2)/(s1+sj)
+    num_stat = (x1 - mu_1j)/np.sqrt(s_1j)
+    num = 1-norm.cdf(num_stat)
+    # Compute denominator. Don't need to break up, just nice to see.
+    if j>=2 and means[1] > mu_1j:
+        denom_stat = (means[1] - mu_1j)/np.sqrt(s_1j)
+        denom = 1-norm.cdf(denom_stat)
+    else:
+        denom = 0.5
+
+    p_val = num/denom
+    # print("j, p-value:", j, p_val)
+    result = "reject" if p_val < alpha else "fail to reject"
+    if not compute_sample_size:
+        if return_p_val:
+            return result, p_val
+        return result
+    else:
+        if p_val < alpha:
+            return result, None
+        else:
+            result = "fail to reject"
+            Z_crit = norm.ppf(1-alpha/2)
+            value_var_1, value_var_j = value_vars[0], value_vars[j]
+            if n_equal:
+                n_to_run = (Z_crit/(x1-xj))**2 * (value_var_1 + value_var_j)
+                List = [n_to_run, n_to_run]
+                return result, List
+            else:
+                n_to_run_1 = (Z_crit/(x1-xj))**2 * (2*value_var_1)
+                n_to_run_j = (Z_crit/(x1-xj))**2 * (2*value_var_j)
+                return result, [n_to_run_1, n_to_run_j]
+
+
+def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True):
+    # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
+    d = len(shap_ests)
+    order = get_ranking(shap_ests, abs=abs)
+    if abs:
+        shap_ests = np.abs(shap_ests)
+    num_verified = 0
+    # Test stability of 1 vs 2; 2 vs 3; etc (d-1 total tests)
+    max_num_tests = d-1
+    while num_verified < max_num_tests:
+        idx_to_test = order[num_verified:].astype(int)
+        means_to_test = shap_ests[idx_to_test]
+        vars_to_test = shap_vars[idx_to_test]
+
+        # Find index with biggest variance. 
+        max_test_idx = np.argmax(vars_to_test[1:]) + 1
+        # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
+        for j in range(1, max_test_idx+1):
+            test_result = test_for_max(means_to_test, vars_to_test, j, alpha)
+            if test_result=="reject":
+                break
+        if test_result=="reject":
+            num_verified += 1
+        else:
+            break
+    if num_verified == d-1:
+        num_verified += 1
+    return num_verified 
+
