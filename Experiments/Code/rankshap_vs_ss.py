@@ -24,7 +24,13 @@ d = len(mapping_dict)
 model = train_model(X_train, y_train, model="nn", lime=False)
 # model = train_logreg(X_train, y_train)
 np.random.seed(42)
-K = int(sys.argv[1])
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--k', type= int, default=3)
+args = parser.parse_args() 
+K = args.k
+# K = int(sys.argv[1])
 print(f"K={K}")
 
 skip_thresh = 0.5
