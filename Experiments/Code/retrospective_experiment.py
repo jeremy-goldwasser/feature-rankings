@@ -8,8 +8,8 @@ dir_path = os.path.join(path_to_file, "../../")
 
 sys.path.append(os.path.join(dir_path, "HelperFiles"))
 from helper import *
-from rankshap import *
-from sprtshap import *
+from top_k import *
+from retrospective import *
 from train_models import *
 from load_data import *
 

@@ -9,8 +9,8 @@ from slime import lime_tabular
 
 sys.path.append(os.path.join(dir_path, "HelperFiles"))
 from helper import *
-from rankshap import *
-from sprtshap import *
+from top_k import *
+from retrospective import *
 from train_models import *
 from load_data import *
 
@@ -109,6 +109,7 @@ while len(fwers) < N_pts and x_idx < N_test:
                                                       n_max=max_n_kernelshap, alpha=alpha, beta=0.2, abs=True)
             else:
                 print("Name must be lime, rankshap, or kernelshap.")
+                sys.exit()
             if converged:
                 est_top_K = get_ranking(shap_vals)[:K]
                 Ns.append(N)

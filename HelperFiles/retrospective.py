@@ -4,8 +4,9 @@ from helper_kernelshap import *
 from helper_shapley_sampling import *
 
 ############### SHAPLEY SAMPLING ###############
-def shapley_sampling(model, X, xloc, n_perms, mapping_dict=None, n_samples_per_perm=2, 
-                        alphas=None, abs=True):
+def shapley_sampling(model, X, xloc, n_perms, 
+                     mapping_dict=None, n_samples_per_perm=10, 
+                     alphas=None, abs=True):
     if xloc.ndim==1:
         xloc = xloc.reshape(1,-1)
     diffs_all_feats = compute_diffs_all_feats(model, X, xloc, n_perms, 

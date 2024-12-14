@@ -61,7 +61,7 @@ def find_num_verified_rankshap(diffs_all_feats, alpha=0.1, abs=True,
 
 
 def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, 
-            n_samples_per_perm=2, n_init=100, max_n_perms=10000,  
+            n_samples_per_perm=10, n_init=100, max_n_perms=10000,  
             n_equal=True, buffer=1.1, abs=True):
     '''
     - model: Inputs a numpy array, outputs a scalar
@@ -231,9 +231,10 @@ def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
 
 
 
-def sprtshap(model, X, xloc, K, mapping_dict=None, 
-                n_samples_per_perm=5, n_perms_btwn_tests=100, n_max=100000, 
-                alpha=0.1, beta=0.2, abs=True):
+def sprtshap(model, X, xloc, K, 
+             mapping_dict=None, n_samples_per_perm=10, 
+             n_perms_btwn_tests=100, n_max=100000, 
+             alpha=0.1, beta=0.2, abs=True):
     if xloc.ndim==1:
         xloc = xloc.reshape(1,-1)
     avg_pred = np.mean(model(X))
