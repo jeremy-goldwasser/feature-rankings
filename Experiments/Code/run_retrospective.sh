@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python -u "retrospective.py" --method=$1 --dataset=$2
+python -u "retrospective_experiment.py" --method=$1 --dataset=$2

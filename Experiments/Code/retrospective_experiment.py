@@ -59,13 +59,13 @@ for x_idx in range(N_pts):
     Ns = []
     for i in range(N_runs):
         if method=="ss":
-            shap_vals, n_verified = shapley_sampling(model, X_train, xloc, n_perms=N_samples//d, 
-                    n_samples_per_perm=10, mapping_dict=mapping_dict, 
-                    alphas=alphas, abs=True)
+            shap_vals, n_verified, _ = shapley_sampling(model, X_train, xloc, n_perms=N_samples//d, 
+                                                    n_samples_per_perm=10, mapping_dict=mapping_dict, 
+                                                    alphas=alphas, abs=True)
         elif method=="kernelshap":
-            shap_vals, n_verified = kernelshap(model, X_train, xloc, n_perms=N_samples, 
-                    n_samples_per_perm=10, mapping_dict=mapping_dict,
-                    alphas=alphas, abs=True)
+            shap_vals, n_verified, _ = kernelshap(model, X_train, xloc, n_perms=N_samples, 
+                                                            n_samples_per_perm=10, mapping_dict=mapping_dict,
+                                                            alphas=alphas, abs=True)
         else:
             print("Name must be ss or kernelshap.")
         if i==0: print(n_verified)
@@ -73,7 +73,6 @@ for x_idx in range(N_pts):
         Ns.append(n_verified)
     shap_vals_all.append(shap_vals_pt)
     N_verified_all.append(Ns)
-
             
     # Store results
     with open(os.path.join(results_path, fname), "wb") as fp:

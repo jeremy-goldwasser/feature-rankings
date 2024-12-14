@@ -57,8 +57,9 @@ skip_thresh = 0.75 # Skip if successful with frequency below skip_thresh
 
 top_K_all = []
 fwers = {}
-results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
-if not os.path.exists(results_path): os.makedirs(results_path)
+# results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
+output_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
+if not os.path.exists(output_dir): os.makedirs(output_dir)
 if isLime:
     explainer = lime_tabular.LimeTabularExplainer(X_train, 
                                               discretize_continuous = False, 
@@ -99,13 +100,13 @@ while len(fwers) < N_pts and x_idx < N_test:
         else:
             if method=="rankshap":
                 shap_vals, _, N, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
-                                        mapping_dict=mapping_dict, max_n_perms=max_n_rankshap, 
-                                        n_samples_per_perm=10, n_init=100, n_equal=False)
+                                                      mapping_dict=mapping_dict, max_n_perms=max_n_rankshap, 
+                                                      n_equal=False, n_samples_per_perm=10, 
+                                                      n_init=100, abs=True)
             elif method=="kernelshap":
-                # print(len(top_K), count)
-                shap_vals, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
-                    n_samples_per_perm=10, n_perms_btwn_tests=500, n_max=max_n_kernelshap, 
-                    alpha=alpha, beta=0.2, abs=True)
+                shap_vals, _, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
+                                                      n_samples_per_perm=10, n_perms_btwn_tests=1000, 
+                                                      n_max=max_n_kernelshap, alpha=alpha, beta=0.2, abs=True)
             else:
                 print("Name must be lime, rankshap, or kernelshap.")
             if converged:
@@ -121,20 +122,20 @@ while len(fwers) < N_pts and x_idx < N_test:
                 break
         else:
             if num_successes % 25 == 0 and num_successes > 0 and num_successes!=N_runs:
-                print(num_successes, calc_fwer(top_K))
+                print(num_successes, calc_fwer(top_K, digits=3))
             
     if len(top_K)==N_runs:
-        fwer = calc_fwer(top_K)
+        fwer = calc_fwer(top_K, digits=3)
         fwers[x_idx] = fwer
         top_K_all.append(top_K)
         N_samples.append(Ns)
         print("#"*20, len(fwers), fwer, " (idx ", x_idx, ") ", "#"*20)
         # Store results
-        with open(os.path.join(results_path, fname), "wb") as fp:
+        with open(os.path.join(output_dir, fname), "wb") as fp:
             pickle.dump(fwers, fp)
-        with open(os.path.join(results_path, fname2), "wb") as fp:
+        with open(os.path.join(output_dir, fname2), "wb") as fp:
             pickle.dump(top_K_all, fp)
         if method != "lime":
-            with open(os.path.join(results_path, fname3), "wb") as fp:
+            with open(os.path.join(output_dir, fname3), "wb") as fp:
                 pickle.dump(np.array(N_samples), fp)
     x_idx += 1
