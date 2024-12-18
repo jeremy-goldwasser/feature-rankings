@@ -96,16 +96,12 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None,
         # Number of tests passed = index of test with first failure
         failure_idx = order[num_verified]
 
-        # print(num_verified)
-        # print(order)
-        # print(failure_idx, close_idx)
         exceeded = False
         # Run until order of pair is stable
         ordered_pair = [failure_idx, close_idx]
         while True:
             # Run for suggested number of samples to be significant difference
             n_to_run = [int(buffer*n) for n in n_samples_to_reject]
-            # print("n to run:", np.array(n_to_run).astype(int))
             # Suggested runtime exceeds computational maximum
             if max(n_to_run) > max_n_perms:
                 # Run 1x for that maximum
@@ -120,7 +116,7 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None,
             diffs_pair = []
             for i, idx_to_resample in enumerate(ordered_pair):
                 w_vals, wj_vals = [], []
-                num_samples = n_to_run[i]
+                num_samples = max(n_to_run[i], n_init)
                 for _ in range(num_samples):
                     # Generate new permutations and thus new x_{S^c | S}
                     perm = np.random.permutation(d)
@@ -219,8 +215,6 @@ def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
 
         # Accept null, reject null, or continue sampling depending on likelihood ratio
         LR = alt_p_val / null_p_val
-        # print(num_verified)
-        # print(LR)
         if LR > rejectNullThresh:
             num_verified += 1
             
