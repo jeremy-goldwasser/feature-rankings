@@ -44,18 +44,19 @@ top_K_rankshap_all = []
 top_K_ss_fixed_all = []
 top_K_ss_adaptive_all = []
 n_samples_rankshap_all = []
+indices_used = []
 x_idx = 0
 n_successful_pts = 0
 
 output_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
 if not os.path.exists(output_dir): os.makedirs(output_dir)
-fname_rankshap = "rankshap_top_k" + str(K)
-fname_ss_adaptive = "ss_top_k" + str(K) + "_n_adaptive"
-fname_ss_fixed = "ss_top_k" + str(K) + "_n" + str(N_samples_fixed)
-fname_rankshap_samples = "rankshap_n_samples_k" + str(K)
+# fname_rankshap = "rankshap_top_k" + str(K)
+# fname_ss_adaptive = "ss_top_k" + str(K) + "_n_adaptive"
+# fname_ss_fixed = "ss_top_k" + str(K) + "_n" + str(N_samples_fixed)
+# fname_rankshap_samples = "rankshap_n_samples_k" + str(K)
+fname = 'rankshap_vs_ss_k' + str(K)
 while n_successful_pts < N_pts:
-    # print(x_idx)
-    xloc = X_test[x_idx:(x_idx+1)]
+    xloc = X_test[x_idx]
     x_idx += 1
     top_K = []
     
@@ -80,6 +81,7 @@ while n_successful_pts < N_pts:
         continue
     
     # RankSHAP consistently converged on this input x. 
+    indices_used.append(x_idx-1)
     n_successful_pts += 1
     top_K_rankshap_all.append(top_K_rankshap)
     avg_samples_per_feat = int(np.mean(n_samples_all_runs))
@@ -104,12 +106,15 @@ while n_successful_pts < N_pts:
     
     print(f"FWER, Shapley Sampling (fixed N={N_samples_fixed}): {calc_fwer(top_K_ss_fixed, digits=3)}")
     print(f"FWER, Shapley Sampling (adaptive N={avg_samples_per_feat}): {calc_fwer(top_K_ss_adaptive, digits=3)}")
-        
-    with open(join(output_dir, fname_rankshap), "wb") as fp:
-        pickle.dump(top_K_rankshap_all, fp)
-    with open(join(output_dir, fname_ss_fixed), "wb") as fp:
-        pickle.dump(top_K_ss_fixed_all, fp)
-    with open(join(output_dir, fname_ss_adaptive), "wb") as fp:
-        pickle.dump(top_K_ss_adaptive_all, fp)
-    with open(join(output_dir, fname_rankshap_samples), "wb") as fp:
-        pickle.dump(n_samples_rankshap_all, fp)
+    all_results = {'rankshap': top_K_rankshap_all, 'ss_fixed': top_K_ss_fixed_all, 'ss_adaptive': top_K_ss_adaptive_all, 
+                   'rankshap_n_samples': n_samples_rankshap_all, 'x_indices': indices_used}
+    with open(join(output_dir, fname), "wb") as fp:
+        pickle.dump(all_results, fp)
+    # with open(join(output_dir, fname_rankshap), "wb") as fp:
+    #     pickle.dump(top_K_rankshap_all, fp)
+    # with open(join(output_dir, fname_ss_fixed), "wb") as fp:
+    #     pickle.dump(top_K_ss_fixed_all, fp)
+    # with open(join(output_dir, fname_ss_adaptive), "wb") as fp:
+    #     pickle.dump(top_K_ss_adaptive_all, fp)
+    # with open(join(output_dir, fname_rankshap_samples), "wb") as fp:
+    #     pickle.dump(n_samples_rankshap_all, fp)
