@@ -21,8 +21,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--method', type=str, default="shap")
 parser.add_argument('--dataset', type=str, default="census")
 parser.add_argument('--algo', type=str, default="nn")
-parser.add_argument('--nruns', type=int, default=250)
-parser.add_argument('--npts', type=int, default=10)
+parser.add_argument('--nruns', type=int, default=50) #250
+parser.add_argument('--npts', type=int, default=30) #10
 
 args = parser.parse_args() 
 print(args)
