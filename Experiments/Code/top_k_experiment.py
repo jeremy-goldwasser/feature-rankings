@@ -23,8 +23,8 @@ parser.add_argument('--method', type=str, default="shap")
 parser.add_argument('--dataset', type=str, default="census")
 parser.add_argument('--k', type= int, default=3)
 parser.add_argument('--algo', type=str, default="nn")
-parser.add_argument('--nruns', type=int, default=100)
-parser.add_argument('--npts', type=int, default=10)
+parser.add_argument('--nruns', type=int, default=50) #100
+parser.add_argument('--npts', type=int, default=30) #10
 parser.add_argument('--alpha', type=float, default=0.2)
 
 args = parser.parse_args() 
@@ -106,12 +106,12 @@ while N_successful_pts < N_pts and x_idx < N_test:
                                                       mapping_dict=mapping_dict, max_n_perms=max_n_rankshap, 
                                                       n_equal=False, n_samples_per_perm=10, 
                                                       n_init=100, abs=True)
-            elif method=="kernelshap":
+            elif method=="sprtshap":
                 shap_vals, _, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                       n_samples_per_perm=10, n_perms_btwn_tests=1000, 
                                                       n_max=max_n_kernelshap, alpha=alpha, beta=0.2, abs=True)
             else:
-                print("Name must be lime, rankshap, or kernelshap.")
+                print("Name must be lime, rankshap, or sprtshap.")
                 sys.exit()
             if converged:
                 est_top_K = get_ranking(shap_vals)[:K]

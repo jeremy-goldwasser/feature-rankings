@@ -6,12 +6,12 @@ try.ipynb
 slime/
 Papers/
 Versions/
+HelperFiles/__pycache__/
 Experiments/Results/alpha0.1copy
 Experiments/Results/alpha0.2copy
 Experiments/Results/Retrospectivecopy
 Experiments/Code/lime_rf.py
 Experiments/Code/lime_vs_slime.py
-Presentations/
 Experiments/Analysis/.ipynb_checkpoints
 Experiments/Analysis/lime_instability.ipynb
 Experiments/Results/alpha0.2/lime_vs_slime
