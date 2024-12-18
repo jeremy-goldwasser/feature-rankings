@@ -86,7 +86,7 @@ while N_successful_pts < N_pts:
     top_K_rankshap_all.append(top_K_rankshap)
     avg_samples_per_feat = int(np.mean(n_samples_all_runs))
     N_samples_rankshap_all.append(n_samples_all_runs)
-    print(f"Successful run {x_idx}, {N_successful_pts} attempts")
+    print(f"Successful run {N_successful_pts}, {x_idx} attempts")
     print(f"RankSHAP, average number of samples per feature: {avg_samples_per_feat}")
     print(f"FWER, RankSHAP: {calc_fwer(top_K_rankshap, digits=3)}")
 
