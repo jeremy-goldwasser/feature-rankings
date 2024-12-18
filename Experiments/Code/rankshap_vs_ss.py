@@ -72,7 +72,7 @@ while N_successful_pts < N_pts:
         count += 1
         if converged: 
             N_successful_runs += 1
-            est_top_K = get_ranking(rankshap_vals)[:K]
+            est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
             top_K_rankshap.append(est_top_K)
             n_samples_all_runs.append([len(diffs_feat) for diffs_feat in diffs])
         if count >= 5 and N_successful_runs/count < skip_thresh:
@@ -94,11 +94,11 @@ while N_successful_pts < N_pts:
     top_K_ss_adaptive, top_K_ss_fixed = [], []
     for i in range(N_runs):
         shap_vals_fixed = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=N_samples_fixed)
-        est_top_K = get_ranking(shap_vals_fixed)[:K]
+        est_top_K = get_ranking(shap_vals_fixed, abs=True)[:K]
         top_K_ss_fixed.append(est_top_K)
 
         shap_vals_adaptive = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=avg_samples_per_feat)
-        est_top_K = get_ranking(shap_vals_adaptive)[:K]
+        est_top_K = get_ranking(shap_vals_adaptive, abs=True)[:K]
         top_K_ss_adaptive.append(est_top_K)
     
     top_K_ss_fixed_all.append(top_K_ss_fixed)

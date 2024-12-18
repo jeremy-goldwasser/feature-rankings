@@ -32,15 +32,16 @@ def find_num_verified_rankshap(diffs_all_feats, alpha=0.1, abs=True,
         # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
         max_test_idx = np.argmax(vars_to_test[1:]) + 1
         ns_to_reject = []
+        
+        reject = True # True until shown false (a p-value > alpha)
         for j in range(1, max_test_idx+1): # max_test_idx iterations
             test_result, n_to_reject = helper.test_for_max(means_to_test, vars_to_test, j, alpha,
                                                            compute_sample_size=True, n_equal=n_equal,
                                                            value_vars=value_vars_to_test)
-            if test_result=="reject": # Significant P-value
-                break
-            
-            ns_to_reject.append(n_to_reject)
-        if test_result=="reject":
+            if test_result=="fail to reject":
+                ns_to_reject.append(n_to_reject)
+                reject = False
+        if reject:
             # One of the tests passed. Move on.
             num_verified += 1
         else:

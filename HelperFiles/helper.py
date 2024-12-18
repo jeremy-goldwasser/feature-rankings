@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import t
 from scipy.stats import norm
 
-############### MISC HELPER FUNCTIONS ###############
+############### Estimation ###############
 def map_S(S, mapping_dict):
     '''
     Maps a subset of feature indices to the corresponding subset of columns.
@@ -21,6 +21,7 @@ def get_ranking(shap_vals, abs=True):
     else:
         return np.argsort(shap_vals)[::-1]
 
+############### General Analysis ###############
 
 def mode_rows(a):
     a = np.ascontiguousarray(a)
@@ -39,21 +40,44 @@ def calc_fwer(top_K, digits=None):
         return np.round(fwer, digits)
     return fwer
     
-def welch_df(var1, var2, n1, n2, var_of_mean=False):
-    if var_of_mean:
-        num = (var1 + var2)**2
-        denom = var1**2/(n1-1) + var2**2/(n2-1)
-    else:
-        num = (var1/n1 + var2/n2)**2
-        denom = (var1/n1)**2/(n1-1) + (var2/n2)**2/(n2-1)
-    df = num / denom
-    return df
-
 def shap_vals_to_ranks(shap_vals, abs=True):
     N_pts, N_runs, d = shap_vals.shape
     shap_ranks = np.array([get_ranking(shap_vals[i,j,:], abs=abs) for i in range(N_pts) for j in range(N_runs)]).reshape(shap_vals.shape)
     return shap_ranks
 
+############### Retrospective Analysis ###############
+
+def calc_retro_fwer(GTranks, rankings, nVerified, alphaIdx):
+    nStable = np.sum(nVerified[:,alphaIdx] > 0)
+    N_runs, _ = rankings.shape
+    if nStable <= 0.05*N_runs: # Majority unverified
+        return None
+    prop_stable = 0
+    # Number of runs with at least one stable rank
+    for runIdx in range(N_runs):
+        nVerif = nVerified[runIdx,alphaIdx]
+        if nVerif > 0:
+            stableRanks = rankings[runIdx,:nVerif]
+            was_stable = np.array_equal(stableRanks, GTranks[:nVerif])
+            prop_stable += was_stable
+    prop_stable /= nStable
+    fwer = 1 - prop_stable
+    return round(fwer,3)
+
+
+def calc_all_retro_fwers(verif, ranks, avgRanks):
+    fwers_all = []
+    N_pts, N_runs, N_alphas = verif.shape
+    for alphaIdx in range(N_alphas):
+        fwers = []
+        for ptIdx in range(N_pts):
+            GTranks = avgRanks[ptIdx]
+            fwer = calc_retro_fwer(GTranks, ranks[ptIdx], verif[ptIdx], alphaIdx)
+            fwers.append(fwer)
+        fwers_all.append(fwers)
+    return np.array(fwers_all)
+
+    
 ####### TESTING #######
 
 def test_for_max(means, vars_of_means, j, alpha, 
@@ -76,7 +100,7 @@ def test_for_max(means, vars_of_means, j, alpha,
         denom = 0.5
 
     p_val = num/denom
-    # print("j, p-value:", j, p_val)
+    # print("j, p-value:", j, np.round(p_val,4))
     result = "reject" if p_val < alpha else "fail to reject"
     if not compute_sample_size:
         if return_p_val:
@@ -86,7 +110,6 @@ def test_for_max(means, vars_of_means, j, alpha,
         if p_val < alpha:
             return result, None
         else:
-            result = "fail to reject"
             Z_crit = norm.ppf(1-alpha/2)
             value_var_1, value_var_j = value_vars[0], value_vars[j]
             if n_equal:
@@ -115,11 +138,15 @@ def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True):
 
         # Find index with biggest variance. 
         max_test_idx = np.argmax(vars_to_test[1:]) + 1
+        # print(np.round(np.sqrt(vars_to_test)*1000))
         # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
+        # print(num_verified)
         for j in range(1, max_test_idx+1):
             test_result = test_for_max(means_to_test, vars_to_test, j, alpha)
-            if test_result=="reject":
+            if test_result=="fail to reject":
                 break
+        # print(test_result)
+        # Reject null if all tests reject (max p-value < alpha)
         if test_result=="reject":
             num_verified += 1
         else:
