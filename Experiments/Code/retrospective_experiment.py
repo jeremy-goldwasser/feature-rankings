@@ -54,7 +54,7 @@ N_samples = 2*d + 2048
 # while len(fwers) < N_pts and x_idx < N_test:
 for x_idx in range(N_pts):
     print(x_idx)
-    xloc = X_test[x_idx:(x_idx+1)]
+    xloc = X_test[x_idx]
     shap_vals_pt = []
     Ns = []
     for i in range(N_runs):

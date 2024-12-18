@@ -38,9 +38,11 @@ N_runs = args.nruns
 N_pts = args.npts
 alpha = args.alpha
 
-fname = method + "_" + dataset + "_K" + str(K) + "_fwers"
-fname2 = method + "_" + dataset + "_K" + str(K) + "_ranks"
-fname3 = method + "_" + dataset + "_K" + str(K) + "_samples"
+fname = method + "_" + dataset + "_K" + str(K)
+# fname = method + "_" + dataset + "_K" + str(K) + "_fwers"
+# fname2 = method + "_" + dataset + "_K" + str(K) + "_ranks"
+# fname3 = method + "_" + dataset + "_K" + str(K) + "_samples"
+indices_used = []
 isLime = (method=="lime")
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
@@ -59,7 +61,7 @@ top_K_all = []
 fwers = {}
 # results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
 output_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
-if not os.path.exists(output_dir): os.makedirs(output_dir)
+os.makedirs(output_dir, exist_ok=True)
 if isLime:
     explainer = lime_tabular.LimeTabularExplainer(X_train, 
                                               discretize_continuous = False, 
@@ -67,19 +69,20 @@ if isLime:
                                               sample_around_instance = True)
     alpha_adj = alpha/K/2
 N_samples = []
-while len(fwers) < N_pts and x_idx < N_test:
+N_successful_pts = 0
+while N_successful_pts < N_pts and x_idx < N_test:
     # Don't bother in situations that rarely converge
     if x_idx >= 10 and len(fwers)/x_idx < 0.1:
         print("Aborting. Too infrequently converging.")
         break
     print(x_idx)
-    xloc = X_test[x_idx] if isLime else X_test[x_idx:(x_idx+1)]
+    xloc = X_test[x_idx]
     shap_vals_all = []
     top_K = []
     count = 0
     Ns = []
     while len(top_K) < N_runs:
-        if method=="lime":
+        if isLime:
             try:
                 if dataset=="credit" and x_idx==19 and K==5: 
                     tol = 1e-5 # Get closer to true algorithm
@@ -117,26 +120,28 @@ while len(fwers) < N_pts and x_idx < N_test:
             top_K.append(est_top_K)
             
         count += 1
-        num_successes = len(top_K)
+        N_successful_runs = len(top_K)
         if not converged:
-            if count >= 5 and num_successes/count < skip_thresh:
+            if count >= 5 and N_successful_runs/count < skip_thresh:
                 break
         else:
-            if num_successes % 25 == 0 and num_successes > 0 and num_successes!=N_runs:
-                print(num_successes, calc_fwer(top_K, digits=3))
+            if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
+                print(N_successful_runs, calc_fwer(top_K, digits=3))
             
-    if len(top_K)==N_runs:
+    if len(top_K)==N_runs: # Made it through
+        N_successful_pts += 1
         fwer = calc_fwer(top_K, digits=3)
         fwers[x_idx] = fwer
+        indices_used.append(x_idx)
         top_K_all.append(top_K)
         N_samples.append(Ns)
         print("#"*20, len(fwers), fwer, " (idx ", x_idx, ") ", "#"*20)
+
         # Store results
+        top_K_results = {'fwers': np.array(fwers), 'ranks': np.array(top_K_all), 'x_indices': np.array(indices_used)}
+        if not isLime:
+            top_K_results['samples'] = np.array(N_samples)
         with open(os.path.join(output_dir, fname), "wb") as fp:
-            pickle.dump(fwers, fp)
-        with open(os.path.join(output_dir, fname2), "wb") as fp:
-            pickle.dump(top_K_all, fp)
-        if method != "lime":
-            with open(os.path.join(output_dir, fname3), "wb") as fp:
-                pickle.dump(np.array(N_samples), fp)
+            pickle.dump(top_K_results, fp)
+            
     x_idx += 1
