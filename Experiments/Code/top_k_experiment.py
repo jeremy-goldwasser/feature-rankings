@@ -3,11 +3,12 @@ import sys
 import pickle
 import pathlib
 import os
+from os.path import join
 path_to_file = str(pathlib.Path().resolve())
-dir_path = os.path.join(path_to_file, "../../")
+dir_path = join(path_to_file, "../../")
 from slime import lime_tabular
 
-sys.path.append(os.path.join(dir_path, "HelperFiles"))
+sys.path.append(join(dir_path, "HelperFiles"))
 from helper import *
 from top_k import *
 from retrospective import *
@@ -26,6 +27,7 @@ parser.add_argument('--algo', type=str, default="nn")
 parser.add_argument('--nruns', type=int, default=50) #100
 parser.add_argument('--npts', type=int, default=30) #10
 parser.add_argument('--alpha', type=float, default=0.2)
+parser.add_argument('--guarantee', type=str, default="ranks")
 
 args = parser.parse_args() 
 print(args)
@@ -38,14 +40,24 @@ N_runs = args.nruns
 N_pts = args.npts
 alpha = args.alpha
 
+guarantee = args.guarantee
+
 fname = method + "_" + dataset + "_K" + str(K)
 # fname = method + "_" + dataset + "_K" + str(K) + "_fwers"
 # fname2 = method + "_" + dataset + "_K" + str(K) + "_ranks"
 # fname3 = method + "_" + dataset + "_K" + str(K) + "_samples"
 indices_used = []
+if method not in ["rankshap", "sprtshap", "lime"]:
+    print("Method must be rankshap, sprtshap, or lime.")
+    sys.exit()
 isLime = (method=="lime")
+
+if guarantee not in ["rank", "set"]:
+    print("Guarantee must be rank or set.")
+    sys.exit()
+
 print(fname)
-X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
+X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
 model = train_model(X_train, y_train, algo, isLime)
 N_test = y_test.shape[0]
 max_n_rankshap = 10000
@@ -55,20 +67,22 @@ max_n_lime = 100000 # 500000
 
 np.random.seed(0)
 x_idx = 0
-skip_thresh = 0.75 # Skip if successful with frequency below skip_thresh 
+skip_thresh = 0.5 # Skip if successful with frequency below skip_thresh 
 
 top_K_all = []
 fwers = {}
-# results_path = os.path.join(dir_path, "Experiments", "Results", "alpha"+str(alpha))
-output_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
-os.makedirs(output_dir, exist_ok=True)
+results_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
+os.makedirs(results_dir, exist_ok=True)
 if isLime:
     explainer = lime_tabular.LimeTabularExplainer(X_train, 
                                               discretize_continuous = False, 
                                               feature_selection = "lasso_path", 
                                               sample_around_instance = True)
     alpha_adj = alpha/K/2
-N_samples = []
+
+shap_values_all = []
+shap_vars_all = []
+N_samples_all = []
 N_successful_pts = 0
 while N_successful_pts < N_pts and x_idx < N_test:
     # Don't bother in situations that rarely converge
@@ -80,7 +94,8 @@ while N_successful_pts < N_pts and x_idx < N_test:
     shap_vals_all = []
     top_K = []
     count = 0
-    Ns = []
+    N_samples = []
+    shap_vals_i, shap_vars_i = [], []
     while len(top_K) < N_runs:
         if isLime:
             try:
@@ -102,20 +117,25 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 converged = False
         else:
             if method=="rankshap":
-                shap_vals, _, N, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
-                                                      mapping_dict=mapping_dict, max_n_perms=max_n_rankshap, 
+                shap_vals, shap_vars, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
+                                                      K=K, alpha=alpha, guarantee=guarantee,
+                                                      max_n_perms=max_n_rankshap, 
                                                       n_equal=False, n_samples_per_perm=10, 
                                                       n_init=100, abs=True)
-            elif method=="sprtshap":
-                shap_vals, _, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
+            else:
+                shap_vals, shap_covs, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
+                                                      guarantee=guarantee,
                                                       n_samples_per_perm=10, n_perms_btwn_tests=1000, 
                                                       n_max=max_n_kernelshap, alpha=alpha, beta=0.2, abs=True)
-            else:
-                print("Name must be lime, rankshap, or sprtshap.")
-                sys.exit()
+                shap_vars = np.diag(shap_covs)
+
             if converged:
                 est_top_K = get_ranking(shap_vals)[:K]
-                Ns.append(N)
+                if guarantee=="set":
+                    est_top_K = np.sort(est_top_K)
+                N_samples.append(N)
+                shap_vals_i.append(shap_vals)
+                shap_vars_i.append(shap_vars)
         if converged:
             top_K.append(est_top_K)
             
@@ -134,14 +154,19 @@ while N_successful_pts < N_pts and x_idx < N_test:
         fwers[x_idx] = fwer
         indices_used.append(x_idx)
         top_K_all.append(top_K)
-        N_samples.append(Ns)
+        
         print("#"*20, len(fwers), fwer, " (idx ", x_idx, ") ", "#"*20)
 
         # Store results
         top_K_results = {'fwers': np.array(fwers), 'ranks': np.array(top_K_all), 'x_indices': np.array(indices_used)}
         if not isLime:
-            top_K_results['samples'] = np.array(N_samples)
-        with open(os.path.join(output_dir, fname), "wb") as fp:
+            N_samples_all.append(N_samples)
+            shap_vals_all.append(shap_vals_i)
+            shap_vars_all.append(shap_vars_i)
+            top_K_results['N_samples'] = np.array(N_samples)
+            top_K_results['shap_vals'] = np.array(shap_vals_all)
+            top_K_results['shap_vars'] = np.array(shap_vars_all)
+        with open(join(results_dir, fname), "wb") as fp:
             pickle.dump(top_K_results, fp)
             
     x_idx += 1
