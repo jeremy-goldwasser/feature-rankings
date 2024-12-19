@@ -47,11 +47,16 @@ def shap_vals_to_ranks(shap_vals, abs=True):
 
 ############### Retrospective Analysis ###############
 
-def calc_retro_fwer(GTranks, rankings, nVerified, alphaIdx):
+def calc_retro_fwer(GTranks, rankings, nVerified, alphaIdx, digits=3, thresh=0.25):
+    '''
+    Calculates FWER of observed rankings for a single alpha. Different iterations may have verified different numbers of ranks.
+    FWER will not be computed on iterations that verified too infrequently.
+    '''
     nStable = np.sum(nVerified[:,alphaIdx] > 0)
     N_runs, _ = rankings.shape
-    if nStable <= 0.05*N_runs: # Majority unverified
-        return None
+    if nStable <= thresh*N_runs: # Majority unverified
+        # print("Majority unverified.")
+        return np.nan
     prop_stable = 0
     # Number of runs with at least one stable rank
     for runIdx in range(N_runs):
@@ -62,20 +67,23 @@ def calc_retro_fwer(GTranks, rankings, nVerified, alphaIdx):
             prop_stable += was_stable
     prop_stable /= nStable
     fwer = 1 - prop_stable
-    return round(fwer,3)
+    if digits:
+        return np.round(fwer, digits)
+    return fwer
 
 
-def calc_all_retro_fwers(verif, ranks, avgRanks):
-    fwers_all = []
-    N_pts, N_runs, N_alphas = verif.shape
-    for alphaIdx in range(N_alphas):
-        fwers = []
-        for ptIdx in range(N_pts):
-            GTranks = avgRanks[ptIdx]
-            fwer = calc_retro_fwer(GTranks, ranks[ptIdx], verif[ptIdx], alphaIdx)
-            fwers.append(fwer)
-        fwers_all.append(fwers)
-    return np.array(fwers_all)
+def calc_all_retro_fwers(verif, ranks, avgRanks, digits=3, thresh=0.25):
+    N_pts, _, N_alphas = verif.shape
+    fwers_all = [
+        [
+            calc_retro_fwer(avgRanks[ptIdx], ranks[ptIdx], verif[ptIdx], alphaIdx, digits=digits, thresh=thresh)
+            for ptIdx in range(N_pts)
+        ]
+        for alphaIdx in range(N_alphas)
+    ]
+    fwers_all = np.array(fwers_all)
+    # fwers_all = np.where(np.array(fwers_all, dtype=object) == None, np.nan, fwers_all)
+    return fwers_all
 
     
 ############### Top-K Ranking ###############

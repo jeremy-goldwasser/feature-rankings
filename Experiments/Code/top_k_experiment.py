@@ -71,8 +71,8 @@ x_idx = 0
 skip_thresh = 0.5 # Skip if successful with frequency below skip_thresh 
 
 top_K_all = []
-fwers = {}
-results_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
+fwers_all = []
+results_dir = join(dir_path, "Experiments", "Results", "Top_K", guarantee, "alpha_"+str(alpha))
 os.makedirs(results_dir, exist_ok=True)
 if isLime:
     explainer = lime_tabular.LimeTabularExplainer(X_train, 
@@ -153,14 +153,14 @@ while N_successful_pts < N_pts and x_idx < N_test:
     if len(top_K)==N_runs: # Made it through
         N_successful_pts += 1
         fwer = calc_fwer(top_K, digits=3)
-        fwers[x_idx] = fwer
+        fwers_all.append(fwer)
         indices_used.append(x_idx)
         top_K_all.append(top_K)
         
         print("#"*20, len(fwers), fwer, " (idx ", x_idx, ") ", "#"*20)
 
         # Store results
-        top_K_results = {'fwers': np.array(fwers), 'ranks': np.array(top_K_all), 'x_indices': np.array(indices_used)}
+        top_K_results = {'fwers': np.array(fwers_all), 'ranks': np.array(top_K_all), 'x_indices': np.array(indices_used)}
         if not isLime:
             N_samples_all.append(N_samples)
             shap_vals_all.append(shap_vals_i)

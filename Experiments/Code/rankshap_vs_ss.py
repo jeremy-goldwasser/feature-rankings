@@ -50,9 +50,9 @@ indices_used = []
 x_idx = 0
 N_successful_pts = 0
 
-output_dir = join(dir_path, "Experiments", "Results", "Top_K", "alpha_"+str(alpha))
+output_dir = join(dir_path, "Experiments", "Results", "Top_K", "rank", "alpha_"+str(alpha))
 os.makedirs(output_dir, exist_ok=True)
-fname = 'rankshap_vs_ss_k' + str(K) + "_alpha" + str(alpha)
+fname = 'rankshap_vs_ss_k' + str(K)
 while N_successful_pts < N_pts:
     xloc = X_test[x_idx]
     x_idx += 1
