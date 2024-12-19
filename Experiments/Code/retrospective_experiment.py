@@ -86,8 +86,3 @@ for x_idx in range(N_pts):
                      "shap_vars": np.array(shap_vars_all)}
     with open(os.path.join(results_dir, fname), "wb") as fp:
         pickle.dump(retro_results, fp)
-
-    # with open(os.path.join(results_dir, fname), "wb") as fp:
-    #     pickle.dump(np.array(shap_vals_all), fp)
-    # with open(os.path.join(results_dir, fname2), "wb") as fp:
-    #     pickle.dump(np.array(N_verified_all), fp)
