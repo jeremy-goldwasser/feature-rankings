@@ -62,7 +62,7 @@ for x_idx in range(N_pts):
     Ns = []
     for i in range(N_runs):
         if method=="ss":
-            shap_vals, n_verified, shap_vals = shapley_sampling(model, X_train, xloc, n_perms=N_samples//d, 
+            shap_vals, n_verified, shap_vars = shapley_sampling(model, X_train, xloc, n_perms=N_samples//d, 
                                                     n_samples_per_perm=10, mapping_dict=mapping_dict, 
                                                     alphas=alphas, abs=True)
         elif method=="kernelshap":
