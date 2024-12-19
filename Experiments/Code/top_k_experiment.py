@@ -10,6 +10,7 @@ from slime import lime_tabular
 
 sys.path.append(join(dir_path, "HelperFiles"))
 from helper import *
+from helper_shapley_sampling import *
 from top_k import *
 from retrospective import *
 from train_models import *
@@ -117,11 +118,12 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 converged = False
         else:
             if method=="rankshap":
-                shap_vals, shap_vars, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
+                shap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
                                                       K=K, alpha=alpha, guarantee=guarantee,
                                                       max_n_perms=max_n_rankshap, 
                                                       n_equal=False, n_samples_per_perm=10, 
                                                       n_init=100, abs=True)
+                shap_vars = diffs_to_shap_vars(diffs)
             else:
                 shap_vals, shap_covs, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                       guarantee=guarantee,
