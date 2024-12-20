@@ -97,7 +97,8 @@ while N_successful_pts < N_pts and x_idx < N_test:
     count = 0
     N_samples = []
     shap_vals_i, shap_vars_i = [], []
-    while len(top_K) < N_runs:
+    N_successful_runs = 0
+    while N_successful_runs < N_runs:
         if isLime:
             try:
                 if dataset=="credit" and x_idx==19 and K==5: 
@@ -121,7 +122,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 shap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
                                                       K=K, alpha=alpha, guarantee=guarantee,
                                                       max_n_perms=max_n_rankshap, 
-                                                      n_equal=False, n_samples_per_perm=10, 
+                                                      n_equal=True, n_samples_per_perm=10, 
                                                       n_init=100, abs=True)
                 shap_vars = diffs_to_shap_vars(diffs)
             else:
@@ -132,7 +133,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 shap_vars = np.diag(shap_covs)
 
             if converged:
-                est_top_K = get_ranking(shap_vals)[:K]
+                est_top_K = get_ranking(shap_vals, abs=True)[:K]
                 if guarantee=="set":
                     est_top_K = np.sort(est_top_K)
                 N_samples.append(N)
@@ -140,9 +141,10 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 shap_vars_i.append(shap_vars)
         if converged:
             top_K.append(est_top_K)
-            
+            N_successful_runs += 1
+        
         count += 1
-        N_successful_runs = len(top_K)
+        print(N_successful_runs, count)
         if not converged:
             if count >= 5 and N_successful_runs/count < skip_thresh:
                 break
