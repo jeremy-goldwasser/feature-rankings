@@ -157,7 +157,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
         indices_used.append(x_idx)
         top_K_all.append(top_K)
         
-        print("#"*20, len(fwers), fwer, " (idx ", x_idx, ") ", "#"*20)
+        print("#"*20, len(fwers_all), fwer, " (idx ", x_idx, ") ", "#"*20)
 
         # Store results
         top_K_results = {'fwers': np.array(fwers_all), 'ranks': np.array(top_K_all), 'x_indices': np.array(indices_used)}
