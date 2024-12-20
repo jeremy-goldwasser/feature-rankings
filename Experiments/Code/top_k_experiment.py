@@ -87,7 +87,7 @@ N_samples_all = []
 N_successful_pts = 0
 while N_successful_pts < N_pts and x_idx < N_test:
     # Don't bother in situations that rarely converge
-    if x_idx >= 10 and len(fwers)/x_idx < 0.1:
+    if x_idx >= 10 and N_successful_pts/x_idx < 0.2:
         print("Aborting. Too infrequently converging.")
         break
     print(x_idx)
@@ -151,14 +151,14 @@ while N_successful_pts < N_pts and x_idx < N_test:
             if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
                 print(N_successful_runs, calc_fwer(top_K, digits=3))
             
-    if len(top_K)==N_runs: # Made it through
+    if N_successful_runs==N_runs: # Made it through
         N_successful_pts += 1
         fwer = calc_fwer(top_K, digits=3)
         fwers_all.append(fwer)
         indices_used.append(x_idx)
         top_K_all.append(top_K)
         
-        print("#"*20, len(fwers_all), fwer, " (idx ", x_idx, ") ", "#"*20)
+        print("#"*20, N_successful_pts, fwer, " (idx ", x_idx, ") ", "#"*20)
 
         # Store results
         top_K_results = {'fwers': np.array(fwers_all), 'ranks': np.array(top_K_all), 'x_indices': np.array(indices_used)}
