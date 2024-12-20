@@ -119,12 +119,14 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 converged = False
         else:
             if method=="rankshap":
+                print('starting')
                 shap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
                                                       K=K, alpha=alpha, guarantee=guarantee,
                                                       max_n_perms=max_n_rankshap, 
                                                       n_equal=True, n_samples_per_perm=10, 
                                                       n_init=100, abs=True)
                 shap_vars = diffs_to_shap_vars(diffs)
+                print("made it")
             else:
                 shap_vals, shap_covs, N, converged = sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                       guarantee=guarantee,

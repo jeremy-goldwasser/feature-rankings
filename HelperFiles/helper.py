@@ -109,25 +109,29 @@ def test_for_max(means, vars_of_means, j, alpha,
 
     p_val = num/denom
     # print("j, p-value:", j, np.round(p_val,4))
-    result = "reject" if p_val < alpha else "fail to reject"
+    result = "reject" if p_val < alpha or np.isnan(p_val) else "fail to reject"
     if not compute_sample_size:
         if return_p_val:
             return result, p_val
         return result
     else:
         if p_val < alpha:
+            if return_p_val:
+                return result, p_val, None
             return result, None
         else:
             Z_crit = norm.ppf(1-alpha/2)
             value_var_1, value_var_j = value_vars[0], value_vars[j]
             if n_equal:
                 n_to_run = (Z_crit/(x1-xj))**2 * (value_var_1 + value_var_j)
-                List = [n_to_run, n_to_run]
-                return result, List
+                n_to_reject_pair = np.ceil([n_to_run, n_to_run])
             else:
                 n_to_run_1 = (Z_crit/(x1-xj))**2 * (2*value_var_1)
                 n_to_run_j = (Z_crit/(x1-xj))**2 * (2*value_var_j)
-                return result, np.ceil([n_to_run_1, n_to_run_j])
+                n_to_reject_pair = np.ceil([n_to_run_1, n_to_run_j])
+            if return_p_val:
+                return result, p_val, n_to_reject_pair
+            return result, n_to_reject_pair
 
 
 # def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True):
@@ -241,6 +245,7 @@ def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
     reject = True
     ns_to_reject_all = []
     pair_ranks = []
+    p_vals = []
     for i in range(K):
         # Start with lower-ranked indices. Makes rejection faster if not computing sample sizes.
         top_K_idx = K - i - 1
@@ -255,27 +260,35 @@ def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
                                 alpha, 
                                 compute_sample_size=compute_sample_size, 
                                 n_equal=n_equal, 
-                                value_vars=relevant_value_vars)
-            test_result, n_to_reject_pair = result if compute_sample_size else (result, None)
+                                value_vars=relevant_value_vars,
+                                return_p_val=compute_sample_size)
+            test_result, p_val, n_to_reject_pair = result if compute_sample_size else (result, None, None)
             if test_result == "fail to reject":
                 reject = False
                 if compute_sample_size:
                     ns_to_reject_all.append(n_to_reject_pair)
                     # top_K_idx is in K, K-1, .., 1; j is in K, K+1, .., d-1
                     pair_ranks.append((top_K_idx, j)) 
+                    p_vals.append(p_val)
                 else:
                     break
         if not reject and not compute_sample_size:
             break
     
-    # Identify the pair of indices that failed to reject with fewest samples to reject
+    
     if compute_sample_size:
         if reject:
             return "reject", None, None
-        n_totals = np.sum(np.array(ns_to_reject_all), axis=1)
-        min_idx = np.argmin(n_totals)
-        n_to_reject_pair = ns_to_reject_all[min_idx]
-        pair_rank = pair_ranks[min_idx]
+        # WRONG: Identify the pair of indices that failed to reject with fewest samples to reject
+        # n_totals = np.sum(np.array(ns_to_reject_all), axis=1)
+        # best_idx = np.argmin(n_totals)
+
+        # RIGHT: Identify the pair of indices that failed to reject with largest p-value
+            # WEIRD: Getting a lot of nan p-values. Now lumping them into rejections.
+
+        best_idx = np.nanargmax(p_vals)
+        n_to_reject_pair = ns_to_reject_all[best_idx]
+        pair_rank = pair_ranks[best_idx]
         pair_idx = [order[pair_rank[0]].item(), order[pair_rank[1]].item()]
 
         return "fail to reject", pair_idx, n_to_reject_pair

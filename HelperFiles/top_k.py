@@ -7,57 +7,6 @@ import helper_kernelshap
 
 ################ RankSHAP (Shapley Smampling) ################
 
-# def find_num_verified_rankshap(diffs_all_feats, alpha=0.1, abs=True, 
-#                     n_equal=True, K=None):
-#     # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
-#     shap_ests = helper_shapley_sampling.diffs_to_shap_vals(diffs_all_feats, abs=abs)
-#     shap_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs_all_feats)
-#     value_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs_all_feats, var_of_mean=False)
-#     order = helper.get_ranking(shap_ests, abs=abs)
-    
-#     # Test stability of 1 vs 2; 2 vs 3; etc (d-1 total tests)
-#     num_verified = 0
-#     d = len(shap_ests)
-#     max_num_tests = d-1 if K is None else K
-#     while num_verified < max_num_tests:
-#         idx_to_test = order[num_verified:].astype(int)
-#         # Means are in sorted order (may be with absolute value)
-#         means_to_test = shap_ests[idx_to_test]
-#         vars_to_test = shap_vars[idx_to_test]
-#         value_vars_to_test = value_vars[idx_to_test]
-
-#         # Find index with biggest variance. 
-#         # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
-#         max_test_idx = np.argmax(vars_to_test[1:]) + 1
-#         ns_to_reject = []
-        
-#         reject = True # True until shown false (a p-value > alpha)
-#         for j in range(1, max_test_idx+1): # max_test_idx iterations
-#             test_result, n_to_reject = helper.test_for_max(means_to_test, vars_to_test, j, alpha,
-#                                                            compute_sample_size=True, n_equal=n_equal,
-#                                                            value_vars=value_vars_to_test)
-#             if test_result=="fail to reject":
-#                 ns_to_reject.append(n_to_reject)
-#                 reject = False
-#         if reject:
-#             # All of the tests passed. Move on.
-#             num_verified += 1
-#         else:
-#             # At least one of the tests failed to reject.
-#             # Identify features with fewest features needed to reject null
-#             n_totals = np.sum(ns_to_reject, axis=1)
-#             close_idx_among_tested = np.argmin(n_totals)
-#             n_to_reject_pair = ns_to_reject[close_idx_among_tested]
-#             close_idx = order[num_verified+close_idx_among_tested+1]
-
-#             break
-#     if num_verified == d-1:
-#         num_verified += 1
-#     if num_verified >= K:
-#         return num_verified, None, None
-#     return num_verified, close_idx, n_to_reject_pair
-
-
 
 def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
             n_samples_per_perm=10, n_init=100, max_n_perms=10000,  
@@ -112,6 +61,15 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
         # pair_idx = [failure_idx, close_idx]
         while True:
             # Run for suggested number of samples to be significant difference
+            # print(pair_idx, n_to_reject_pair) # Extremely low
+            # shap_ests = helper_shapley_sampling.diffs_to_shap_vals(diffs_all_feats)
+            # shap_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs_all_feats)
+            # order = helper.get_ranking(shap_ests, abs=abs)
+            # print(pair_idx, order)
+            # print(np.round(shap_ests*100, 2))
+            # print(np.round(np.sqrt(shap_vars)*1000, 2))
+
+
             n_to_run = [int(buffer*n) for n in n_to_reject_pair]
             # Suggested runtime exceeds computational maximum
             if max(n_to_run) > max_n_perms:
