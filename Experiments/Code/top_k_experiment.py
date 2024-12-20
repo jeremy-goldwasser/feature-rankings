@@ -68,7 +68,7 @@ max_n_lime = 100000 # 500000
 
 np.random.seed(0)
 x_idx = 0
-skip_thresh = 0.5 # Skip if successful with frequency below skip_thresh 
+skip_thresh = 0.75 # Skip if successful with frequency below skip_thresh 
 
 top_K_all = []
 fwers_all = []

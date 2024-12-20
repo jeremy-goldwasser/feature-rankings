@@ -35,7 +35,7 @@ alpha = args.alpha
 # K = int(sys.argv[1])
 print(f"K={K}")
 
-skip_thresh = 0.5
+skip_thresh = 0.75
 # alpha = 0.2
 N_runs = 50
 N_pts = 30
@@ -62,9 +62,9 @@ while N_successful_pts < N_pts:
     top_K_rankshap = []
     count, N_successful_runs = 0, 0
     while N_successful_runs < N_runs:
-        rankshap_vals, diffs, N, converged = rankshap(model, X_train, xloc, K=K, alpha=alpha, 
-                                        mapping_dict=mapping_dict, max_n_perms=10000, n_equal=False,
-                                        abs=True)
+        rankshap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict, 
+                                                      K=K, alpha=alpha, n_equal=True, guarantee='rank', 
+                                                      max_n_perms=10000, abs=True)
         
         # Only consider inputs on which RankSHAP is capable of K rejections.
         count += 1
