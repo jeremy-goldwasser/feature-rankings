@@ -33,7 +33,7 @@ args = parser.parse_args()
 K = args.k
 alpha = args.alpha
 # K = int(sys.argv[1])
-print(f"K={K}")
+print(f"K={K}, alpha={alpha}")
 
 skip_thresh = 0.25
 # alpha = 0.2
