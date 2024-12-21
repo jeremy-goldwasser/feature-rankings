@@ -33,7 +33,7 @@ parser.add_argument('--algo', type=str, default="nn")
 parser.add_argument('--nruns', type=int, default=50) #100
 parser.add_argument('--npts', type=int, default=30) #10
 parser.add_argument('--alpha', type=float, default=0.2)
-parser.add_argument('--guarantee', type=str, default="ranks")
+parser.add_argument('--guarantee', type=str, default="rank")
 
 args = parser.parse_args() 
 print(args)
