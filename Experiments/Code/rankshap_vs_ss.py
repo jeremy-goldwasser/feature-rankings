@@ -108,6 +108,7 @@ while N_successful_pts < N_pts:
     top_K_rankshap_all.append(top_K_rankshap)
     avg_samples_per_feat = int(np.mean(N_samples_all_runs))
     N_samples_rankshap_all.append(N_samples_all_runs)
+    print("#"*20)
     print(f"Successful run {N_successful_pts}, {x_idx} attempts")
     print(f"RankSHAP, average number of samples per feature: {avg_samples_per_feat}")
     print(f"FWER, RankSHAP: {calc_fwer(top_K_rankshap, digits=3, rejection_idx=successful_iters)}")
@@ -129,7 +130,7 @@ while N_successful_pts < N_pts:
     successful_iters_all.append(successful_iters)
     
     # print(f"FWER, Shapley Sampling (fixed N={N_samples_fixed}): {calc_fwer(top_K_ss_fixed, digits=3)}")
-    print(f"FWER, Shapley Sampling (adaptive N={avg_samples_per_feat}): {calc_fwer(top_K_ss_adaptive, digits=3)}")
+    print(f"FWER, Shapley Sampling (adaptive N={avg_samples_per_feat}): {calc_fwer(top_K_ss_adaptive, digits=3)}\n")
     all_results = {'rankshap': top_K_rankshap_all, 'rankshap_rejection_idx': np.array(successful_iters_all),
                    'ss_adaptive': np.array(top_K_ss_adaptive_all), 
                 #    'ss_fixed': top_K_ss_fixed_all, 

@@ -18,7 +18,6 @@ sys.path.append(join(dir_path, "HelperFiles"))
 import helper
 import helper_shapley_sampling
 import top_k
-import retrospective
 import train_models
 import load_data
 
@@ -65,7 +64,7 @@ if guarantee not in ["rank", "set"]:
 
 print(fname)
 X_train, y_train, X_test, y_test, mapping_dict = load_data.load_data(join(dir_path, "Experiments", "Data"), dataset)
-model = train_model(X_train, y_train, algo, isLime)
+model = train_models.train_model(X_train, y_train, algo, isLime)
 N_test = y_test.shape[0]
 max_n_rankshap = 10000
 # max_n_kernelshap = 200000
