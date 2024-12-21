@@ -178,7 +178,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
         top_K_results = {'fwers': np.array(fwers_all), 
                          'ranks': np.array(top_K_all), 
                          'x_indices': np.array(indices_used),
-                         'successful_iters': np.array(successful_iters_all)}
+                         'rejection_idx': np.array(successful_iters_all)}
         if not isLime:
             N_samples_all.append(N_samples)
             shap_vals_all.append(shap_vals_i)

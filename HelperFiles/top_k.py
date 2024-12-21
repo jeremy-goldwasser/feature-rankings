@@ -141,7 +141,6 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
 
 def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
                                abs=True, K=None):
-    # Had used alpha/2 but I don't think this is right!
     acceptNullThresh = beta/(1-alpha)
     rejectNullThresh = (1-beta)/(alpha)
     order = helper.get_ranking(shap_ests, abs=abs)
@@ -157,44 +156,52 @@ def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
 
         # Find index with biggest variance. 
         # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
-        max_test_idx = np.argmax(vars_to_test[1:]) + 1
-        p_vals = []
-        # Identify index with the highest p-value (i.e. likelihood) under the null.
-        for j in range(1, max_test_idx+1):
-            _, p_value = helper.test_for_max(means_to_test, vars_to_test, j, alpha, return_p_val=True)
-            p_vals.append(p_value)
-        null_p_val = np.max(p_vals)
+        # max_test_idx = np.argmax(vars_to_test[1:]) + 1
+        # p_vals = []
+        # # Identify index with the highest p-value (i.e. likelihood) under the null.
+        # for j in range(1, max_test_idx+1):
+        #     _, p_value = helper.test_for_max(means_to_test, vars_to_test, j, alpha, return_p_val=True)
+        #     p_vals.append(p_value)
+        # null_p_val = np.max(p_vals)
         
-        j_max = np.argmax(p_vals) + 1    
+        # j_max = np.argmax(p_vals) + 1    
         
-        # Test 0 vs j under alternate hypothesis - true mean > 0.
-        x1, xj = means_to_test[0], means_to_test[j_max]
-        s1, sj = vars_to_test[0], vars_to_test[j_max]
-        Delta = x1 - xj
-        mu_alt_1j = (sj*x1+s1*xj+s1*Delta) / (s1+sj)
-        s_1j = s1**2 / (s1+sj)
-        num_stat = (x1 - mu_alt_1j)/np.sqrt(s_1j)
-        num = 1-norm.cdf(num_stat)
-        highest_unseen_idx = 1 if j_max > 1 else 2
-        denom_stat = (means_to_test[highest_unseen_idx] - mu_alt_1j)/np.sqrt(s_1j)
-        denom = 1-norm.cdf(denom_stat)
-        alt_p_val = num/denom
+        # # Test 0 vs j under alternate hypothesis - true mean > 0.
+        # x1, xj = means_to_test[0], means_to_test[j_max]
+        # s1, sj = vars_to_test[0], vars_to_test[j_max]
+        # Delta = x1 - xj
+        # mu_alt_1j = (sj*x1+s1*xj+s1*Delta) / (s1+sj)
+        # # s_1j = s1**2 / (s1+sj)
+
+        # num_stat = (x1 - mu_alt_1j)/np.sqrt(s_1j)
+        # num = 1-norm.cdf(num_stat)
+        # highest_unseen_idx = 1 if j_max > 1 else 2
+        # denom_stat = (means_to_test[highest_unseen_idx] - mu_alt_1j)/np.sqrt(s_1j)
+        # denom = 1-norm.cdf(denom_stat)
+        # alt_p_val = num/denom
 
         # Accept null, reject null, or continue sampling depending on likelihood ratio
-        LR = alt_p_val / null_p_val
+        # LR = alt_p_val / null_p_val
+        x1, s1 = means_to_test[0], vars_to_test[0]
+        LRs = []
+        for j in range(1, len(means_to_test)):
+            xj, sj = means_to_test[j], vars_to_test[j]
+            Delta = x1 - xj
+            LR_1j = np.exp((Delta**2)/(2*(s1+sj)))
+            LRs.append(LR_1j)
+        LR = np.min(LRs)
         if LR > rejectNullThresh:
             num_verified += 1
-            
         else: 
-            # Should never have LR < acceptNullThresh
+            # Should never have LR < acceptNullThresh; 
+            # Either way, return number of previously verified rankings
             return num_verified
     return num_verified
 
 
     
 def top_K_set_sprtshap(means, vars_of_means, alpha=0.1, beta=0.2, abs=True, K=None):
-    # Had used alpha/2 but I don't think this is right!
-    acceptNullThresh = beta/(1-alpha)
+    acceptNullThresh = beta/(1-alpha) # Won't actually use
     rejectNullThresh = (1-beta)/(alpha)
 
     d = len(means)
@@ -206,36 +213,46 @@ def top_K_set_sprtshap(means, vars_of_means, alpha=0.1, beta=0.2, abs=True, K=No
     bottom_means = means[order[K:]]
     bottom_vars = vars_of_means[order[K:]]
             
-    reject = True
+    # reject = True
     for i in range(K): # Need to reject all K
         top_K_idx = K - i - 1
         x1, s1 = top_K_means[top_K_idx], top_K_vars[top_K_idx]
         relevant_means = np.hstack((x1, bottom_means))
         relevant_vars = np.hstack((s1, bottom_vars))
+
+        LRs = []
+        for j in range(1, len(relevant_means)): # d-K comparisons
+            xj, sj = relevant_means[j], relevant_vars[j]
+            Delta = x1 - xj
+            LR_1j = np.exp((Delta**2)/(2*(s1+sj)))
+            LRs.append(LR_1j)
+        LR = np.min(LRs)
+
         
-        # Compute all p-values comparing this top-ranked feature to lower-ranked ones
-        p_vals = []
-        for j in range(K, d):
-            bottom_D_minus_K_idx = j - K + 1
-            _, p_value = helper.test_for_max(relevant_means, relevant_vars, bottom_D_minus_K_idx, alpha, return_p_val=True)
-            p_vals.append(p_value)
-        null_p_val = np.max(p_vals)
-        j_max = np.argmax(p_vals) + 1
+        # # Compute all p-values comparing this top-ranked feature to lower-ranked ones
+        # p_vals = []
+        # for j in range(K, d):
+        #     bottom_D_minus_K_idx = j - K + 1
+        #     _, p_value = helper.test_for_max(relevant_means, relevant_vars, bottom_D_minus_K_idx, alpha, return_p_val=True)
+        #     p_vals.append(p_value)
+        # null_p_val = np.max(p_vals)
+        # j_max = np.argmax(p_vals) + 1
 
-        # Test 0 vs j under alternate hypothesis - true mean > 0.
-        xj, sj = relevant_means[j_max], relevant_vars[j_max]
-        Delta = x1 - xj
-        mu_alt_1j = (sj*x1+s1*xj+s1*Delta) / (s1+sj)
-        s_1j = s1**2 / (s1+sj)
-        num_stat = (x1 - mu_alt_1j)/np.sqrt(s_1j)
-        num = 1-norm.cdf(num_stat)
-        highest_unseen_idx = 1 if j_max > 1 else 2
-        denom_stat = (relevant_means[highest_unseen_idx] - mu_alt_1j)/np.sqrt(s_1j)
-        denom = 1-norm.cdf(denom_stat)
-        alt_p_val = num/denom
+        # # Test 0 vs j under alternate hypothesis - true mean > 0.
+        # xj, sj = relevant_means[j_max], relevant_vars[j_max]
+        # Delta = x1 - xj
+        # mu_alt_1j = (sj*x1+s1*xj+s1*Delta) / (s1+sj)
+        # s_1j = s1**2 / (s1+sj)
+        # num_stat = (x1 - mu_alt_1j)/np.sqrt(s_1j)
+        # num = 1-norm.cdf(num_stat)
+        # highest_unseen_idx = 1 if j_max > 1 else 2
+        # denom_stat = (relevant_means[highest_unseen_idx] - mu_alt_1j)/np.sqrt(s_1j)
+        # denom = 1-norm.cdf(denom_stat)
+        # alt_p_val = num/denom
 
-        # Accept null, reject null, or continue sampling depending on likelihood ratio
-        LR = alt_p_val / null_p_val
+        # # Accept null, reject null, or continue sampling depending on likelihood ratio
+        # LR = alt_p_val / null_p_val
+        
         if LR < rejectNullThresh:
             return "fail to reject"
         # If rejects null, this top-ranked feature is significantly different from the lower-ranked ones
@@ -284,6 +301,11 @@ def sprtshap(model, X, xloc, K,
             if num_verified >= K:
                 converged = True
                 return kshap_vals, kshap_covs, N, converged
+            elif num_verified < 0:
+                converged = False
+                return kshap_vals, kshap_covs, N, converged
+            else:
+                continue
         else:
             test_result = top_K_set_sprtshap(kshap_vals, kshap_vars, alpha=alpha, 
                                              beta=beta, abs=abs, K=K)

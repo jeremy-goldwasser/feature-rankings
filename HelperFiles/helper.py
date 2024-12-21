@@ -34,6 +34,11 @@ def mode_rows(a):
 
 
 def calc_fwer(top_K, digits=None, rejection_idx=None):
+    '''
+    Calculates the family-wise error rate (FWER) of the top-K rankings: {# false rejections}/{# total trials}.
+    top_k is a np.array of shape (N_runs, K)
+    rejection_idx is a subset of the N_runs iterations in which the test rejected
+    '''
     most_common_row = mode_rows(top_K)
     relevant_top_K = np.array(top_K)
     if rejection_idx is not None:
