@@ -35,7 +35,7 @@ alpha = args.alpha
 # K = int(sys.argv[1])
 print(f"K={K}")
 
-skip_thresh = 0.75
+skip_thresh = 0.25
 # alpha = 0.2
 N_runs = 50
 N_pts = 30
@@ -53,6 +53,8 @@ N_successful_pts = 0
 output_dir = join(dir_path, "Experiments", "Results", "Top_K", "rank", "alpha_"+str(alpha))
 os.makedirs(output_dir, exist_ok=True)
 fname = 'rankshap_vs_ss_k' + str(K)
+
+successful_iters_all = []
 while N_successful_pts < N_pts:
     xloc = X_test[x_idx]
     x_idx += 1
@@ -60,25 +62,47 @@ while N_successful_pts < N_pts:
     
     N_samples_all_runs = []
     top_K_rankshap = []
-    count, N_successful_runs = 0, 0
-    while N_successful_runs < N_runs:
+    # count, N_successful_runs = 0, 0
+    # while N_successful_runs < N_runs:
+    #     rankshap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict, 
+    #                                                   K=K, alpha=alpha, n_equal=True, guarantee='rank', 
+    #                                                   max_n_perms=10000, abs=True)
+        
+    #     # Only consider inputs on which RankSHAP is capable of K rejections.
+    #     count += 1
+    #     if converged: 
+    #         N_successful_runs += 1
+    #         est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
+    #         top_K_rankshap.append(est_top_K)
+    #         N_samples_all_runs.append([len(diffs_feat) for diffs_feat in diffs])
+    #     if count >= 5 and N_successful_runs/count < skip_thresh:
+    #         break
+    # if N_successful_runs < N_runs:
+    #     continue
+    # count, N_successful_runs = 0, 0
+    successful_iters = []
+    for i in range(N_runs):
         rankshap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict, 
                                                       K=K, alpha=alpha, n_equal=True, guarantee='rank', 
                                                       max_n_perms=10000, abs=True)
         
-        # Only consider inputs on which RankSHAP is capable of K rejections.
-        count += 1
-        if converged: 
-            N_successful_runs += 1
-            est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
-            top_K_rankshap.append(est_top_K)
-            N_samples_all_runs.append([len(diffs_feat) for diffs_feat in diffs])
-        if count >= 5 and N_successful_runs/count < skip_thresh:
+        # if converged: 
+        #     N_successful_runs += 1
+        #     est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
+
+        # Store Shapley estimates, top-K ranking, and number of samples
+        est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
+        top_K_rankshap.append(est_top_K)
+        N_samples_all_runs.append([len(diffs_feat) for diffs_feat in diffs])
+        if converged:
+            successful_iters.append(i)
+        # Doesn't consider inputs on which RankSHAP is rarely capable of K rejections.
+        if (i+1) >= 5 and len(successful_iters)/(i+1) < skip_thresh:
             break
-    if N_successful_runs < N_runs:
+    if len(successful_iters) < N_runs:
         continue
     
-    # RankSHAP consistently converged on this input x. 
+    # RankSHAP (presumably) controlled FWER on this input x. 
     indices_used.append(x_idx-1)
     N_successful_pts += 1
     top_K_rankshap_all.append(top_K_rankshap)
@@ -86,7 +110,7 @@ while N_successful_pts < N_pts:
     N_samples_rankshap_all.append(N_samples_all_runs)
     print(f"Successful run {N_successful_pts}, {x_idx} attempts")
     print(f"RankSHAP, average number of samples per feature: {avg_samples_per_feat}")
-    print(f"FWER, RankSHAP: {calc_fwer(top_K_rankshap, digits=3)}")
+    print(f"FWER, RankSHAP: {calc_fwer(top_K_rankshap, digits=3, rejection_idx=successful_iters)}")
 
     # Run Shapley Sampling
     top_K_ss_adaptive = [] 
@@ -102,11 +126,13 @@ while N_successful_pts < N_pts:
     
     # top_K_ss_fixed_all.append(top_K_ss_fixed)
     top_K_ss_adaptive_all.append(top_K_ss_adaptive)
+    successful_iters_all.append(successful_iters)
     
     # print(f"FWER, Shapley Sampling (fixed N={N_samples_fixed}): {calc_fwer(top_K_ss_fixed, digits=3)}")
     print(f"FWER, Shapley Sampling (adaptive N={avg_samples_per_feat}): {calc_fwer(top_K_ss_adaptive, digits=3)}")
-    all_results = {'rankshap': top_K_rankshap_all, 'ss_adaptive': top_K_ss_adaptive_all, 
+    all_results = {'rankshap': top_K_rankshap_all, 'rankshap_rejection_idx': np.array(successful_iters_all),
+                   'ss_adaptive': np.array(top_K_ss_adaptive_all), 
                 #    'ss_fixed': top_K_ss_fixed_all, 
-                   'rankshap_n_samples': N_samples_rankshap_all, 'x_indices': indices_used}
+                   'rankshap_n_samples': np.array(N_samples_rankshap_all), 'x_indices': np.array(indices_used)}
     with open(join(output_dir, fname), "wb") as fp:
         pickle.dump(all_results, fp)

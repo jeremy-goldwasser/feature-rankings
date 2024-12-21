@@ -21,7 +21,7 @@ def get_ranking(shap_vals, abs=True):
     else:
         return np.argsort(shap_vals)[::-1]
 
-############### General Analysis ###############
+############### Top-K Analysis ###############
 
 def mode_rows(a):
     a = np.ascontiguousarray(a)
@@ -33,9 +33,15 @@ def mode_rows(a):
     return most_frequent_row
 
 
-def calc_fwer(top_K, digits=None):
+def calc_fwer(top_K, digits=None, rejection_idx=None):
     most_common_row = mode_rows(top_K)
-    fwer = 1 - np.mean(np.all(np.array(top_K)==most_common_row,axis=1))
+    relevant_top_K = np.array(top_K)
+    if rejection_idx is not None:
+        # Rows where test rejected
+        relevant_top_K = relevant_top_K[rejection_idx]
+    num_false_rejections = np.sum(np.all(relevant_top_K!=most_common_row,axis=1)).item()
+    num_total_trials = len(top_K)
+    fwer = num_false_rejections/num_total_trials
     if digits:
         return np.round(fwer, digits)
     return fwer
@@ -47,36 +53,44 @@ def shap_vals_to_ranks(shap_vals, abs=True):
 
 ############### Retrospective Analysis ###############
 
-def calc_retro_fwer(GTranks, rankings, nVerified, alphaIdx, digits=3, thresh=0.25):
+def calc_retro_fwer(GTranks, rankings, N_verified, digits=3):
     '''
-    Calculates FWER of observed rankings for a single alpha. Different iterations may have verified different numbers of ranks.
-    FWER will not be computed on iterations that verified too infrequently.
+    Calculates FWER of observed rankings for a single alpha on a given sample. 
+    Different iterations may have verified different numbers of ranks.
     '''
-    nStable = np.sum(nVerified[:,alphaIdx] > 0)
-    N_runs, _ = rankings.shape
-    if nStable <= thresh*N_runs: # Majority unverified
-        # print("Majority unverified.")
-        return np.nan
-    prop_stable = 0
-    # Number of runs with at least one stable rank
-    for runIdx in range(N_runs):
-        nVerif = nVerified[runIdx,alphaIdx]
-        if nVerif > 0:
-            stableRanks = rankings[runIdx,:nVerif]
-            was_stable = np.array_equal(stableRanks, GTranks[:nVerif])
-            prop_stable += was_stable
-    prop_stable /= nStable
+    # N_runs, _ = rankings.shape
+    # nStable = np.sum(N_verified > 0)
+    # if nStable <= thresh*N_runs: # Majority unverified
+    #    # FWER will not be computed on iterations that verified too infrequently.
+    #     # print("Majority unverified.")
+    #     return np.nan
+    # prop_stable = 0
+    # # Number of runs with at least one stable rank
+    # for runIdx in range(N_runs):
+    #     nVerif = N_verified[runIdx]
+    #     if nVerif > 0:
+    #         stableRanks = rankings[runIdx,:nVerif]
+    #         was_stable = np.array_equal(stableRanks, GTranks[:nVerif])
+    #         prop_stable += was_stable
+    #     else:
+    #         prop_stable += 1
+    # # prop_stable /= nStable
+    # prop_stable /= N_runs
+    prop_stable = np.mean([
+        np.array_equal(rankings[i, :nVerif], GTranks[:nVerif]) if nVerif > 0 else True
+        for i, nVerif in enumerate(N_verified)
+    ])
     fwer = 1 - prop_stable
     if digits:
         return np.round(fwer, digits)
     return fwer
 
 
-def calc_all_retro_fwers(verif, ranks, avgRanks, digits=3, thresh=0.25):
-    N_pts, _, N_alphas = verif.shape
+def calc_all_retro_fwers(N_verified_all, ranks, avgRanks, digits=3):
+    N_pts, _, N_alphas = N_verified_all.shape
     fwers_all = [
         [
-            calc_retro_fwer(avgRanks[ptIdx], ranks[ptIdx], verif[ptIdx], alphaIdx, digits=digits, thresh=thresh)
+            calc_retro_fwer(avgRanks[ptIdx], ranks[ptIdx], N_verified_all[ptIdx,:,alphaIdx], digits=digits)
             for ptIdx in range(N_pts)
         ]
         for alphaIdx in range(N_alphas)
