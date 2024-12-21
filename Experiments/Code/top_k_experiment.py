@@ -150,14 +150,16 @@ while N_successful_pts < N_pts and x_idx < N_test:
 
             # if converged:
             #     Append here
+        top_K.append(est_top_K)
         if converged:
-            top_K.append(est_top_K)
+            # Indicate successful run. Will be used to calculate FWER.
             successful_iters.append(run_idx)
             N_successful_runs += 1
         
         # count += 1
         if not converged:
-            if (run_idx+1) >= 5 and N_successful_runs/(run_idx+1) < skip_thresh:
+            N_completed_runs = run_idx + 1
+            if N_completed_runs >= 5 and N_successful_runs/N_completed_runs < skip_thresh:
                 break
         else:
             if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
