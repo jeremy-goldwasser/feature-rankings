@@ -1,0 +1,3 @@
+Namespace(method='rankshap', dataset='breast_cancer', k=5, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
+rankshap_breast_cancer_K5
+0
