@@ -156,11 +156,11 @@ while N_successful_pts < N_pts and x_idx < N_test:
         # count += 1
         if not converged:
             N_completed_runs = run_idx + 1
-            print("failed run ", N_completed_runs)
+            # print("failed run ", N_completed_runs)
             if N_completed_runs >= 5 and N_successful_runs/N_completed_runs < skip_thresh:
                 break
         else:
-            print("successful run ", N_successful_runs)
+            # print("successful run ", N_successful_runs)
             if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
                 print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters))
             
