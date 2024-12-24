@@ -60,16 +60,6 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
         failure_idx, close_idx = pair_idx
         # pair_idx = [failure_idx, close_idx]
         while True:
-            # Run for suggested number of samples to be significant difference
-            # print(pair_idx, n_to_reject_pair) # Extremely low
-            # shap_ests = helper_shapley_sampling.diffs_to_shap_vals(diffs_all_feats)
-            # shap_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs_all_feats)
-            # order = helper.get_ranking(shap_ests, abs=abs)
-            # print(pair_idx, order)
-            # print(np.round(shap_ests*100, 2))
-            # print(np.round(np.sqrt(shap_vars)*1000, 2))
-
-
             n_to_run = [int(buffer*n) for n in n_to_reject_pair]
             # Suggested runtime exceeds computational maximum
             if max(n_to_run) > max_n_perms:
@@ -139,10 +129,42 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
 
 ############### SPRT-SHAP (KernelSHAP) ###############
 
+def perform_SPRT(sorted_data, vars, alpha, beta):
+    def calc_LR(x1, s1, xj, sj, min_x1):
+        Delta = x1 - xj
+        mu_alt_1j = (sj*x1 + s1*xj + s1*Delta) / (s1+sj)
+        s_1j = s1**2 / (s1+sj)
+        alt_num = norm.pdf(x1, mu_alt_1j, np.sqrt(s_1j))
+
+        alt_denom = 1 - norm.cdf(min_x1, mu_alt_1j, np.sqrt(s_1j))
+        alt_likelihood = alt_num / alt_denom
+
+        mu_1j = (sj*x1 + s1*xj) / (s1+sj)
+        null_num = norm.pdf(x1, mu_1j, np.sqrt(s_1j))
+        null_denom = 1 - norm.cdf(min_x1, mu_1j, np.sqrt(s_1j))
+        null_likelihood = null_num / null_denom
+
+        LR_1j = alt_likelihood / null_likelihood
+        return LR_1j
+    
+    LRs = []
+    x1, s1 = sorted_data[0], vars[0]
+    for j in range(1, len(sorted_data)): # d-K comparisons
+        xj, sj = sorted_data[j], vars[j]
+        min_x1 = sorted_data[1] if j>1 else sorted_data[2]
+        LR_1j = calc_LR(x1, s1, xj, sj, min_x1)
+        LRs.append(LR_1j)
+    LR = np.min(LRs)
+    
+    rejectNullThresh = (1-beta)/(alpha)
+    if LR > rejectNullThresh:
+        return "reject"
+    else:    
+        return "fail to reject"
+
+
 def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
                                abs=True, K=None):
-    acceptNullThresh = beta/(1-alpha)
-    rejectNullThresh = (1-beta)/(alpha)
     order = helper.get_ranking(shap_ests, abs=abs)
     if abs: shap_ests = np.abs(shap_ests)
     num_verified = 0
@@ -151,46 +173,11 @@ def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
     while num_verified < max_num_tests:
         # Perform test on index "num_verified"
         idx_to_test = order[num_verified:].astype(int)
-        means_to_test = shap_ests[idx_to_test]
-        vars_to_test = shap_vars[idx_to_test]
+        relevant_ests = shap_ests[idx_to_test]
+        relevant_vars = shap_vars[idx_to_test]
 
-        # Find index with biggest variance. 
-        # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
-        # max_test_idx = np.argmax(vars_to_test[1:]) + 1
-        # p_vals = []
-        # # Identify index with the highest p-value (i.e. likelihood) under the null.
-        # for j in range(1, max_test_idx+1):
-        #     _, p_value = helper.test_for_max(means_to_test, vars_to_test, j, alpha, return_p_val=True)
-        #     p_vals.append(p_value)
-        # null_p_val = np.max(p_vals)
-        
-        # j_max = np.argmax(p_vals) + 1    
-        
-        # # Test 0 vs j under alternate hypothesis - true mean > 0.
-        # x1, xj = means_to_test[0], means_to_test[j_max]
-        # s1, sj = vars_to_test[0], vars_to_test[j_max]
-        # Delta = x1 - xj
-        # mu_alt_1j = (sj*x1+s1*xj+s1*Delta) / (s1+sj)
-        # # s_1j = s1**2 / (s1+sj)
-
-        # num_stat = (x1 - mu_alt_1j)/np.sqrt(s_1j)
-        # num = 1-norm.cdf(num_stat)
-        # highest_unseen_idx = 1 if j_max > 1 else 2
-        # denom_stat = (means_to_test[highest_unseen_idx] - mu_alt_1j)/np.sqrt(s_1j)
-        # denom = 1-norm.cdf(denom_stat)
-        # alt_p_val = num/denom
-
-        # Accept null, reject null, or continue sampling depending on likelihood ratio
-        # LR = alt_p_val / null_p_val
-        x1, s1 = means_to_test[0], vars_to_test[0]
-        LRs = []
-        for j in range(1, len(means_to_test)):
-            xj, sj = means_to_test[j], vars_to_test[j]
-            Delta = x1 - xj
-            LR_1j = np.exp((Delta**2)/(2*(s1+sj)))
-            LRs.append(LR_1j)
-        LR = np.min(LRs)
-        if LR > rejectNullThresh:
+        SPRT_result = perform_SPRT(relevant_ests, relevant_vars, alpha, beta)
+        if SPRT_result == "reject":
             num_verified += 1
         else: 
             # Should never have LR < acceptNullThresh; 
@@ -198,65 +185,31 @@ def find_num_verified_sprtshap(shap_ests, shap_vars, alpha=0.1, beta=0.2,
             return num_verified
     return num_verified
 
-
     
-def top_K_set_sprtshap(means, vars_of_means, alpha=0.1, beta=0.2, abs=True, K=None):
-    acceptNullThresh = beta/(1-alpha) # Won't actually use
-    rejectNullThresh = (1-beta)/(alpha)
-
-    d = len(means)
-    order = helper.get_ranking(means, abs=abs)
+def top_K_set_sprtshap(ests, vars, alpha=0.1, beta=0.2, abs=True, K=None):
+    order = helper.get_ranking(ests, abs=abs)
     if abs:
-        means = np.abs(means)
-    top_K_means = means[order[:K]]
-    top_K_vars = vars_of_means[order[:K]]
-    bottom_means = means[order[K:]]
-    bottom_vars = vars_of_means[order[K:]]
+        ests = np.abs(ests)
+    top_K_ests = ests[order[:K]]
+    top_K_vars = vars[order[:K]]
+    bottom_means = ests[order[K:]]
+    bottom_vars = vars[order[K:]]
             
-    # reject = True
-    for i in range(K): # Need to reject all K
+    for i in range(K):
+        # Pick a top-ranked feature, starting with hardest
         top_K_idx = K - i - 1
-        x1, s1 = top_K_means[top_K_idx], top_K_vars[top_K_idx]
-        relevant_means = np.hstack((x1, bottom_means))
+        x1, s1 = top_K_ests[top_K_idx], top_K_vars[top_K_idx]
+        relevant_ests = np.hstack((x1, bottom_means))
         relevant_vars = np.hstack((s1, bottom_vars))
 
-        LRs = []
-        for j in range(1, len(relevant_means)): # d-K comparisons
-            xj, sj = relevant_means[j], relevant_vars[j]
-            Delta = x1 - xj
-            LR_1j = np.exp((Delta**2)/(2*(s1+sj)))
-            LRs.append(LR_1j)
-        LR = np.min(LRs)
-
+        # Test whether it is significantly higher than the lower-ranked ones
+        SPRT_result = perform_SPRT(relevant_ests, relevant_vars, alpha, beta)
         
-        # # Compute all p-values comparing this top-ranked feature to lower-ranked ones
-        # p_vals = []
-        # for j in range(K, d):
-        #     bottom_D_minus_K_idx = j - K + 1
-        #     _, p_value = helper.test_for_max(relevant_means, relevant_vars, bottom_D_minus_K_idx, alpha, return_p_val=True)
-        #     p_vals.append(p_value)
-        # null_p_val = np.max(p_vals)
-        # j_max = np.argmax(p_vals) + 1
-
-        # # Test 0 vs j under alternate hypothesis - true mean > 0.
-        # xj, sj = relevant_means[j_max], relevant_vars[j_max]
-        # Delta = x1 - xj
-        # mu_alt_1j = (sj*x1+s1*xj+s1*Delta) / (s1+sj)
-        # s_1j = s1**2 / (s1+sj)
-        # num_stat = (x1 - mu_alt_1j)/np.sqrt(s_1j)
-        # num = 1-norm.cdf(num_stat)
-        # highest_unseen_idx = 1 if j_max > 1 else 2
-        # denom_stat = (relevant_means[highest_unseen_idx] - mu_alt_1j)/np.sqrt(s_1j)
-        # denom = 1-norm.cdf(denom_stat)
-        # alt_p_val = num/denom
-
-        # # Accept null, reject null, or continue sampling depending on likelihood ratio
-        # LR = alt_p_val / null_p_val
-        
-        if LR < rejectNullThresh:
+        # If so, move on to the next top-ranked feature; 
+        # otherwise, return that not all features K rejected
+        if SPRT_result == "fail to reject":
             return "fail to reject"
-        # If rejects null, this top-ranked feature is significantly different from the lower-ranked ones
-        # Move on to the next top-ranked feature
+        
     return "reject"
 
 

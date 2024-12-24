@@ -1,6 +1,6 @@
 #!/bin/bash
 
-methods=("rankshap" "sprtshap")
+methods=("sprtshap") # "rankshap"
 datasets=("census" "bank" "brca" "breast_cancer" "credit")
 ks=(2 5)
 guarantees=("rank" "set")
