@@ -2,19 +2,14 @@ Namespace(method='sprtshap', dataset='credit', k=5, algo='nn', nruns=50, npts=30
 sprtshap_credit_K5
 0
 1
-25 0.0
-#################### 1 0.0  (idx  1 )  ####################
 2
 3
-25 0.0
 4
 5
 6
 7
 8
 25 0.0
-#################### 2 0.0  (idx  8 )  ####################
+#################### 1 0.0  (idx  8 )  ####################
 9
-25 0.0
-10
 Aborting. Too infrequently converging.
