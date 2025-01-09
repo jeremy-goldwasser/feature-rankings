@@ -151,23 +151,18 @@ while N_successful_pts < N_pts and x_idx < N_test:
             shap_vals_i.append(shap_vals)
             shap_vars_i.append(shap_vars)
 
-        top_K.append(est_top_K)
         if converged:
             # Indicate successful run. Will be used to calculate FWER.
+            top_K.append(est_top_K)
             successful_iters.append(run_idx)
             N_successful_runs += 1
-        
-        # count += 1
-        if not converged:
+            if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
+                print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters))
+        else:
             N_completed_runs = run_idx + 1
             # print("failed run ", N_completed_runs)
             if N_completed_runs >= 5 and N_successful_runs/N_completed_runs < skip_thresh:
                 break
-        else:
-            # print("successful run ", N_successful_runs)
-            if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
-                print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters))
-            
     if N_successful_runs==N_runs: # Made it through
         successful_iters_all.append(successful_iters)
         N_successful_pts += 1
