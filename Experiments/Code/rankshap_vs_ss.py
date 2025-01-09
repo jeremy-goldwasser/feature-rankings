@@ -27,7 +27,7 @@ np.random.seed(42)
 
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--k', type= int, default=3)
+parser.add_argument('--k', type= int, default=2)
 parser.add_argument('--alpha', type=float, default=0.2)
 args = parser.parse_args() 
 K = args.k

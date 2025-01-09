@@ -10,3 +10,4 @@ else
     echo "Usage: $0 <method> <dataset>"
     exit 1
 fi
+

@@ -183,7 +183,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
             N_samples_all.append(N_samples)
             shap_vals_all.append(shap_vals_i)
             shap_vars_all.append(shap_vars_i)
-            top_K_results['N_samples'] = np.array(N_samples)
+            top_K_results['N_samples'] = np.array(N_samples_all)
             top_K_results['shap_vals'] = np.array(shap_vals_all)
             top_K_results['shap_vars'] = np.array(shap_vars_all)
         with open(join(results_dir, fname), "wb") as fp:
