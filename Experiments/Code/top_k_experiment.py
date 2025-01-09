@@ -89,6 +89,7 @@ if isLime:
 shap_values_all = []
 shap_vars_all = []
 N_samples_all = []
+Ns_per_feature_all = []
 N_successful_pts = 0
 successful_iters_all = []
 while N_successful_pts < N_pts and x_idx < N_test:
@@ -103,6 +104,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
     top_K = []
     # count = 0
     N_samples = []
+    Ns_per_feature = []
     shap_vals_i, shap_vars_i = [], []
     N_successful_runs = 0
     # while N_successful_runs < N_runs:
@@ -134,6 +136,8 @@ while N_successful_pts < N_pts and x_idx < N_test:
                                                       n_equal=True, n_samples_per_perm=10, 
                                                       n_init=100, abs=True)
                 shap_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs)
+                N_per_feature = [len(diffs_feat) for diffs_feat in diffs]
+                Ns_per_feature.append(N_per_feature)
             else:
                 shap_vals, shap_covs, N, converged = top_k.sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                       guarantee=guarantee,
@@ -186,6 +190,9 @@ while N_successful_pts < N_pts and x_idx < N_test:
             top_K_results['N_samples'] = np.array(N_samples_all)
             top_K_results['shap_vals'] = np.array(shap_vals_all)
             top_K_results['shap_vars'] = np.array(shap_vars_all)
+            if method=="rankshap":
+                Ns_per_feature_all.append(Ns_per_feature)
+                top_K_results['N_samples_per_feature'] = np.array(Ns_per_feature_all)
         with open(join(results_dir, fname), "wb") as fp:
             pickle.dump(top_K_results, fp)
             
