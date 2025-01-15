@@ -110,7 +110,7 @@ while N_successful_pts < N_pts:
     N_samples_rankshap_all.append(N_samples_all_runs)
     print("#"*20)
     print(f"Successful run {N_successful_pts}, {x_idx} attempts")
-    print(f"RankSHAP, average number of samples per feature: {avg_samples_per_feat}")
+    # print(f"RankSHAP, average number of samples per feature: {avg_samples_per_feat}")
     print(f"FWER, RankSHAP: {calc_fwer(top_K_rankshap, digits=3, rejection_idx=successful_iters)}")
 
     # Run Shapley Sampling

@@ -152,21 +152,23 @@ while N_successful_pts < N_pts and x_idx < N_test:
             shap_vars_i.append(shap_vars)
 
         if converged:
-            # Indicate successful run. Will be used to calculate FWER.
             top_K.append(est_top_K)
-            successful_iters.append(run_idx)
+            # Indicate successful run. Will be used to calculate FWER.
+            # successful_iters.append(run_idx)
             N_successful_runs += 1
             if N_successful_runs % 25 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
-                print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters))
+                print(N_successful_runs, helper.calc_fwer(top_K, digits=3))
+                # print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters))
         else:
             N_completed_runs = run_idx + 1
             # print("failed run ", N_completed_runs)
             if N_completed_runs >= 5 and N_successful_runs/N_completed_runs < skip_thresh:
                 break
     if N_successful_runs==N_runs: # Made it through
-        successful_iters_all.append(successful_iters)
+        # successful_iters_all.append(successful_iters)
         N_successful_pts += 1
-        fwer = helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters)
+        # fwer = helper.calc_fwer(top_K, digits=3, rejection_idx=successful_iters)
+        fwer = helper.calc_fwer(top_K, digits=3)
         fwers_all.append(fwer)
         indices_used.append(x_idx)
         top_K_all.append(top_K)
