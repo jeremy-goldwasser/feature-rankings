@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Ensure the top_K_outputs directory exists
+# Ensure the outputs directory exists
 mkdir -p top_K_outputs
 
 if [ "$#" -ge 4 ]; then
