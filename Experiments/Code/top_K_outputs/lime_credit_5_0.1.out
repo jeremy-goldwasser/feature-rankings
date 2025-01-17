@@ -1,0 +1,15 @@
+Namespace(method='lime', dataset='credit', k=5, algo='nn', nruns=50, npts=30, alpha=0.1, guarantee='rank')
+lime_credit_K5
+0
+1
+2
+3
+4
+5
+25 0.0
+6
+7
+8
+9
+25 0.0
+Aborting. Too infrequently converging.

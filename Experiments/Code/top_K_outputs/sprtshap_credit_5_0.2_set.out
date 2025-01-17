@@ -1,0 +1,16 @@
+Namespace(method='sprtshap', dataset='credit', k=5, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='set')
+sprtshap_credit_K5
+0
+1
+25 0.0
+2
+3
+4
+5
+6
+7
+8
+25 0.0
+#################### 1 0.0  (idx  8 )  ####################
+9
+Aborting. Too infrequently converging.

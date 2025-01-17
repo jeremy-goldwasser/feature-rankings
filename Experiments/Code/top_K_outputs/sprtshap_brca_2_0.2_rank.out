@@ -1,0 +1,14 @@
+Namespace(method='sprtshap', dataset='brca', k=2, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
+sprtshap_brca_K2
+0
+1
+2
+3
+25 0.0
+4
+5
+6
+7
+8
+9
+Aborting. Too infrequently converging.
