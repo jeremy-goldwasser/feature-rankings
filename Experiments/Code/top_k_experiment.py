@@ -144,10 +144,11 @@ while N_successful_pts < N_pts and x_idx < N_test:
             N_successful_runs += 1
             stable_top_K.append(est_top_K)
             # rejection_idx.append(run_idx)
-            shap_vals_i.append(shap_vals)
-            shap_vars_i.append(shap_vars)
             if not isLime:
+                shap_vals_i.append(shap_vals)
+                shap_vars_i.append(shap_vars)
                 N_samples.append(N)
+
             if method=="rankshap":
                 Ns_per_feature.append(N_per_feature)
 
