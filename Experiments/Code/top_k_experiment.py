@@ -63,7 +63,7 @@ max_n_lime = 100000
 
 np.random.seed(0)
 x_idx = 0
-skip_thresh = 0.25 # Skip if successful with frequency below skip_thresh 
+# skip_thresh = 0.25 # Skip if successful with frequency below skip_thresh 
 
 top_K_all = []
 fwers_all = []
@@ -84,7 +84,7 @@ N_successful_pts = 0
 # rejection_idx_all = []
 while N_successful_pts < N_pts and x_idx < N_test:
     # Don't bother in situations that rarely converge
-    if x_idx >= 10 and N_successful_pts/x_idx < 0.2:
+    if x_idx >= 10 and N_successful_pts/x_idx < 0.1:
         print("Aborting. Too infrequently converging.")
         break
     # print(x_idx)
@@ -156,7 +156,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
             #     print(N_successful_runs, helper.calc_fwer(stable_top_K, digits=3))#, rejection_idx=rejection_idx
         else:
             N_completed_runs = run_idx + 1
-            if N_completed_runs >= 5 and N_successful_runs/N_completed_runs < skip_thresh:
+            if N_completed_runs >= 10 and N_successful_runs/N_completed_runs < 0.2:
                 break
         run_idx += 1
     if N_successful_runs==N_runs: # Made it through
