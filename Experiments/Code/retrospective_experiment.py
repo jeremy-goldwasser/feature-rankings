@@ -7,11 +7,10 @@ path_to_file = str(pathlib.Path().resolve())
 dir_path = os.path.join(path_to_file, "../../")
 
 sys.path.append(os.path.join(dir_path, "HelperFiles"))
-from helper import *
-from top_k import *
-from retrospective import *
-from train_models import *
-from load_data import *
+
+import retrospective
+import load_data
+import train_models
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -21,8 +20,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--method', type=str, default="shap")
 parser.add_argument('--dataset', type=str, default="census")
 parser.add_argument('--algo', type=str, default="nn")
-parser.add_argument('--nruns', type=int, default=50) #250
-parser.add_argument('--npts', type=int, default=30) #10
+parser.add_argument('--nruns', type=int, default=50)
+parser.add_argument('--npts', type=int, default=30)
 
 args = parser.parse_args() 
 print(args)
@@ -34,11 +33,9 @@ N_runs = args.nruns
 N_pts = args.npts
 
 fname = method + "_" + dataset
-# fname = method + "_" + dataset + "_shap_vals"
-# fname2 = method + "_" + dataset + "_N_verified"
 print(fname)
-X_train, y_train, X_test, y_test, mapping_dict = load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
-model = train_model(X_train, y_train, algo, False)
+X_train, y_train, X_test, y_test, mapping_dict = load_data.load_data(os.path.join(dir_path, "Experiments", "Data"), dataset)
+model = train_models.train_model(X_train, y_train, algo, False)
 N_test = y_test.shape[0]
 
 np.random.seed(0)
@@ -53,7 +50,6 @@ N_verified_all = []
 shap_vars_all = []
 
 N_samples = 2*d + 2048
-# while len(fwers) < N_pts and x_idx < N_test:
 for x_idx in range(N_pts):
     print(x_idx)
     xloc = X_test[x_idx]
@@ -62,11 +58,11 @@ for x_idx in range(N_pts):
     Ns = []
     for i in range(N_runs):
         if method=="ss":
-            shap_vals, n_verified, shap_vars = shapley_sampling(model, X_train, xloc, n_perms=N_samples//d, 
+            shap_vals, n_verified, shap_vars = retrospective.shapley_sampling(model, X_train, xloc, n_perms=N_samples//d, 
                                                     n_samples_per_perm=10, mapping_dict=mapping_dict, 
                                                     alphas=alphas, abs=True)
         elif method=="kernelshap":
-            shap_vals, n_verified, kshap_covs = kernelshap(model, X_train, xloc, n_perms=N_samples, 
+            shap_vals, n_verified, kshap_covs = retrospective.kernelshap(model, X_train, xloc, n_perms=N_samples, 
                                                             n_samples_per_perm=10, mapping_dict=mapping_dict,
                                                             alphas=alphas, abs=True)
             shap_vars = np.diag(kshap_covs)
