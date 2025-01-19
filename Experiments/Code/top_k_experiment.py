@@ -81,7 +81,7 @@ shap_vars_all = []
 N_samples_all = []
 Ns_per_feature_all = []
 N_successful_pts = 0
-# rejection_idx_all = []
+rejection_idx_all = []
 while N_successful_pts < N_pts and x_idx < N_test:
     # Don't bother in situations that rarely converge
     if x_idx >= 10 and N_successful_pts/x_idx < 0.1:
@@ -90,36 +90,36 @@ while N_successful_pts < N_pts and x_idx < N_test:
     # print(x_idx)
 
     xloc = X_test[x_idx]
-    stable_top_K = []
-    # count = 0
+    top_K = []
     N_samples = []
     Ns_per_feature = []
     shap_vals_i, shap_vars_i = [], []
     N_successful_runs = 0
-    run_idx = 0
-    # rejection_idx = []
-    while N_successful_runs < N_runs:
-    # for run_idx in range(N_runs):
+    # run_idx = 0
+    rejection_idx = []
+    # while N_successful_runs < N_runs:
+    for run_idx in range(N_runs):
         if isLime:
-            try:
-                if dataset=="credit" and x_idx==19 and K==5:
-                    tol = 1e-5
-                elif dataset=="brca" and x_idx==35 and K==2:
-                    tol = 1e-5
-                else:
-                    tol = 1e-4
-                exp = explainer.slime(xloc, model, num_features = K, 
-                                            num_samples = 1000, n_max = max_n_lime, 
-                                            alpha = alpha_adj, tol=tol, return_none=True)
-                if exp is not None:
-                    # est_top_K = extract_lime_feats(exp, K, mapping_dict)
-                    # Don't see a good way to get back to feature space.
-                    est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
-                    converged = True
-                else:
-                    converged = False
-            except:
-                converged = False
+            # try:
+            if dataset=="credit" and x_idx==19 and K==5:
+                tol = 1e-5
+            elif dataset=="brca" and x_idx==35 and K==2:
+                tol = 1e-5
+            else:
+                tol = 1e-4
+            exp, converged = explainer.slime(xloc, model, num_features = K, 
+                                        num_samples = 1000, n_max = max_n_lime, 
+                                        alpha = alpha_adj, tol=tol, return_none=True)
+            est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
+                # if exp is not None:
+                #     # est_top_K = extract_lime_feats(exp, K, mapping_dict)
+                #     # Don't see a good way to get back to feature space.
+                #     est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
+                #     converged = True
+                # else:
+                #     converged = False
+            # except:
+            #     converged = False
         else:
             if method=="rankshap":
                 shap_vals, diffs, N, converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
@@ -129,52 +129,52 @@ while N_successful_pts < N_pts and x_idx < N_test:
                                                       n_init=100, abs=True)
                 shap_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs)
                 N_per_feature = [len(diffs_feat) for diffs_feat in diffs]
+                Ns_per_feature.append(N_per_feature)
             else:
                 shap_vals, shap_covs, N, converged = top_k.sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                       guarantee=guarantee,
                                                       n_samples_per_perm=10, n_perms_btwn_tests=1000, 
                                                       n_max=max_n_kernelshap, alpha=alpha, beta=0.2, abs=True)
                 shap_vars = np.diag(shap_covs)
+
+            shap_vals_i.append(shap_vals)
+            shap_vars_i.append(shap_vars)
+            N_samples.append(N)
             est_top_K = helper.get_ranking(shap_vals, abs=True)[:K]
             if guarantee=="set":
                 est_top_K = np.sort(est_top_K)
         
+        top_K.append(est_top_K)
         if converged:
             # Indicate successful run. Will be used to calculate FWER.
             N_successful_runs += 1
-            stable_top_K.append(est_top_K)
-            # rejection_idx.append(run_idx)
-            if not isLime:
-                shap_vals_i.append(shap_vals)
-                shap_vars_i.append(shap_vars)
-                N_samples.append(N)
-
-            if method=="rankshap":
-                Ns_per_feature.append(N_per_feature)
-
+            rejection_idx.append(run_idx)
             # if N_successful_runs % 5 == 0 and N_successful_runs > 0 and N_successful_runs!=N_runs:
-            #     print(N_successful_runs, helper.calc_fwer(stable_top_K, digits=3))#, rejection_idx=rejection_idx
+            #     print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=rejection_idx))
         else:
             N_completed_runs = run_idx + 1
-            if N_completed_runs >= 10 and N_successful_runs/N_completed_runs < 0.2:
+            if N_completed_runs >= 10 and N_successful_runs/N_completed_runs < 0.5:
+                print(f'Skipping. {N_successful_runs} convergences in {N_completed_runs} runs.')
                 break
-        run_idx += 1
-    if N_successful_runs==N_runs: # Made it through
+        # run_idx += 1
+
+    # if N_successful_runs==N_runs: # Made it through
+    if N_runs==run_idx+1:
         N_successful_pts += 1
-        fwer = helper.calc_fwer(stable_top_K, digits=3)#, rejection_idx=rejection_idx
+        fwer = helper.calc_fwer(top_K, digits=3, rejection_idx=rejection_idx)
         fwers_all.append(fwer)
         indices_used.append(x_idx)
-        # rejection_idx_all.append(rejection_idx)
-        top_K_all.append(stable_top_K)
+        rejection_idx_all.append(rejection_idx)
+        top_K_all.append(top_K)
         
         # print("#"*20, N_successful_pts, fwer, " (idx ", x_idx, ") ", "#"*20)
-        print(f'FWER {fwer} on pt {N_successful_pts} (idx {x_idx}). {run_idx} runs to {N_runs} rejections')
+        print(f'FWER {fwer} on pt {N_successful_pts} (idx {x_idx}). {N_successful_runs} convergences in {N_runs} runs')
 
         # Store results
         top_K_results = {'fwers': np.array(fwers_all), 
                          'top_K': np.array(top_K_all), 
-                         'x_indices': np.array(indices_used)#,
-                        #  'rejection_idx': rejection_idx_all
+                         'x_indices': np.array(indices_used),
+                         'rejection_idx': rejection_idx_all
                          }
         if not isLime:
             N_samples_all.append(N_samples)
