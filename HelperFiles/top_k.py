@@ -217,8 +217,9 @@ def top_K_set_sprtshap(ests, vars, alpha=0.1, beta=0.2, abs=True, K=None):
 def sprtshap(model, X, xloc, K, 
              mapping_dict=None, guarantee="rank",
              n_samples_per_perm=10, 
-             n_perms_btwn_tests=100, n_max=100000, 
-             alpha=0.1, beta=0.2, abs=True):
+             n_perms_btwn_tests=1000, n_max=100000, 
+             alpha=0.1, beta=0.2, abs=True,
+             n_init=None):
     if xloc.ndim==1:
         xloc = xloc.reshape(1,-1)
     avg_pred = np.mean(model(X))
@@ -228,11 +229,11 @@ def sprtshap(model, X, xloc, K,
     
     # coalitions, coalition_values, coalition_vars = [], [], []
     while N < n_max:# and num_verified < K:
+        n_perms = n_perms_btwn_tests if n_init is None else n_init
         coalitions_t, coalition_values_t, coalition_vars_t = helper_kernelshap.compute_coalitions_values(model, X, xloc, 
-                                                                        n_perms_btwn_tests, n_samples_per_perm, 
-                                                                        mapping_dict)
-        N += n_perms_btwn_tests
-        if N > n_perms_btwn_tests:
+                                                                        n_perms, n_samples_per_perm, mapping_dict)
+        N += n_perms
+        if N > n_perms:
             # Append onto existing counts
             coalitions = np.concatenate((coalitions, coalitions_t)) # z vectors
             coalition_values = np.concatenate((coalition_values, coalition_values_t)) # E[f(X)|z]
