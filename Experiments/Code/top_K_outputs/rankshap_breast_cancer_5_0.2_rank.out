@@ -1,4 +1,2 @@
 Namespace(method='rankshap', dataset='breast_cancer', k=5, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
 rankshap_breast_cancer_K5
-0
-slurmstepd-scf-sm11: error: *** JOB 1331671 ON scf-sm11 CANCELLED AT 2025-01-15T16:17:05 ***

@@ -1,18 +1,48 @@
 Namespace(method='sprtshap', dataset='breast_cancer', k=5, algo='nn', nruns=50, npts=30, alpha=0.1, guarantee='set')
 sprtshap_breast_cancer_K5
-0
-1
-25 0.0
-2
-3
-4
-5
-6
-25 0.0
-7
-25 0.0
-#################### 1 0.0  (idx  7 )  ####################
-8
-25 0.0
-9
-Aborting. Too infrequently converging.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 1 (idx 1). 37 convergences in 50 runs
+Skipping. 2 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 1 convergences in 11 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 2 (idx 6). 46 convergences in 50 runs
+FWER 0.0 on pt 3 (idx 7). 50 convergences in 50 runs
+FWER 0.0 on pt 4 (idx 8). 50 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 5 (idx 10). 46 convergences in 50 runs
+FWER 0.0 on pt 6 (idx 11). 48 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 5 convergences in 11 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 5 convergences in 11 runs.
+Skipping. 12 convergences in 25 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 7 (idx 24). 50 convergences in 50 runs
+FWER 0.0 on pt 8 (idx 25). 37 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 9 (idx 28). 50 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 10 (idx 31). 47 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 11 (idx 34). 50 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 12 (idx 39). 39 convergences in 50 runs
+FWER 0.0 on pt 13 (idx 40). 50 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 1 convergences in 11 runs.
+FWER 0.0 on pt 14 (idx 45). 50 convergences in 50 runs

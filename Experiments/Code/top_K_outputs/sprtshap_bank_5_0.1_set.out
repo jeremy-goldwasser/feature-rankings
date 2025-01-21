@@ -1,21 +1,64 @@
 Namespace(method='sprtshap', dataset='bank', k=5, algo='nn', nruns=50, npts=30, alpha=0.1, guarantee='set')
 sprtshap_bank_K5
-0
-1
-2
-25 0.0
-3
-25 0.0
-#################### 1 0.0  (idx  3 )  ####################
-4
-5
-25 0.0
-#################### 2 0.0  (idx  5 )  ####################
-6
-7
-25 0.0
-8
-25 0.0
-9
-10
-Aborting. Too infrequently converging.
+Skipping. 0 convergences in 10 runs.
+Skipping. 4 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 1 (idx 3). 50 convergences in 50 runs
+Skipping. 2 convergences in 10 runs.
+FWER 0.0 on pt 2 (idx 5). 43 convergences in 50 runs
+Skipping. 1 convergences in 11 runs.
+FWER 0.0 on pt 3 (idx 7). 31 convergences in 50 runs
+FWER 0.0 on pt 4 (idx 8). 44 convergences in 50 runs
+Skipping. 3 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 5 convergences in 11 runs.
+Skipping. 2 convergences in 10 runs.
+FWER 0.0 on pt 5 (idx 13). 31 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 6 (idx 17). 49 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 3 convergences in 11 runs.
+Skipping. 3 convergences in 11 runs.
+FWER 0.0 on pt 7 (idx 21). 27 convergences in 50 runs
+FWER 0.0 on pt 8 (idx 22). 34 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 4 convergences in 10 runs.
+FWER 0.0 on pt 9 (idx 25). 49 convergences in 50 runs
+FWER 0.0 on pt 10 (idx 26). 50 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 11 (idx 28). 26 convergences in 50 runs
+Skipping. 2 convergences in 11 runs.
+FWER 0.0 on pt 12 (idx 30). 48 convergences in 50 runs
+FWER 0.0 on pt 13 (idx 31). 49 convergences in 50 runs
+FWER 0.0 on pt 14 (idx 32). 50 convergences in 50 runs
+FWER 0.0 on pt 15 (idx 33). 50 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 16 (idx 36). 37 convergences in 50 runs
+FWER 0.0 on pt 17 (idx 37). 50 convergences in 50 runs
+Skipping. 2 convergences in 10 runs.
+FWER 0.0 on pt 18 (idx 39). 50 convergences in 50 runs
+FWER 0.0 on pt 19 (idx 40). 32 convergences in 50 runs
+FWER 0.0 on pt 20 (idx 41). 42 convergences in 50 runs
+FWER 0.0 on pt 21 (idx 42). 50 convergences in 50 runs
+Skipping. 2 convergences in 11 runs.
+FWER 0.0 on pt 22 (idx 44). 38 convergences in 50 runs
+FWER 0.0 on pt 23 (idx 45). 49 convergences in 50 runs
+FWER 0.0 on pt 24 (idx 46). 50 convergences in 50 runs
+Skipping. 3 convergences in 10 runs.
+Skipping. 6 convergences in 13 runs.
+FWER 0.0 on pt 25 (idx 49). 49 convergences in 50 runs
+Skipping. 2 convergences in 10 runs.
+Skipping. 5 convergences in 11 runs.
+Skipping. 6 convergences in 13 runs.
+FWER 0.0 on pt 26 (idx 53). 33 convergences in 50 runs
+FWER 0.0 on pt 27 (idx 54). 49 convergences in 50 runs
+FWER 0.0 on pt 28 (idx 55). 40 convergences in 50 runs
+Skipping. 9 convergences in 19 runs.
+FWER 0.0 on pt 29 (idx 57). 46 convergences in 50 runs
+Skipping. 13 convergences in 27 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 3 convergences in 11 runs.
+FWER 0.0 on pt 30 (idx 61). 33 convergences in 50 runs

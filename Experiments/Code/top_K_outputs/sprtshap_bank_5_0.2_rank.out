@@ -1,13 +1,13 @@
 Namespace(method='sprtshap', dataset='bank', k=5, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
 sprtshap_bank_K5
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
+Skipping. 2 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 6 convergences in 13 runs.
+Skipping. 0 convergences in 10 runs.
 Aborting. Too infrequently converging.

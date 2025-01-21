@@ -1,110 +1,36 @@
 Namespace(method='rankshap', dataset='census', k=5, algo='nn', nruns=50, npts=30, alpha=0.1, guarantee='set')
 rankshap_census_K5
-0
-25 0.0
-#################### 1 0.0  (idx  0 )  ####################
-1
-25 0.0
-#################### 2 0.0  (idx  1 )  ####################
-2
-25 0.0
-#################### 3 0.0  (idx  2 )  ####################
-3
-25 0.0
-#################### 4 0.0  (idx  3 )  ####################
-4
-25 0.0
-#################### 5 0.0  (idx  4 )  ####################
-5
-25 0.0
-6
-25 0.0
-#################### 6 0.0  (idx  6 )  ####################
-7
-25 0.0
-#################### 7 0.0  (idx  7 )  ####################
-8
-25 0.0
-#################### 8 0.0  (idx  8 )  ####################
-9
-25 0.0
-#################### 9 0.0  (idx  9 )  ####################
-10
-25 0.0
-#################### 10 0.0  (idx  10 )  ####################
-11
-25 0.0
-#################### 11 0.0  (idx  11 )  ####################
-12
-25 0.0
-13
-25 0.0
-#################### 12 0.0  (idx  13 )  ####################
-14
-25 0.0
-#################### 13 0.0  (idx  14 )  ####################
-15
-25 0.0
-#################### 14 0.0  (idx  15 )  ####################
-16
-25 0.0
-#################### 15 0.0  (idx  16 )  ####################
-17
-25 0.0
-#################### 16 0.0  (idx  17 )  ####################
-18
-25 0.0
-19
-20
-25 0.0
-#################### 17 0.0  (idx  20 )  ####################
-21
-25 0.0
-#################### 18 0.0  (idx  21 )  ####################
-22
-25 0.0
-#################### 19 0.0  (idx  22 )  ####################
-23
-24
-25 0.0
-#################### 20 0.0  (idx  24 )  ####################
-25
-25 0.0
-26
-27
-25 0.0
-28
-25 0.0
-#################### 21 0.0  (idx  28 )  ####################
-29
-25 0.0
-30
-25 0.0
-#################### 22 0.0  (idx  30 )  ####################
-31
-32
-25 0.0
-33
-25 0.0
-#################### 23 0.0  (idx  33 )  ####################
-34
-25 0.0
-#################### 24 0.0  (idx  34 )  ####################
-35
-25 0.0
-#################### 25 0.0  (idx  35 )  ####################
-36
-25 0.0
-#################### 26 0.0  (idx  36 )  ####################
-37
-25 0.0
-#################### 27 0.0  (idx  37 )  ####################
-38
-25 0.0
-#################### 28 0.0  (idx  38 )  ####################
-39
-25 0.0
-#################### 29 0.0  (idx  39 )  ####################
-40
-25 0.0
-#################### 30 0.0  (idx  40 )  ####################
+FWER 0.0 on pt 1 (idx 0). 50 convergences in 50 runs
+FWER 0.0 on pt 2 (idx 1). 50 convergences in 50 runs
+FWER 0.0 on pt 3 (idx 2). 50 convergences in 50 runs
+FWER 0.0 on pt 4 (idx 3). 50 convergences in 50 runs
+FWER 0.0 on pt 5 (idx 4). 50 convergences in 50 runs
+FWER 0.0 on pt 6 (idx 5). 46 convergences in 50 runs
+FWER 0.0 on pt 7 (idx 6). 50 convergences in 50 runs
+FWER 0.0 on pt 8 (idx 7). 50 convergences in 50 runs
+FWER 0.0 on pt 9 (idx 8). 50 convergences in 50 runs
+FWER 0.0 on pt 10 (idx 9). 50 convergences in 50 runs
+FWER 0.0 on pt 11 (idx 10). 50 convergences in 50 runs
+FWER 0.0 on pt 12 (idx 11). 50 convergences in 50 runs
+FWER 0.0 on pt 13 (idx 12). 47 convergences in 50 runs
+FWER 0.0 on pt 14 (idx 13). 50 convergences in 50 runs
+FWER 0.0 on pt 15 (idx 14). 50 convergences in 50 runs
+FWER 0.0 on pt 16 (idx 15). 50 convergences in 50 runs
+FWER 0.0 on pt 17 (idx 16). 50 convergences in 50 runs
+FWER 0.0 on pt 18 (idx 17). 50 convergences in 50 runs
+FWER 0.0 on pt 19 (idx 18). 47 convergences in 50 runs
+Skipping. 2 convergences in 10 runs.
+FWER 0.0 on pt 20 (idx 20). 50 convergences in 50 runs
+FWER 0.0 on pt 21 (idx 21). 50 convergences in 50 runs
+FWER 0.0 on pt 22 (idx 22). 50 convergences in 50 runs
+Skipping. 2 convergences in 12 runs.
+FWER 0.0 on pt 23 (idx 24). 50 convergences in 50 runs
+FWER 0.0 on pt 24 (idx 25). 44 convergences in 50 runs
+Skipping. 3 convergences in 10 runs.
+FWER 0.0 on pt 25 (idx 27). 48 convergences in 50 runs
+FWER 0.0 on pt 26 (idx 28). 50 convergences in 50 runs
+FWER 0.0 on pt 27 (idx 29). 47 convergences in 50 runs
+FWER 0.0 on pt 28 (idx 30). 50 convergences in 50 runs
+Skipping. 13 convergences in 27 runs.
+FWER 0.0 on pt 29 (idx 32). 50 convergences in 50 runs
+FWER 0.0 on pt 30 (idx 33). 50 convergences in 50 runs

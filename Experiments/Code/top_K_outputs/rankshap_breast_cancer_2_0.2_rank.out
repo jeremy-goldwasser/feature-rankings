@@ -1,40 +1,15 @@
 Namespace(method='rankshap', dataset='breast_cancer', k=2, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
 rankshap_breast_cancer_K2
-0
-25 0.0
-#################### 1 0.0  (idx  0 )  ####################
-1
-25 0.0
-#################### 2 0.0  (idx  1 )  ####################
-2
-25 0.0
-#################### 3 0.0  (idx  2 )  ####################
-3
-25 0.0
-#################### 4 0.0  (idx  3 )  ####################
-4
-25 0.0
-5
-25 0.0
-#################### 5 0.0  (idx  5 )  ####################
-6
-25 0.0
-#################### 6 0.0  (idx  6 )  ####################
-7
-25 0.0
-#################### 7 0.0  (idx  7 )  ####################
-8
-25 0.0
-#################### 8 0.0  (idx  8 )  ####################
-9
-25 0.0
-#################### 9 0.0  (idx  9 )  ####################
-10
-25 0.0
-#################### 10 0.0  (idx  10 )  ####################
-11
-25 0.0
-12
-25 0.0
-#################### 11 0.0  (idx  12 )  ####################
-13
+FWER 0.0 on pt 1 (idx 0). 50 convergences in 50 runs
+FWER 0.0 on pt 2 (idx 1). 50 convergences in 50 runs
+FWER 0.0 on pt 3 (idx 2). 50 convergences in 50 runs
+FWER 0.0 on pt 4 (idx 3). 50 convergences in 50 runs
+FWER 0.0 on pt 5 (idx 4). 40 convergences in 50 runs
+FWER 0.0 on pt 6 (idx 5). 50 convergences in 50 runs
+FWER 0.0 on pt 7 (idx 6). 50 convergences in 50 runs
+FWER 0.0 on pt 8 (idx 7). 50 convergences in 50 runs
+FWER 0.0 on pt 9 (idx 8). 50 convergences in 50 runs
+FWER 0.0 on pt 10 (idx 9). 50 convergences in 50 runs
+FWER 0.0 on pt 11 (idx 10). 50 convergences in 50 runs
+FWER 0.02 on pt 12 (idx 11). 44 convergences in 50 runs
+FWER 0.0 on pt 13 (idx 12). 50 convergences in 50 runs
