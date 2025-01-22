@@ -1,15 +1,4 @@
 Namespace(method='rankshap', dataset='breast_cancer', k=2, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
 rankshap_breast_cancer_K2
 FWER 0.0 on pt 1 (idx 0). 50 convergences in 50 runs
-FWER 0.0 on pt 2 (idx 1). 50 convergences in 50 runs
-FWER 0.0 on pt 3 (idx 2). 50 convergences in 50 runs
-FWER 0.0 on pt 4 (idx 3). 50 convergences in 50 runs
-FWER 0.0 on pt 5 (idx 4). 40 convergences in 50 runs
-FWER 0.0 on pt 6 (idx 5). 50 convergences in 50 runs
-FWER 0.0 on pt 7 (idx 6). 50 convergences in 50 runs
-FWER 0.0 on pt 8 (idx 7). 50 convergences in 50 runs
-FWER 0.0 on pt 9 (idx 8). 50 convergences in 50 runs
-FWER 0.0 on pt 10 (idx 9). 50 convergences in 50 runs
-FWER 0.0 on pt 11 (idx 10). 50 convergences in 50 runs
-FWER 0.02 on pt 12 (idx 11). 44 convergences in 50 runs
-FWER 0.0 on pt 13 (idx 12). 50 convergences in 50 runs
+slurmstepd-scf-sm10: error: *** JOB 1352680 ON scf-sm10 CANCELLED AT 2025-01-20T21:56:25 ***
