@@ -61,7 +61,7 @@ max_n_rankshap = 10000
 max_n_kernelshap = 50000
 max_n_lime = 100000
 
-np.random.seed(0)
+np.random.seed(1)
 x_idx = 0
 # skip_thresh = 0.25 # Skip if successful with frequency below skip_thresh 
 
@@ -153,7 +153,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
             #     print(N_successful_runs, helper.calc_fwer(top_K, digits=3, rejection_idx=rejection_idx))
         else:
             N_completed_runs = run_idx + 1
-            if N_completed_runs >= 10 and N_successful_runs/N_completed_runs < 0.5:
+            if N_completed_runs >= 10 and N_successful_runs/N_completed_runs < 0.9: # 0.5
                 print(f'Skipping. {N_successful_runs} convergences in {N_completed_runs} runs.')
                 break
         # run_idx += 1
