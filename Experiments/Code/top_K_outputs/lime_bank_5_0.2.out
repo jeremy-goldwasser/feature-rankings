@@ -1,92 +1,139 @@
 Namespace(method='lime', dataset='bank', k=5, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
 lime_bank_K5
-FWER 0.0 on pt 1 (idx 0). 50 convergences in 50 runs
+FWER 0.0 on pt 1 (idx 0). 49 convergences in 50 runs
 Skipping. 0 convergences in 10 runs.
-Skipping. 2 convergences in 10 runs.
+Skipping. 4 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 FWER 0.0 on pt 2 (idx 6). 50 convergences in 50 runs
 Skipping. 2 convergences in 10 runs.
-Skipping. 1 convergences in 11 runs.
+Skipping. 1 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 3 (idx 10). 43 convergences in 50 runs
-Skipping. 3 convergences in 13 runs.
-Skipping. 5 convergences in 12 runs.
+Skipping. 17 convergences in 19 runs.
 Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 4 (idx 14). 49 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 3 (idx 14). 46 convergences in 50 runs
 Skipping. 0 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 Skipping. 4 convergences in 10 runs.
-FWER 0.0 on pt 5 (idx 18). 50 convergences in 50 runs
+FWER 0.0 on pt 4 (idx 18). 50 convergences in 50 runs
 Skipping. 0 convergences in 10 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 3 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 14 convergences in 16 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 5 (idx 27). 50 convergences in 50 runs
+Skipping. 10 convergences in 12 runs.
 Skipping. 4 convergences in 12 runs.
-Skipping. 12 convergences in 25 runs.
-Skipping. 7 convergences in 15 runs.
 Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 6 (idx 24). 47 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 2 convergences in 10 runs.
+FWER 0.0 on pt 6 (idx 34). 48 convergences in 50 runs
+Skipping. 13 convergences in 16 runs.
+Skipping. 26 convergences in 29 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 3 convergences in 11 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 7 (idx 41). 47 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 7 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 12 convergences in 17 runs.
+FWER 0.0 on pt 8 (idx 47). 50 convergences in 50 runs
+Skipping. 17 convergences in 19 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 9 (idx 51). 50 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 10 (idx 53). 50 convergences in 50 runs
+Skipping. 0 convergences in 10 runs.
+Skipping. 2 convergences in 11 runs.
+Skipping. 23 convergences in 26 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 2 convergences in 11 runs.
+Skipping. 8 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 11 (idx 62). 50 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+Skipping. 2 convergences in 11 runs.
+FWER 0.0 on pt 12 (idx 65). 50 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 13 (idx 67). 50 convergences in 50 runs
+Skipping. 5 convergences in 10 runs.
 Skipping. 3 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 7 (idx 27). 50 convergences in 50 runs
-FWER 0.0 on pt 8 (idx 28). 29 convergences in 50 runs
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-Skipping. 4 convergences in 10 runs.
-Skipping. 2 convergences in 10 runs.
-FWER 0.0 on pt 9 (idx 34). 50 convergences in 50 runs
-FWER 0.0 on pt 10 (idx 35). 40 convergences in 50 runs
-FWER 0.0 on pt 11 (idx 36). 41 convergences in 50 runs
-Skipping. 0 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-FWER 0.0 on pt 12 (idx 39). 26 convergences in 50 runs
-Skipping. 1 convergences in 10 runs.
-FWER 0.0 on pt 13 (idx 41). 46 convergences in 50 runs
-Skipping. 1 convergences in 10 runs.
-FWER 0.0 on pt 14 (idx 43). 43 convergences in 50 runs
-Skipping. 0 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-Skipping. 8 convergences in 17 runs.
-FWER 0.0 on pt 15 (idx 47). 50 convergences in 50 runs
-FWER 0.0 on pt 16 (idx 48). 50 convergences in 50 runs
-Skipping. 1 convergences in 10 runs.
 Skipping. 1 convergences in 11 runs.
-FWER 0.0 on pt 17 (idx 51). 50 convergences in 50 runs
-Skipping. 3 convergences in 11 runs.
-FWER 0.0 on pt 18 (idx 53). 49 convergences in 50 runs
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 19 (idx 56). 44 convergences in 50 runs
+Skipping. 25 convergences in 28 runs.
+Skipping. 5 convergences in 11 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 14 (idx 78). 50 convergences in 50 runs
+FWER 0.0 on pt 15 (idx 79). 50 convergences in 50 runs
+Skipping. 10 convergences in 12 runs.
+Skipping. 9 convergences in 14 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 17 convergences in 19 runs.
+Skipping. 1 convergences in 11 runs.
+Skipping. 2 convergences in 11 runs.
 Skipping. 4 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-FWER 0.0 on pt 20 (idx 62). 48 convergences in 50 runs
-Skipping. 0 convergences in 10 runs.
-Skipping. 6 convergences in 13 runs.
-FWER 0.0 on pt 21 (idx 65). 50 convergences in 50 runs
-Skipping. 1 convergences in 10 runs.
-FWER 0.0 on pt 22 (idx 67). 50 convergences in 50 runs
-Skipping. 5 convergences in 11 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 23 (idx 72). 47 convergences in 50 runs
-Skipping. 5 convergences in 11 runs.
+Skipping. 10 convergences in 13 runs.
+FWER 0.0 on pt 16 (idx 89). 50 convergences in 50 runs
+FWER 0.0 on pt 17 (idx 90). 50 convergences in 50 runs
 Skipping. 4 convergences in 11 runs.
 Skipping. 0 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-FWER 0.0 on pt 24 (idx 78). 50 convergences in 50 runs
-FWER 0.0 on pt 25 (idx 79). 49 convergences in 50 runs
-FWER 0.0 on pt 26 (idx 80). 46 convergences in 50 runs
-FWER 0.0 on pt 27 (idx 81). 38 convergences in 50 runs
+FWER 0.0 on pt 18 (idx 93). 50 convergences in 50 runs
+FWER 0.0 on pt 19 (idx 94). 50 convergences in 50 runs
+FWER 0.0 on pt 20 (idx 95). 49 convergences in 50 runs
+FWER 0.0 on pt 21 (idx 96). 50 convergences in 50 runs
+FWER 0.0 on pt 22 (idx 97). 50 convergences in 50 runs
+Skipping. 17 convergences in 21 runs.
+Skipping. 42 convergences in 47 runs.
+FWER 0.0 on pt 23 (idx 100). 50 convergences in 50 runs
+FWER 0.0 on pt 24 (idx 101). 48 convergences in 50 runs
 Skipping. 0 convergences in 10 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
-FWER 0.0 on pt 28 (idx 84). 41 convergences in 50 runs
+Skipping. 1 convergences in 10 runs.
+FWER 0.0 on pt 25 (idx 107). 50 convergences in 50 runs
+Skipping. 2 convergences in 10 runs.
 Skipping. 1 convergences in 10 runs.
 Skipping. 2 convergences in 10 runs.
+Skipping. 2 convergences in 11 runs.
+Skipping. 4 convergences in 12 runs.
 Skipping. 5 convergences in 11 runs.
-FWER 0.0 on pt 29 (idx 88). 39 convergences in 50 runs
-FWER 0.0 on pt 30 (idx 89). 50 convergences in 50 runs
+FWER 0.0 on pt 26 (idx 114). 50 convergences in 50 runs
+FWER 0.0 on pt 27 (idx 115). 50 convergences in 50 runs
+Skipping. 11 convergences in 13 runs.
+Skipping. 2 convergences in 11 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 4 convergences in 10 runs.
+Skipping. 4 convergences in 11 runs.
+FWER 0.0 on pt 28 (idx 122). 48 convergences in 50 runs
+Skipping. 20 convergences in 23 runs.
+Skipping. 10 convergences in 14 runs.
+Skipping. 2 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 1 convergences in 10 runs.
+Skipping. 0 convergences in 10 runs.
+Skipping. 5 convergences in 11 runs.
+Skipping. 5 convergences in 10 runs.
+FWER 0.0 on pt 29 (idx 131). 50 convergences in 50 runs
+Skipping. 1 convergences in 11 runs.
+Skipping. 2 convergences in 11 runs.
+Skipping. 5 convergences in 12 runs.
+Skipping. 0 convergences in 10 runs.
+FWER 0.0 on pt 30 (idx 136). 50 convergences in 50 runs
