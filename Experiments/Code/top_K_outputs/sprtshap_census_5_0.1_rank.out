@@ -9,3 +9,4 @@ Skipping. 1 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
+slurmstepd-scf-sm11: error: *** JOB 1360656 ON scf-sm11 CANCELLED AT 2025-01-22T20:52:11 ***

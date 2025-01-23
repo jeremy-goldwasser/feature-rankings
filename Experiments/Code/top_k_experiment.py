@@ -61,7 +61,7 @@ max_n_rankshap = 10000
 max_n_kernelshap = 50000
 max_n_lime = 100000
 
-np.random.seed(1)
+# np.random.seed(1)
 x_idx = 0
 # skip_thresh = 0.25 # Skip if successful with frequency below skip_thresh 
 
