@@ -103,7 +103,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
             # try:
             if dataset=="credit" and x_idx==19 and K==5:
                 tol = 1e-5
-            elif dataset=="brca" and x_idx==35 and K==2:
+            elif dataset=="brca" and x_idx==35: #  and K==2
                 tol = 1e-5
             else:
                 tol = 1e-4
