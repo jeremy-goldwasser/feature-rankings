@@ -44,7 +44,8 @@ def calc_fwer(top_K, digits=None, rejection_idx=None):
     if rejection_idx is not None:
         # Rows where test rejected
         relevant_top_K = relevant_top_K[rejection_idx]
-    num_false_rejections = np.sum(np.all(relevant_top_K!=most_common_row,axis=1)).item()
+    # num_false_rejections = np.sum(np.all(relevant_top_K!=most_common_row,axis=1)).item()
+    num_false_rejections = np.sum([1-np.array_equal(top_K_row, most_common_row) for top_K_row in relevant_top_K]).item()
     num_total_trials = len(top_K)
     fwer = num_false_rejections/num_total_trials
     if digits:
