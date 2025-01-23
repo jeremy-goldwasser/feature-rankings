@@ -2,12 +2,3 @@ Namespace(method='sprtshap', dataset='census', k=5, algo='nn', nruns=50, npts=30
 sprtshap_census_K5
 Skipping. 0 convergences in 10 runs.
 Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 1 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 0 convergences in 10 runs.
-Skipping. 1 convergences in 11 runs.
-Aborting. Too infrequently converging.
