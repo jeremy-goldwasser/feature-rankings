@@ -3,7 +3,7 @@ import sys
 import pickle
 import pathlib
 import os
-from os.path import join
+from os.path import join, exists
 path_to_file = str(pathlib.Path().resolve())
 dir_path = join(path_to_file, "../../")
 from slime import lime_tabular
@@ -28,15 +28,19 @@ alpha = 0.1
 results_dir = join(dir_path, "Experiments", "Results", "Top_K", guarantee, "alpha_"+str(alpha))
 fname = "sample_size_comparison.npy"
 
-max_n_rankshap = 10000
-# max_n_sprtshap = 100000
-# datasets = ["census", "bank", "brca", "credit", "breast_cancer"]
-datasets = ["census", "bank", "credit", "breast_cancer"]
+if exists(join(results_dir, fname)):
+    with open(join(results_dir, fname), 'rb') as f:
+        N_samples_all_datasets = list(np.load(f))
+else:
+    N_samples_all_datasets = []
 
-N_samples_all_datasets = []
+# datasets = ["census", "bank", "credit", "breast_cancer"]
+datasets = ["breast_cancer"]
+
+max_n_rankshap = 10000
 for dataset in datasets:
     X_train, y_train, X_test, y_test, mapping_dict = load_data.load_data(join(dir_path, "Experiments", "Data"), dataset)
-    N_test = y_test.shape[0]
+    N_max_pts = y_test.shape[0] if dataset!="breast_cancer" else y_train.shape[0]
     d = len(mapping_dict) if mapping_dict is not None else X_train.shape[1]
 
     model = train_models.train_model(X_train, y_train, "nn")
@@ -47,8 +51,8 @@ for dataset in datasets:
     n_init_total = 100*d
     N_samples = []
     max_n_sprtshap = max_n_rankshap*d
-    while N_successful_pts < N_pts and x_idx < N_test:
-        xloc = X_test[x_idx]
+    while N_successful_pts < N_pts and x_idx < N_max_pts:
+        xloc = X_test[x_idx] if dataset!="breast_cancer" else X_train[x_idx]
         rankshap_vals, _, N_rankshap, rankshap_converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
                                                 K=K, alpha=alpha, guarantee=guarantee,
                                                 max_n_perms=max_n_rankshap, 

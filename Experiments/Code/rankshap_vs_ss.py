@@ -62,33 +62,11 @@ while N_successful_pts < N_pts:
     
     N_samples_all_runs = []
     top_K_rankshap = []
-    # count, N_successful_runs = 0, 0
-    # while N_successful_runs < N_runs:
-    #     rankshap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict, 
-    #                                                   K=K, alpha=alpha, n_equal=True, guarantee='rank', 
-    #                                                   max_n_perms=10000, abs=True)
-        
-    #     # Only consider inputs on which RankSHAP is capable of K rejections.
-    #     count += 1
-    #     if converged: 
-    #         N_successful_runs += 1
-    #         est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
-    #         top_K_rankshap.append(est_top_K)
-    #         N_samples_all_runs.append([len(diffs_feat) for diffs_feat in diffs])
-    #     if count >= 5 and N_successful_runs/count < skip_thresh:
-    #         break
-    # if N_successful_runs < N_runs:
-    #     continue
-    # count, N_successful_runs = 0, 0
     successful_iters = []
     for i in range(N_runs):
         rankshap_vals, diffs, N, converged = rankshap(model, X_train, xloc, mapping_dict=mapping_dict, 
                                                       K=K, alpha=alpha, n_equal=True, guarantee='rank', 
                                                       max_n_perms=10000, abs=True)
-        
-        # if converged: 
-        #     N_successful_runs += 1
-        #     est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
 
         # Store Shapley estimates, top-K ranking, and number of samples
         est_top_K = get_ranking(rankshap_vals, abs=True)[:K]
@@ -117,10 +95,6 @@ while N_successful_pts < N_pts:
     top_K_ss_adaptive = [] 
     # top_K_ss_fixed = []
     for i in range(N_runs):
-        # shap_vals_fixed = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=N_samples_fixed)
-        # est_top_K = get_ranking(shap_vals_fixed, abs=True)[:K]
-        # top_K_ss_fixed.append(est_top_K)
-
         shap_vals_adaptive = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=avg_samples_per_feat)
         est_top_K = get_ranking(shap_vals_adaptive, abs=True)[:K]
         top_K_ss_adaptive.append(est_top_K)
@@ -129,7 +103,6 @@ while N_successful_pts < N_pts:
     top_K_ss_adaptive_all.append(top_K_ss_adaptive)
     successful_iters_all.append(successful_iters)
     
-    # print(f"FWER, Shapley Sampling (fixed N={N_samples_fixed}): {calc_fwer(top_K_ss_fixed, digits=3)}")
     print(f"FWER, Shapley Sampling (adaptive N={avg_samples_per_feat}): {calc_fwer(top_K_ss_adaptive, digits=3)}\n")
     all_results = {'rankshap': top_K_rankshap_all, 'rankshap_rejection_idx': np.array(successful_iters_all),
                    'ss_adaptive': np.array(top_K_ss_adaptive_all), 
