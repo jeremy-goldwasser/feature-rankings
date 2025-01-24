@@ -22,7 +22,7 @@ class TwoLayerNet(nn.Module):
         out = self.softmax(out)
         return out
 
-def train_neural_net(X_train, y_train, lime=False):
+def train_neural_net(X_train, y_train, lime=False, return_array=False):
     if lime:
         clf = MLPClassifier(random_state=1, hidden_layer_sizes=(50,)).fit(X_train, y_train)
         return clf.predict_proba
@@ -72,7 +72,10 @@ def train_neural_net(X_train, y_train, lime=False):
     def model(x):
         if not torch.is_tensor(x):
             x = torch.tensor(x, dtype=torch.float32)
-        return neural_net(x).detach().numpy()
+        output = neural_net(x).detach().numpy()
+        if return_array:
+            output = np.array([output])
+        return output
     return model
 
 

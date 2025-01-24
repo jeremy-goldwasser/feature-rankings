@@ -28,19 +28,19 @@ alpha = 0.1
 results_dir = join(dir_path, "Experiments", "Results", "Top_K", guarantee, "alpha_"+str(alpha))
 fname = "sample_size_comparison.npy"
 
-if exists(join(results_dir, fname)):
-    with open(join(results_dir, fname), 'rb') as f:
-        N_samples_all_datasets = list(np.load(f))
-else:
-    N_samples_all_datasets = []
+# if exists(join(results_dir, fname)):
+#     with open(join(results_dir, fname), 'rb') as f:
+#         N_samples_all_datasets = list(np.load(f))
+# else:
+#     N_samples_all_datasets = []
 
-# datasets = ["census", "bank", "credit", "breast_cancer"]
-datasets = ["breast_cancer"]
+N_samples_all_datasets = []
+datasets = ["census", "bank", "brca", "credit", "breast_cancer"]
 
 max_n_rankshap = 10000
 for dataset in datasets:
     X_train, y_train, X_test, y_test, mapping_dict = load_data.load_data(join(dir_path, "Experiments", "Data"), dataset)
-    N_max_pts = y_test.shape[0] if dataset!="breast_cancer" else y_train.shape[0]
+    N_max_pts = y_test.shape[0] if dataset!="brca" else y_train.shape[0]
     d = len(mapping_dict) if mapping_dict is not None else X_train.shape[1]
 
     model = train_models.train_model(X_train, y_train, "nn")
@@ -50,26 +50,31 @@ for dataset in datasets:
     n_init_per_feature = 100
     n_init_total = 100*d
     N_samples = []
-    max_n_sprtshap = max_n_rankshap*d
+    max_n_sprtshap = min(max_n_rankshap*d, 20000)
     while N_successful_pts < N_pts and x_idx < N_max_pts:
-        xloc = X_test[x_idx] if dataset!="breast_cancer" else X_train[x_idx]
-        rankshap_vals, _, N_rankshap, rankshap_converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
-                                                K=K, alpha=alpha, guarantee=guarantee,
-                                                max_n_perms=max_n_rankshap, 
-                                                n_equal=True, n_samples_per_perm=10, 
-                                                n_init=n_init_per_feature, abs=True)
+        if x_idx > 0:
+            print(x_idx, N_successful_pts)
+        xloc = X_test[x_idx] if dataset!="brca" else X_train[x_idx]
+        x_idx += 1
         sprtshap_vals, _, N_sprtshap, sprtshap_converged = top_k.sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                 guarantee=guarantee,
                                                 n_samples_per_perm=10, n_perms_btwn_tests=1000, 
                                                 n_max=max_n_sprtshap, alpha=alpha, beta=0.2, abs=True,
                                                 n_init=n_init_total)
-        print(rankshap_converged, sprtshap_converged)
-        if rankshap_converged and sprtshap_converged:
-            N_samples.append([N_rankshap, N_sprtshap])
-            N_successful_pts += 1
-            
-        x_idx += 1
-        print(x_idx, N_successful_pts)
+        if not sprtshap_converged:
+            continue
+        rankshap_vals, _, N_rankshap, rankshap_converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
+                                                K=K, alpha=alpha, guarantee=guarantee,
+                                                max_n_perms=max_n_rankshap, 
+                                                n_equal=True, n_samples_per_perm=10, 
+                                                n_init=n_init_per_feature, abs=True)
+        if not rankshap_converged:
+            continue
+        # print(rankshap_converged, sprtshap_converged)
+        # if rankshap_converged and sprtshap_converged:
+        N_samples.append([N_rankshap, N_sprtshap])
+        N_successful_pts += 1
+        
     N_samples_all_datasets.append(N_samples)
     
     with open(join(results_dir, fname), 'wb') as f:

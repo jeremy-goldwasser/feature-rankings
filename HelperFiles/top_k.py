@@ -33,6 +33,7 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
                                             n_samples_per_perm=n_samples_per_perm)
     d = len(mapping_dict) if mapping_dict is not None else X.shape[1]
     N_total = n_init*d
+    ct = 0
     while True:
         shap_ests = helper_shapley_sampling.diffs_to_shap_vals(diffs_all_feats, abs=abs)
         shap_vars = helper_shapley_sampling.diffs_to_shap_vars(diffs_all_feats)
@@ -56,9 +57,10 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
         # failure_idx = order[num_verified]
 
         exceeded = False
-        # Run until order of pair is stable
+        # Pair of features with highest p-value
         failure_idx, close_idx = pair_idx
-        # pair_idx = [failure_idx, close_idx]
+
+        # Run until order of pair is stable
         while True:
             n_to_run = [int(buffer*n) for n in n_to_reject_pair]
             # Suggested runtime exceeds computational maximum
@@ -233,6 +235,7 @@ def sprtshap(model, X, xloc, K,
         coalitions_t, coalition_values_t, coalition_vars_t = helper_kernelshap.compute_coalitions_values(model, X, xloc, 
                                                                         n_perms, n_samples_per_perm, mapping_dict)
         N += n_perms
+        # print(N, n_max)
         if N > n_perms:
             # Append onto existing counts
             coalitions = np.concatenate((coalitions, coalitions_t)) # z vectors

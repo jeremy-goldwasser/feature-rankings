@@ -154,39 +154,6 @@ def test_for_max(means, vars_of_means, j, alpha,
             return result, n_to_reject_pair
 
 
-# def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True):
-#     # k passed <=> passed through rank k vs k+1 <=> first failure at test idx k vs k+1
-#     d = len(shap_ests)
-#     order = get_ranking(shap_ests, abs=abs)
-#     if abs:
-#         shap_ests = np.abs(shap_ests)
-#     num_verified = 0
-#     # Test stability of 1 vs 2; 2 vs 3; etc (d-1 total tests)
-#     max_num_tests = d-1
-#     while num_verified < max_num_tests:
-#         idx_to_test = order[num_verified:].astype(int)
-#         means_to_test = shap_ests[idx_to_test]
-#         vars_to_test = shap_vars[idx_to_test]
-
-#         # Find index with biggest variance. 
-#         max_test_idx = np.argmax(vars_to_test[1:]) + 1
-#         # print(np.round(np.sqrt(vars_to_test)*1000))
-#         # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
-#         # print(num_verified)
-#         for j in range(1, max_test_idx+1):
-#             test_result = test_for_max(means_to_test, vars_to_test, j, alpha)
-#             if test_result=="fail to reject":
-#                 break
-#         # print(test_result)
-#         # Reject null if all tests reject (max p-value < alpha)
-#         if test_result=="reject":
-#             num_verified += 1
-#         else:
-#             break
-#     if num_verified == d-1:
-#         num_verified += 1
-#     return num_verified 
-
 def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True, 
                       compute_sample_size=False,
                       K=None, n_equal=True, value_vars=None):
@@ -207,8 +174,8 @@ def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True,
         max_test_idx = np.argmax(vars_to_test[1:]) + 1
         reject = True
         # Subsequent tests will necessarily have lower p-values, so they don't need to be tested.
-        # print(num_verified)
         ns_to_reject_all = []
+        fail_to_reject_idx = []
         for j in range(1, max_test_idx+1):
             result = test_for_max(means_to_test, vars_to_test, j, alpha,
                                        compute_sample_size=compute_sample_size, 
@@ -216,6 +183,7 @@ def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True,
             test_result, n_to_reject_pair = result if compute_sample_size else (result, None)
             if test_result=="fail to reject":
                 reject = False
+                fail_to_reject_idx.append(j)
                 if compute_sample_size:
                     ns_to_reject_all.append(n_to_reject_pair)
                 else:
@@ -228,10 +196,9 @@ def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True,
             # Fail to reject - cut off
             if compute_sample_size:
                 n_totals = np.sum(ns_to_reject_all, axis=1)
-                close_idx_among_tested = np.argmin(n_totals)
-                n_to_reject_pair = ns_to_reject_all[close_idx_among_tested]
-
-                close_idx = order[num_verified+close_idx_among_tested+1]
+                close_idx_among_tested = np.array(fail_to_reject_idx)[np.argmin(n_totals)]
+                n_to_reject_pair = ns_to_reject_all[np.argmin(n_totals)]
+                close_idx = order[num_verified+close_idx_among_tested]
                 failure_idx = order[num_verified]
                 pair_idx = [failure_idx, close_idx]
             break

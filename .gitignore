@@ -21,6 +21,9 @@ Experiments/Results/lime_ranks*
 Experiments/Results/lime_fwers*
 Experiments/Results/lime_instability.png
 Experiments/Code/slurm*
+Experiments/Code/top_K_outputs/
+Experiments/Code/retro_outputs/
 .DS_Store
 **/.ipynb_checkpoints/*
 .ipynb_checkpoints
+basic_analysis.ipynb
