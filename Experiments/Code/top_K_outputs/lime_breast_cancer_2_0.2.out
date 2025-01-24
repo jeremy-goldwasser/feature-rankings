@@ -1,8 +1,8 @@
 Namespace(method='lime', dataset='breast_cancer', k=2, algo='nn', nruns=50, npts=30, alpha=0.2, guarantee='rank')
 lime_breast_cancer_K2
-FWER 0.0 on pt 1 (idx 0). 50 convergences in 50 runs
-FWER 0.0 on pt 2 (idx 1). 34 convergences in 50 runs
-FWER 0.0 on pt 3 (idx 2). 50 convergences in 50 runs
+FWER 0.02 on pt 1 (idx 0). 49 convergences in 50 runs
+Skipping. 7 convergences in 12 runs.
+FWER 0.0 on pt 2 (idx 2). 50 convergences in 50 runs
 Traceback (most recent call last):
   File "/accounts/grad/jeremy_goldwasser/RankSHAP/Experiments/Code/top_k_experiment.py", line 110, in <module>
     exp, converged = explainer.slime(xloc, model, num_features = K, 
