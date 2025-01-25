@@ -64,24 +64,6 @@ def calc_retro_fwer(GTranks, rankings, N_verified, digits=3):
     Calculates FWER of observed rankings for a single alpha on a given sample. 
     Different iterations may have verified different numbers of ranks.
     '''
-    # N_runs, _ = rankings.shape
-    # nStable = np.sum(N_verified > 0)
-    # if nStable <= thresh*N_runs: # Majority unverified
-    #    # FWER will not be computed on iterations that verified too infrequently.
-    #     # print("Majority unverified.")
-    #     return np.nan
-    # prop_stable = 0
-    # # Number of runs with at least one stable rank
-    # for runIdx in range(N_runs):
-    #     nVerif = N_verified[runIdx]
-    #     if nVerif > 0:
-    #         stableRanks = rankings[runIdx,:nVerif]
-    #         was_stable = np.array_equal(stableRanks, GTranks[:nVerif])
-    #         prop_stable += was_stable
-    #     else:
-    #         prop_stable += 1
-    # # prop_stable /= nStable
-    # prop_stable /= N_runs
     prop_stable = np.mean([
         np.array_equal(rankings[i, :nVerif], GTranks[:nVerif]) if nVerif > 0 else True
         for i, nVerif in enumerate(N_verified)
@@ -102,7 +84,6 @@ def calc_all_retro_fwers(N_verified_all, ranks, avgRanks, digits=3):
         for alphaIdx in range(N_alphas)
     ]
     fwers_all = np.array(fwers_all)
-    # fwers_all = np.where(np.array(fwers_all, dtype=object) == None, np.nan, fwers_all)
     return fwers_all
 
     
@@ -128,7 +109,6 @@ def test_for_max(means, vars_of_means, j, alpha,
         denom = 0.5
 
     p_val = num/denom
-    # print("j, p-value:", j, np.round(p_val,4))
     result = "reject" if p_val < alpha or np.isnan(p_val) else "fail to reject"
     if not compute_sample_size:
         if return_p_val:
@@ -266,13 +246,7 @@ def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
     if compute_sample_size:
         if reject:
             return "reject", None, None
-        # WRONG: Identify the pair of indices that failed to reject with fewest samples to reject
-        # n_totals = np.sum(np.array(ns_to_reject_all), axis=1)
-        # best_idx = np.argmin(n_totals)
-
-        # RIGHT: Identify the pair of indices that failed to reject with largest p-value
-            # WEIRD: Getting a lot of nan p-values. Now lumping them into rejections.
-
+        # Identify the pair of indices that failed to reject with largest p-value
         best_idx = np.nanargmax(p_vals)
         n_to_reject_pair = ns_to_reject_all[best_idx]
         pair_rank = pair_ranks[best_idx]

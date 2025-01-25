@@ -1,4 +1,3 @@
-#%%
 import numpy as np
 import sys
 import pickle
@@ -22,7 +21,6 @@ dataset = "census"
 X_train, y_train, X_test, y_test, mapping_dict = load_data(join(dir_path, "Experiments", "Data"), dataset)
 d = len(mapping_dict)
 model = train_model(X_train, y_train, model="nn", lime=False)
-# model = train_logreg(X_train, y_train)
 np.random.seed(42)
 
 import argparse
@@ -32,18 +30,14 @@ parser.add_argument('--alpha', type=float, default=0.2)
 args = parser.parse_args() 
 K = args.k
 alpha = args.alpha
-# K = int(sys.argv[1])
 print(f"K={K}, alpha={alpha}")
 
 skip_thresh = 0.25
-# alpha = 0.2
 N_runs = 50
 N_pts = 30
 
 fwers = []
-# N_samples_fixed = 500
 top_K_rankshap_all = []
-# top_K_ss_fixed_all = []
 top_K_ss_adaptive_all = []
 N_samples_rankshap_all = []
 indices_used = []
@@ -88,25 +82,21 @@ while N_successful_pts < N_pts:
     N_samples_rankshap_all.append(N_samples_all_runs)
     print("#"*20)
     print(f"Successful run {N_successful_pts}, {x_idx} attempts")
-    # print(f"RankSHAP, average number of samples per feature: {avg_samples_per_feat}")
     print(f"FWER, RankSHAP: {calc_fwer(top_K_rankshap, digits=3, rejection_idx=successful_iters)}")
 
     # Run Shapley Sampling
     top_K_ss_adaptive = [] 
-    # top_K_ss_fixed = []
     for i in range(N_runs):
         shap_vals_adaptive = shapley_sampling(model, X_train, xloc, mapping_dict=mapping_dict, n_perms=avg_samples_per_feat)
         est_top_K = get_ranking(shap_vals_adaptive, abs=True)[:K]
         top_K_ss_adaptive.append(est_top_K)
     
-    # top_K_ss_fixed_all.append(top_K_ss_fixed)
     top_K_ss_adaptive_all.append(top_K_ss_adaptive)
     successful_iters_all.append(successful_iters)
     
     print(f"FWER, Shapley Sampling (adaptive N={avg_samples_per_feat}): {calc_fwer(top_K_ss_adaptive, digits=3)}\n")
     all_results = {'rankshap': top_K_rankshap_all, 'rankshap_rejection_idx': np.array(successful_iters_all),
                    'ss_adaptive': np.array(top_K_ss_adaptive_all), 
-                #    'ss_fixed': top_K_ss_fixed_all, 
                    'rankshap_n_samples': np.array(N_samples_rankshap_all), 'x_indices': np.array(indices_used)}
     with open(join(output_dir, fname), "wb") as fp:
         pickle.dump(all_results, fp)

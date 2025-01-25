@@ -1,6 +1,5 @@
 import numpy as np
 from helper import *
-# from scipy.stats import norm
 
 
 def diffs_to_shap_vals(diffs_all_feats, abs=False):

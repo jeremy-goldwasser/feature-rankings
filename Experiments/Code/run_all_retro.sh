@@ -1,6 +1,6 @@
 #!/bin/bash
 
-methods=("ss kernelshap") # Add more methods if needed
+methods=("ss kernelshap")
 datasets=("census" "bank" "brca" "breast_cancer" "credit")
 
 for method in "${methods[@]}"; do

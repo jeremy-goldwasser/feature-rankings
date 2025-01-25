@@ -20,6 +20,7 @@ def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
     - mapping_dict: Dictionary mapping categorical variables to corresponding binary columns of X and xloc
     - guarantee: "rank" or "set". "rank" tests for order within top K, while "set" merely tests for belonging
     - n_samples_per_perm: Number of samples of X_{S^c} with which to estimate v(S) = E[f(X) | x_S)]
+    - max_n_perms: Maximum number of permutations to run before returning unconverged results
     - n_init: Number of initial permutations for all features, before testing pairs for ranking
     - n_equal: Boolean, whether we want ambiguously ranked features to receive equal number of permutations, or scale by relative variance
     - buffer: Factor by which to increase estimate of necessary number of permutations. Should be ≥ 1.
@@ -217,11 +218,26 @@ def top_K_set_sprtshap(ests, vars, alpha=0.1, beta=0.2, abs=True, K=None):
 
 
 def sprtshap(model, X, xloc, K, 
-             mapping_dict=None, guarantee="rank",
+             mapping_dict=None, alpha=0.1, guarantee="rank",
              n_samples_per_perm=10, 
              n_perms_btwn_tests=1000, n_max=100000, 
-             alpha=0.1, beta=0.2, abs=True,
+             beta=0.2, abs=True,
              n_init=None):
+    '''
+    - model: Inputs a numpy array, outputs a scalar
+    - X: N by D matrix of samples
+    - xloc: 1 by D matrix with one sample, whose SHAP values are estimated
+    - K: Number of features we want to rank correctly
+    - alpha: Significance level
+    - mapping_dict: Dictionary mapping categorical variables to corresponding binary columns of X and xloc
+    - guarantee: "rank" or "set". "rank" tests for order within top K, while "set" merely tests for belonging
+    - n_samples_per_perm: Number of samples of X_{S^c} with which to estimate v(S) = E[f(X) | x_S)]
+    - n_perms_btwn_tests: Number of permutations to run before testing for ranking
+    - n_max: Maximum number of permutations to run before returning unconverged results
+    - beta: Type II error rate
+    - abs: Whether we want to rank features by the absolute values of their Shapley values
+    - n_init: Number of total initial permutations, before testing pairs for ranking
+    '''
     if xloc.ndim==1:
         xloc = xloc.reshape(1,-1)
     avg_pred = np.mean(model(X))

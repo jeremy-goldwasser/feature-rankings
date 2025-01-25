@@ -41,9 +41,6 @@ def make_bank(data_path):
 
 
 def make_credit(data_path):
-    # import sage
-    # df = sage.datasets.credit()
-    # df.to_csv("Data/credit.csv")
     df = pd.read_csv(join(data_path, "credit", "credit.csv"), index_col=0)
 
     # Property, other installment, housing, job, status of checking act, credit history, purpose, savings, employment since, marital status, old debtors

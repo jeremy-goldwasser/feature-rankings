@@ -63,7 +63,6 @@ max_n_lime = 100000
 
 # np.random.seed(1)
 x_idx = 0
-# skip_thresh = 0.25 # Skip if successful with frequency below skip_thresh 
 
 top_K_all = []
 fwers_all = []
@@ -100,26 +99,11 @@ while N_successful_pts < N_pts and x_idx < N_test:
     # while N_successful_runs < N_runs:
     for run_idx in range(N_runs):
         if isLime:
-            # try:
-            if dataset=="credit" and x_idx==19 and K==5:
-                tol = 1e-5
-            elif dataset=="brca" and x_idx==35: #  and K==2
-                tol = 1e-5
-            else:
-                tol = 1e-4
+            tol = 1e-4
             exp, converged = explainer.slime(xloc, model, num_features = K, 
                                         num_samples = 1000, n_max = max_n_lime, 
                                         alpha = alpha_adj, tol=tol, return_none=True)
             est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
-                # if exp is not None:
-                #     # est_top_K = extract_lime_feats(exp, K, mapping_dict)
-                #     # Don't see a good way to get back to feature space.
-                #     est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
-                #     converged = True
-                # else:
-                #     converged = False
-            # except:
-            #     converged = False
         else:
             if method=="rankshap":
                 shap_vals, diffs, N, converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
@@ -156,9 +140,8 @@ while N_successful_pts < N_pts and x_idx < N_test:
             if N_completed_runs >= 10 and N_successful_runs/N_completed_runs < 0.9: # 0.5
                 print(f'Skipping. {N_successful_runs} convergences in {N_completed_runs} runs.')
                 break
-        # run_idx += 1
 
-    # if N_successful_runs==N_runs: # Made it through
+    # Made it through
     if N_runs==run_idx+1:
         N_successful_pts += 1
         fwer = helper.calc_fwer(top_K, digits=3, rejection_idx=rejection_idx)
@@ -167,7 +150,6 @@ while N_successful_pts < N_pts and x_idx < N_test:
         rejection_idx_all.append(rejection_idx)
         top_K_all.append(top_K)
         
-        # print("#"*20, N_successful_pts, fwer, " (idx ", x_idx, ") ", "#"*20)
         print(f'FWER {fwer} on pt {N_successful_pts} (idx {x_idx}). {N_successful_runs} convergences in {N_runs} runs')
 
         # Store results

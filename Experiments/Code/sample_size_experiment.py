@@ -1,16 +1,12 @@
 import numpy as np
 import sys
-import pickle
 import pathlib
-import os
-from os.path import join, exists
+from os.path import join
 path_to_file = str(pathlib.Path().resolve())
 dir_path = join(path_to_file, "../../")
-from slime import lime_tabular
 
 sys.path.append(join(dir_path, "HelperFiles"))
-import helper
-import helper_shapley_sampling
+
 import top_k
 import train_models
 import load_data
@@ -18,21 +14,12 @@ import load_data
 import warnings
 warnings.filterwarnings('ignore')
 
-import matplotlib.pyplot as plt
-from matplotlib.ticker import ScalarFormatter
-
 N_pts = 30
 K = 2
 guarantee = "rank"
 alpha = 0.1
 results_dir = join(dir_path, "Experiments", "Results", "Top_K", guarantee, "alpha_"+str(alpha))
 fname = "sample_size_comparison.npy"
-
-# if exists(join(results_dir, fname)):
-#     with open(join(results_dir, fname), 'rb') as f:
-#         N_samples_all_datasets = list(np.load(f))
-# else:
-#     N_samples_all_datasets = []
 
 N_samples_all_datasets = []
 datasets = ["census", "bank", "brca", "credit", "breast_cancer"]

@@ -21,10 +21,8 @@ def compute_coalitions_values(model, X, xloc,
         z = np.zeros(d)
         z[S] = 1
         # For each z/S, compute list of length {# samples/perm} of X_{S^c}|X_S
-        # w_x_vals = coalitions_kshap(X, xloc, z, n_samples_per_perm, mapping_dict)
         w_x_vals = coalitions_kshap(X, xloc, S, n_samples_per_perm, mapping_dict)
         coalitions.append(z)
-        # coalitions = np.append(coalitions, z).reshape((count, d))        
         W_vals.append(w_x_vals)
     coalitions = np.array(coalitions).reshape((n_perms, d))        
     # Compute all conditional means, variances, and covariances
@@ -107,10 +105,7 @@ def kshap_equation(yloc, coalitions, coalition_values, avg_pred):
 ################### KernelSHAP method ###################
 def compute_kshap_vars_ls(var_values, coalitions):
     d = coalitions.shape[1]
-    #   mean_subset_values = np.matmul(coalitions, kshap_ests) + avg_pred
-    #   var_values = np.mean((coalition_values - mean_subset_values)**2) * np.identity(M) 
     var_values = np.diagflat(var_values)
-    # counts = np.sum(coalitions, axis=1).astype(int).tolist()
     ones_vec = np.ones(d).reshape((d, 1))
     A = coalitions.T @ coalitions
     try:
