@@ -2,6 +2,9 @@ import numpy as np
 from scipy.stats import t
 from scipy.stats import norm
 
+
+
+
 ############### Estimation ###############
 def map_S(S, mapping_dict):
     '''
@@ -21,70 +24,6 @@ def get_ranking(shap_vals, abs=True):
     else:
         return np.argsort(shap_vals)[::-1]
 
-############### Top-K Analysis ###############
-
-def mode_rows(a):
-    a = np.ascontiguousarray(a)
-    void_dt = np.dtype((np.void, a.dtype.itemsize * np.prod(a.shape[1:])))
-    _,ids, count = np.unique(a.view(void_dt).ravel(), \
-                                return_index=1,return_counts=1)
-    largest_count_id = ids[count.argmax()]
-    most_frequent_row = a[largest_count_id]
-    return most_frequent_row
-
-
-def calc_fwer(top_K, digits=None, rejection_idx=None):
-    '''
-    Calculates the family-wise error rate (FWER) of the top-K rankings: {# false rejections}/{# total trials}.
-    top_k is a np.array of shape (N_runs, K)
-    rejection_idx is a subset of the N_runs iterations in which the test rejected
-    '''
-    most_common_row = mode_rows(top_K)
-    relevant_top_K = np.array(top_K)
-    if rejection_idx is not None:
-        # Rows where test rejected
-        relevant_top_K = relevant_top_K[rejection_idx]
-    # num_false_rejections = np.sum(np.all(relevant_top_K!=most_common_row,axis=1)).item()
-    num_false_rejections = np.sum([1-np.array_equal(top_K_row, most_common_row) for top_K_row in relevant_top_K]).item()
-    num_total_trials = len(top_K)
-    fwer = num_false_rejections/num_total_trials
-    if digits:
-        return np.round(fwer, digits)
-    return fwer
-    
-def shap_vals_to_ranks(shap_vals, abs=True):
-    N_pts, N_runs, d = shap_vals.shape
-    shap_ranks = np.array([get_ranking(shap_vals[i,j,:], abs=abs) for i in range(N_pts) for j in range(N_runs)]).reshape(shap_vals.shape)
-    return shap_ranks
-
-############### Retrospective Analysis ###############
-
-def calc_retro_fwer(GTranks, rankings, N_verified, digits=3):
-    '''
-    Calculates FWER of observed rankings for a single alpha on a given sample. 
-    Different iterations may have verified different numbers of ranks.
-    '''
-    prop_stable = np.mean([
-        np.array_equal(rankings[i, :nVerif], GTranks[:nVerif]) if nVerif > 0 else True
-        for i, nVerif in enumerate(N_verified)
-    ])
-    fwer = 1 - prop_stable
-    if digits:
-        return np.round(fwer, digits)
-    return fwer
-
-
-def calc_all_retro_fwers(N_verified_all, ranks, avgRanks, digits=3):
-    N_pts, _, N_alphas = N_verified_all.shape
-    fwers_all = [
-        [
-            calc_retro_fwer(avgRanks[ptIdx], ranks[ptIdx], N_verified_all[ptIdx,:,alphaIdx], digits=digits)
-            for ptIdx in range(N_pts)
-        ]
-        for alphaIdx in range(N_alphas)
-    ]
-    fwers_all = np.array(fwers_all)
-    return fwers_all
 
     
 ############### Top-K Ranking ###############
@@ -194,7 +133,9 @@ def find_num_verified(shap_ests, shap_vars, alpha=0.1, abs=True,
 ############### Top-K Set ###############
 
 def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
-                   compute_sample_size=False, n_equal=True, value_vars=None):
+                   compute_sample_size=False, n_equal=True, 
+                   value_vars=None, 
+                   return_p_val=False, return_close_ranks=False):
     # Split into top K and bottom D-K
     d = len(means)
     order = get_ranking(means, abs=abs)
@@ -213,6 +154,7 @@ def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
     ns_to_reject_all = []
     pair_ranks = []
     p_vals = []
+    all_p_vals = []
     for i in range(K):
         # Start with lower-ranked indices. Makes rejection faster if not computing sample sizes.
         top_K_idx = K - i - 1
@@ -228,8 +170,9 @@ def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
                                 compute_sample_size=compute_sample_size, 
                                 n_equal=n_equal, 
                                 value_vars=relevant_value_vars,
-                                return_p_val=compute_sample_size)
-            test_result, p_val, n_to_reject_pair = result if compute_sample_size else (result, None, None)
+                                return_p_val=True)
+            test_result, p_val, n_to_reject_pair = result if compute_sample_size else (result[0], result[1], None)
+            all_p_vals.append(p_val)
             if test_result == "fail to reject":
                 reject = False
                 if compute_sample_size:
@@ -238,19 +181,114 @@ def test_top_k_set(means, vars_of_means, K, alpha, abs=True,
                     pair_ranks.append((top_K_idx, j)) 
                     p_vals.append(p_val)
                 else:
-                    break
+                    if not return_p_val:
+                        break
         if not reject and not compute_sample_size:
             break
-    
-    
+   
+    test_result = "reject" if reject else "fail to reject"
+    results = [test_result]
     if compute_sample_size:
         if reject:
-            return "reject", None, None
-        # Identify the pair of indices that failed to reject with largest p-value
-        best_idx = np.nanargmax(p_vals)
-        n_to_reject_pair = ns_to_reject_all[best_idx]
-        pair_rank = pair_ranks[best_idx]
-        pair_idx = [order[pair_rank[0]].item(), order[pair_rank[1]].item()]
+            pair_idx, n_to_reject_pair = None, None
+        else:
+            # Identify the pair of indices that failed to reject with largest p-value
+            best_idx = np.nanargmax(p_vals)
+            n_to_reject_pair = ns_to_reject_all[best_idx]
+            pair_rank = pair_ranks[best_idx]
+            pair_idx = [order[pair_rank[0]].item(), order[pair_rank[1]].item()]
+        results.extend([pair_idx, n_to_reject_pair])
+    if return_p_val:
+        results.append(np.nanmax(all_p_vals))
+    if return_close_ranks:
+        if reject:
+            results.append(None)
+        else:
+            p_val_idx = np.nanargmax(all_p_vals)
+            first_idx = p_val_idx // K
+            first_rank = K - first_idx
+            second_idx = p_val_idx % K
+            second_rank = K + 1 + second_idx
+            results.append(np.array([first_rank, second_rank]))
+    if len(results) == 1:
+        return test_result
+    return tuple(results)
 
-        return "fail to reject", pair_idx, n_to_reject_pair
-    return "reject" if reject else "fail to reject"
+
+############### Top-K Analysis ###############
+
+def mode_rows(a):
+    a = np.ascontiguousarray(a)
+    void_dt = np.dtype((np.void, a.dtype.itemsize * np.prod(a.shape[1:])))
+    _,ids, count = np.unique(a.view(void_dt).ravel(), \
+                                return_index=1,return_counts=1)
+    largest_count_id = ids[count.argmax()]
+    most_frequent_row = a[largest_count_id]
+    return most_frequent_row
+
+
+def shap_vals_to_ranks(shap_vals, abs=True):
+    N_pts, N_runs, d = shap_vals.shape
+    shap_ranks = np.array([get_ranking(shap_vals[i,j,:], abs=abs) for i in range(N_pts) for j in range(N_runs)]).reshape(shap_vals.shape)
+    return shap_ranks
+
+
+def calc_fwer(top_K, digits=None, rejection_idx=None):
+    '''
+    Calculates the family-wise error rate (FWER) of the top-K rankings: {# false rejections}/{# total trials}.
+    top_k is a np.array of shape (N_runs, K)
+    rejection_idx is a subset of the N_runs iterations in which the test rejected
+    '''
+    most_common_row = mode_rows(top_K)
+    relevant_top_K = np.array(top_K)
+    if rejection_idx is not None:
+        # Rows where test rejected
+        relevant_top_K = relevant_top_K[rejection_idx]
+    # num_false_rejections = np.sum(np.all(relevant_top_K!=most_common_row,axis=1)).item()
+    num_false_rejections = np.sum([1-np.array_equal(top_K_row, most_common_row) for top_K_row in relevant_top_K]).item()
+    num_total_trials = len(top_K)
+    fwer = num_false_rejections/num_total_trials
+    if digits:
+        return np.round(fwer, digits)
+    return fwer
+    
+
+def calc_max_fwer(results, thresh=0.9):
+    top_K_all = results['top_K']
+    rejection_idx = results['rejection_idx']
+    fwers_all = np.array([calc_fwer(top_K, rejection_idx=idx) for top_K, idx in zip(top_K_all, rejection_idx)])
+    relevant_idx = [len(idx)>(50*thresh) for idx in rejection_idx]
+    fwers = fwers_all[relevant_idx]
+    if len(fwers) > 0:
+        max_fwer = np.max(fwers)
+        return max_fwer
+    return None
+
+############### Retrospective Analysis ###############
+
+def calc_retro_fwer(GTranks, rankings, N_verified, digits=3):
+    '''
+    Calculates FWER of observed rankings for a single alpha on a given sample. 
+    Different iterations may have verified different numbers of ranks.
+    '''
+    prop_stable = np.mean([
+        np.array_equal(rankings[i, :nVerif], GTranks[:nVerif]) if nVerif > 0 else True
+        for i, nVerif in enumerate(N_verified)
+    ])
+    fwer = 1 - prop_stable
+    if digits:
+        return np.round(fwer, digits)
+    return fwer
+
+
+def calc_all_retro_fwers(N_verified_all, ranks, avgRanks, digits=3):
+    N_pts, _, N_alphas = N_verified_all.shape
+    fwers_all = [
+        [
+            calc_retro_fwer(avgRanks[ptIdx], ranks[ptIdx], N_verified_all[ptIdx,:,alphaIdx], digits=digits)
+            for ptIdx in range(N_pts)
+        ]
+        for alphaIdx in range(N_alphas)
+    ]
+    fwers_all = np.array(fwers_all)
+    return fwers_all

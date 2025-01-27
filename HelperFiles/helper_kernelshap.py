@@ -102,7 +102,8 @@ def kshap_equation(yloc, coalitions, coalition_values, avg_pred):
     return kshap_ests
 
 
-################### KernelSHAP method ###################
+################### Variance estimation ###################
+
 def compute_kshap_vars_ls(var_values, coalitions):
     d = coalitions.shape[1]
     var_values = np.diagflat(var_values)
