@@ -108,7 +108,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
                                             alpha = alpha_adj, tol=tol, return_none=True)
                 est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
             except:
-                continue
+                break
         else:
             if method=="rankshap":
                 shap_vals, diffs, N, converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
