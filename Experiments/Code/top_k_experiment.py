@@ -100,6 +100,8 @@ while N_successful_pts < N_pts and x_idx < N_test:
     for run_idx in range(N_runs):
         if isLime:
             tol = 1e-4
+            if dataset=="breast_cancer" and x_idx==3:
+                tol = 1e-5
             exp, converged = explainer.slime(xloc, model, num_features = K, 
                                         num_samples = 1000, n_max = max_n_lime, 
                                         alpha = alpha_adj, tol=tol, return_none=True)
