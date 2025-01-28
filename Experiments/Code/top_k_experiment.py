@@ -105,7 +105,7 @@ while N_successful_pts < N_pts and x_idx < N_test:
             try:
                 exp, converged = explainer.slime(xloc, model, num_features = K, 
                                             num_samples = 1000, n_max = max_n_lime, 
-                                            alpha = alpha_adj, tol=tol, return_none=True)
+                                            alpha = alpha_adj, tol=tol)
                 est_top_K = [pair[0] for pair in list(exp.local_exp.items())[0][1]]
             except:
                 break

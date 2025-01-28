@@ -665,8 +665,7 @@ class LimeTabularExplainer(object):
               sampling_method='gaussian', 
               n_max=10000, 
               alpha=0.05,
-              tol=1e-3,
-              return_none=True):
+              tol=1e-3):
         """Generates explanations for a prediction with S-LIME.
 
         First, we generate neighborhood data by randomly perturbing features
@@ -717,7 +716,7 @@ class LimeTabularExplainer(object):
                                                                  sampling_method=sampling_method,
                                                                  alpha=alpha)
             flag = False
-            # Set flag to true if any feature failed to converge (?)
+            # Set flag to true if any feature failed to converge
             for k in range(1, num_features + 1):
                 if test_result[k][0] < -tol:
                     flag = True
@@ -729,12 +728,7 @@ class LimeTabularExplainer(object):
                     num_samples = n_max
             else:
                 break
-        if flag and return_none:
-            converged = False
-            # return None
-        # return ret_exp
-        else:
-            converged = True
+        converged = False if flag else True
         return ret_exp, converged
 
     def __data_inverse(self,

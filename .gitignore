@@ -1,3 +1,4 @@
+**/older/
 misc/
 **/slurm*
 rankings/
@@ -7,6 +8,7 @@ slime/
 Papers/
 Versions/
 HelperFiles/__pycache__/
+Experiments/Code/top_K_outputs/
 Experiments/Results/alpha0.1copy
 Experiments/Results/alpha0.2copy
 Experiments/Results/Retrospectivecopy
