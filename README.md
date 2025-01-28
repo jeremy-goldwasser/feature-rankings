@@ -35,9 +35,9 @@ The `HelperFiles/` directory contains functions for our methodology, experiments
     
 ### Top-K Sampling Algorithms
 
-The repository includes two algorithms for evaluating feature importance rankings and sets: **SPRT-SHAP** and **RankSHAP**. Both are implemented in `top_k.py`:
-	-	Use the `sprtshap()` and `rankshap()` functions to apply these methods.
-	-	The parameter *guarantee* determines whether the algorithm focuses on ranking stability or set stability.
+The repository includes two algorithms for evaluating feature importance rankings and sets: **SPRT-SHAP** and **RankSHAP**. Both are implemented in `top_k.py`:  
+  - Use the `sprtshap()` and `rankshap()` functions to apply these methods.  
+  - The parameter *guarantee* determines whether the algorithm focuses on ranking stability or set stability.
 
 ## Usage and Examples
 
