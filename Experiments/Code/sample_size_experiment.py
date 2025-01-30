@@ -24,7 +24,7 @@ fname = "sample_size_comparison.npy"
 N_samples_all_datasets = []
 datasets = ["census", "bank", "brca", "credit", "breast_cancer"]
 
-max_n_rankshap = 10000
+max_n_stableshap = 10000
 for dataset in datasets:
     X_train, y_train, X_test, y_test, mapping_dict = load_data.load_data(join(dir_path, "Experiments", "Data"), dataset)
     N_max_pts = y_test.shape[0] if dataset!="brca" else y_train.shape[0]
@@ -37,7 +37,7 @@ for dataset in datasets:
     n_init_per_feature = 100
     n_init_total = 100*d
     N_samples = []
-    max_n_sprtshap = min(max_n_rankshap*d, 20000)
+    max_n_sprtshap = min(max_n_stableshap*d, 20000)
     while N_successful_pts < N_pts and x_idx < N_max_pts:
         if x_idx > 0:
             print(x_idx, N_successful_pts)
@@ -50,16 +50,16 @@ for dataset in datasets:
                                                 n_init=n_init_total)
         if not sprtshap_converged:
             continue
-        rankshap_vals, _, N_rankshap, rankshap_converged = top_k.rankshap(model, X_train, xloc, mapping_dict=mapping_dict,
+        stableshap_vals, _, N_stableshap, stableshap_converged = top_k.stableshap(model, X_train, xloc, mapping_dict=mapping_dict,
                                                 K=K, alpha=alpha, guarantee=guarantee,
-                                                max_n_perms=max_n_rankshap, 
+                                                max_n_perms=max_n_stableshap, 
                                                 n_equal=True, n_samples_per_perm=10, 
                                                 n_init=n_init_per_feature, abs=True)
-        if not rankshap_converged:
+        if not stableshap_converged:
             continue
-        # print(rankshap_converged, sprtshap_converged)
-        # if rankshap_converged and sprtshap_converged:
-        N_samples.append([N_rankshap, N_sprtshap])
+        # print(stableshap_converged, sprtshap_converged)
+        # if stableshap_converged and sprtshap_converged:
+        N_samples.append([N_stableshap, N_sprtshap])
         N_successful_pts += 1
         
     N_samples_all_datasets.append(N_samples)

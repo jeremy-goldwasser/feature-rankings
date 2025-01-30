@@ -5,10 +5,10 @@ import helper_shapley_sampling
 import helper_kernelshap
 
 
-################ RankSHAP (Shapley Smampling) ################
+################ StableSHAP ################
 
 
-def rankshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
+def stableshap(model, X, xloc, K, alpha=0.1, mapping_dict=None, guarantee="rank",
             n_samples_per_perm=10, n_init=100, max_n_perms=10000,  
             n_equal=True, buffer=1.1, abs=True):
     '''
