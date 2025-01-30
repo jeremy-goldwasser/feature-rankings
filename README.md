@@ -35,12 +35,12 @@ The `HelperFiles/` directory contains functions for our methodology, experiments
     
 ### Top-K Sampling Algorithms
 
-The repository includes two algorithms for evaluating feature importance rankings and sets: **SPRT-SHAP** and **RankSHAP**. Both are implemented in `top_k.py`:  
-  - Use the `sprtshap()` and `rankshap()` functions to apply these methods.  
+The repository includes two algorithms for evaluating feature importance rankings and sets: **SPRT-SHAP** and **StableSHAP**. Both are implemented in `top_k.py`:  
+  - Use the `sprtshap()` and `stableshap()` functions to apply these methods.  
   - The parameter *guarantee* determines whether the algorithm focuses on ranking stability or set stability.
 
 ## Usage and Examples
 
 For detailed examples of the provided functions on real-world data, refer to the `vignette.ipynb` notebook. This vignette performs ranking and set stability analysis in both the retrospective and algorithmic cases. 
   - Retrospective analysis with Shapley Sampling and KernelSHAP.
-  - Top-K algorithms with SPRT-SHAP on KernelSHAP, RankSHAP on Shapley Sampling, and our application of S-LIME.
+  - Top-K algorithms with SPRT-SHAP on KernelSHAP, StableSHAP on Shapley Sampling, and our application of S-LIME.
