@@ -42,5 +42,5 @@ The repository includes two algorithms for evaluating feature importance ranking
 ## Usage and Examples
 
 For detailed examples of the provided functions on real-world data, refer to the `vignette.ipynb` notebook. This vignette performs ranking and set stability analysis in both the retrospective and algorithmic cases. 
-	-	Retrospective analysis with Shapley Sampling and KernelSHAP.
-	-	Top-K algorithms with SPRT-SHAP on KernelSHAP, RankSHAP on Shapley Sampling, and our application of S-LIME.
+  - Retrospective analysis with Shapley Sampling and KernelSHAP.
+  - Top-K algorithms with SPRT-SHAP on KernelSHAP, RankSHAP on Shapley Sampling, and our application of S-LIME.
