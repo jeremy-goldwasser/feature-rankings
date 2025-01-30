@@ -120,12 +120,10 @@ while N_successful_pts < N_pts and x_idx < N_test:
                 N_per_feature = [len(diffs_feat) for diffs_feat in diffs]
                 Ns_per_feature.append(N_per_feature)
             else:
-                # beta = 0.2
-                beta = 1-alpha-0.05
                 shap_vals, shap_covs, N, converged = top_k.sprtshap(model, X_train, xloc, K=K, mapping_dict=mapping_dict, 
                                                       guarantee=guarantee,
                                                       n_samples_per_perm=10, n_perms_btwn_tests=1000, 
-                                                      n_max=max_n_kernelshap, alpha=alpha, beta=beta, abs=True)
+                                                      n_max=max_n_kernelshap, alpha=alpha, beta=0.2, abs=True)
                 shap_vars = np.diag(shap_covs)
 
             shap_vals_i.append(shap_vals)
